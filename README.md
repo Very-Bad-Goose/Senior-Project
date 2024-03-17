@@ -3,7 +3,7 @@
 # Please add your names below: 
 
 Joaquim Pedroza
-Jacob Sherer
+Jacob  W Sherer
 Ryan Naveira
 Chisom Iwunze
 Collin Dunkle
