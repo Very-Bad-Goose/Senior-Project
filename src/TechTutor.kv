@@ -1,0 +1,61 @@
+<MyFloatLayout>:
+    FloatLayout:
+        
+        # making size of layout the entire window
+        size: root.width,root.height
+
+        #adding image to side
+        Image:
+            source: 'assests/first_iteration_UI_Image.jpg'
+            pos_hint:{'right': .95, 'top': .9}
+            size_hint: (.45,.85)
+            fit_mode: 'fill'
+
+        # adding label above image
+        Label:
+            pos_hint:{'right': .95, 'top': .95}
+            size_hint: (.45,.05)
+            text: "Current Assignment"
+            font_size: 32
+            color: 0,0,0,1
+
+        # start button
+        Button:
+            size_hint: (.2,.1)
+            pos_hint: {'right': .25,'top': .3}
+            background_normal: ''
+            background_color: (7/255,232/255,86/255,1)
+            text: "Start"
+            color: 0,0,0,1
+            on_press: root.start_press()
+
+        # pause button
+        #ToggleButton:
+        #    id: pause_button
+        #    size_hint:(.2,.1)
+        #    pos_hint: {'right': .25,'top': .45}
+        #    background_normal: ''
+        #    background_color: (217/255,215/255,95/255,1)
+        #    text: "Pause/Resume"
+        #    color: 0,0,0,1
+        #    on_press: root.pause_press()
+
+        # stop button
+        Button:
+            size_hint:(.2,.1)
+            pos_hint: {'right': .25,'top': .15}
+            background_normal: ''
+            background_color: (171/255,82/255,82/255,1)
+            text:"Stop"
+            color: 0,0,0,1
+            on_press: root.stop_press()
+
+        #change grade key button
+        Button:
+            size_hint: (.2,.1)
+            pos_hint: {'right': .25, 'top': .95}
+            background_normal: ''
+            background_color: (86/255,78/255,148/255,1)
+            text:"Change Grading Key"
+            color: 0,0,0,1
+            on_press: root.change_key_button()
