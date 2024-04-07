@@ -17,3 +17,10 @@ In order to install kivy into your virtual environment for python use pip instal
 1) python -m pip install "kivy[base]"
 
 More Information at: https://kivy.org/doc/stable/gettingstarted/installation.html#install-pip
+
+# Lightning installation instructions
+open a terminal an enter the following command
+
+python -m pip install lightning
+
+additional information on the library can be found at: https://github.com/Lightning-AI/pytorch-lightning
