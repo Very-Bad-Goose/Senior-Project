@@ -3,24 +3,25 @@
 
 # Add a logo
 
-# Please add your names below: 
+# Contributors
 
-Joaquim Pedroza
-Jacob Sherer
-Ryan Naveira
-Chisom Iwunze
-Collin Dunkle
-Angelo Karam
-Joshua Grindstaff
-Austin Nolte
+- Joaquim Pedroza
+- Jacob Sherer
+- Ryan Naveira
+- Chisom Iwunze
+- Collin Dunkle
+- Angelo Karam
+- Joshua Grindstaff
+- Austin Nolte
+
 # Synopsis
-================================================================
+
 # Testing
 
 # Development
 
 # Dev Instructions
-================================================================
+
 # Kivy download instructions for UI
 In order to install kivy into your virtual environment for python use pip install and run
 
