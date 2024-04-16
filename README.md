@@ -1,5 +1,8 @@
 # Senior Project
 ![image](https://github.com/Very-Bad-Goose/Senior-Project/assets/71528875/e1188759-313a-422f-8232-3cd898f4fc5c)
+
+# Add a logo
+
 # Please add your names below: 
 
 Joaquim Pedroza
@@ -10,7 +13,14 @@ Collin Dunkle
 Angelo Karam
 Joshua Grindstaff
 Austin Nolte
+# Synopsis
+================================================================
+# Testing
 
+# Development
+
+# Dev Instructions
+================================================================
 # Kivy download instructions for UI
 In order to install kivy into your virtual environment for python use pip install and run
 
