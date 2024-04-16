@@ -1,5 +1,5 @@
 # Senior Project
-
+![image](https://github.com/Very-Bad-Goose/Senior-Project/assets/71528875/e1188759-313a-422f-8232-3cd898f4fc5c)
 # Please add your names below: 
 
 Joaquim Pedroza
@@ -24,3 +24,5 @@ open a terminal an enter the following command
 python -m pip install lightning
 
 additional information on the library can be found at: https://github.com/Lightning-AI/pytorch-lightning
+
+
