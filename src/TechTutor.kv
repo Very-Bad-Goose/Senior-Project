@@ -1,3 +1,22 @@
+
+<MyProgressBar>:
+
+    size:root.width,root.height
+
+    canvas.before:
+        Color:
+            rgba: 0,0,0,1
+        Rectangle:
+            size:(self.width,self.height)
+            pos: (self.x,self.y)
+    canvas.after:
+        Color:
+            rgba: 0,1,1,1
+        Rectangle:
+            id: blue_rect
+            size:(self.width * root.set_value/100,self.height)
+            pos: (self.x,self.y)
+
 <MyFloatLayout>:
     FloatLayout:
         
@@ -6,7 +25,8 @@
 
         #adding image to side
         Image:
-            source: 'assests/first_iteration_UI_Image.jpg'
+            id: grade_key_image
+            source: ''
             pos_hint:{'right': .95, 'top': .9}
             size_hint: (.45,.85)
             fit_mode: 'fill'
@@ -15,7 +35,7 @@
         Label:
             pos_hint:{'right': .95, 'top': .95}
             size_hint: (.45,.05)
-            text: "Current Assignment"
+            text: "Current Grading Key"
             font_size: 32
             color: 0,0,0,1
 
@@ -53,9 +73,29 @@
         #change grade key button
         Button:
             size_hint: (.2,.1)
-            pos_hint: {'right': .25, 'top': .95}
+            pos_hint: {'right': .25, 'top': .45}
             background_normal: ''
             background_color: (86/255,78/255,148/255,1)
             text:"Change Grading Key"
             color: 0,0,0,1
             on_press: root.change_key_button()
+        
+        MyProgressBar:
+            id: progress_bar_background
+            size_hint: (.35,.03)
+            pos_hint: {'right': .4, 'top': .75}
+
+        Label:
+            pos_hint:{'right': .46, 'top': .8}
+            size_hint: (.45,.05)
+            text: str(root.progress_bar_value) + '% Done'
+            font_size: 24
+            color: 0,0,0,1
+
+        Label:
+            id: error_label
+            pos_hint:{'right': .46, 'top': .5}
+            size_hint: (.45,.05)
+            text: root.error_file
+            font_size: 24
+            color: .6,0,0,1
