@@ -34,6 +34,7 @@ class MyFloatLayout(FloatLayout):
     def stop_press(self):
         print('here')
         pass
+
     # method for when change grade key button is pressed
     def change_key_button(self):
         key_file = self.ids.grade_key_image.source
@@ -64,7 +65,7 @@ class TechTutorApp(App):
     def build(self):
         
         # setting window background to white
-        Window.clearcolor = (130/255,129/255,127/255,1)
+        Window.clearcolor = (49/255,51/255,56/255,1)
         return MyFloatLayout()
     
 if __name__ == '__main__':
