@@ -5,13 +5,13 @@
 
     canvas.before:
         Color:
-            rgba: 0,0,0,1
+            rgba: 0.251, 0.259, 0.286, 1
         Rectangle:
             size:(self.width,self.height)
             pos: (self.x,self.y)
     canvas.after:
         Color:
-            rgba: 0,1,1,1
+            rgba: 0.71, 0.729, 0.757, 1
         Rectangle:
             id: blue_rect
             size:(self.width * root.set_value/100,self.height)
@@ -27,33 +27,33 @@
         Image:
             id: grade_key_image
             source: ''
-            pos_hint:{'right': .95, 'top': .9}
+            pos_hint:{'right': .95, 'top': .94}
             size_hint: (.45,.85)
             fit_mode: 'fill'
 
         # adding label above image
         Label:
-            pos_hint:{'right': .95, 'top': .95}
-            size_hint: (.45,.05)
+            pos_hint:{'right': .95, 'top': .98}
+            size_hint: (.45,.04)
             text: "Current Grading Key"
             font_size: 32
-            color: 0,0,0,1
+            color: 0.710, 0.729, 0.757, 1
 
         # start button
         Button:
             size_hint: (.2,.1)
-            pos_hint: {'right': .25,'top': .3}
-            background_normal: ''
-            background_color: (7/255,232/255,86/255,1)
+            pos_hint: {'right': .22,'top': .13}
+            background_normal: 'ui_images/gray4.png'
+            background_down: 'ui_images/gray2.png'
             text: "Start"
-            color: 0,0,0,1
+            color: 0.710, 0.729, 0.757, 1
             on_press: root.start_press()
 
         # pause button
         #ToggleButton:
         #    id: pause_button
         #    size_hint:(.2,.1)
-        #    pos_hint: {'right': .25,'top': .45}
+        #    pos_hint: {'right': .25,'top': .33}
         #    background_normal: ''
         #    background_color: (217/255,215/255,95/255,1)
         #    text: "Pause/Resume"
@@ -63,34 +63,35 @@
         # stop button
         Button:
             size_hint:(.2,.1)
-            pos_hint: {'right': .25,'top': .15}
-            background_normal: ''
-            background_color: (171/255,82/255,82/255,1)
+            pos_hint: {'right': .45,'top': .13}
+            background_normal: 'ui_images/gray4.png'
+            background_down: 'ui_images/gray2.png'
             text:"Stop"
-            color: 0,0,0,1
+            color: 0.710, 0.729, 0.757, 1
             on_press: root.stop_press()
 
         #change grade key button
         Button:
-            size_hint: (.2,.1)
-            pos_hint: {'right': .25, 'top': .45}
-            background_normal: ''
-            background_color: (86/255,78/255,148/255,1)
-            text:"Change Grading Key"
-            color: 0,0,0,1
+            size_hint: (.45,.05)
+            pos_hint: {'right': .95, 'top': .07}
+            background_normal: 'ui_images/gray4.png'
+            background_down: 'ui_images/gray2.png'
+            text:"Change Key"
+            font_size: 20
+            color: 0.710, 0.729, 0.757, 1
             on_press: root.change_key_button()
         
         MyProgressBar:
             id: progress_bar_background
-            size_hint: (.35,.03)
-            pos_hint: {'right': .4, 'top': .75}
+            size_hint: (.43,.03)
+            pos_hint: {'right': .45, 'top': .18}
 
         Label:
-            pos_hint:{'right': .46, 'top': .8}
-            size_hint: (.45,.05)
+            pos_hint:{'right': .45, 'top': .18}
+            size_hint: (.43,.03)
             text: str(root.progress_bar_value) + '% Done'
             font_size: 24
-            color: 0,0,0,1
+            color: 1,1,1,1
 
         Label:
             id: error_label
