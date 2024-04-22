@@ -65,4 +65,11 @@ python -m pip install lightning
 
 additional information on the library can be found at: https://github.com/Lightning-AI/pytorch-lightning
 
+# img2pdf installation instructions
+open a terminal an enter the following command
+
+python -m pip install img2pdf
+
+additional information on the library can be found at: https://pypi.org/project/img2pdf/
+
 
