@@ -7,11 +7,11 @@ from googleapiclient.http import MediaIoBaseDownload
 import os
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 #TODO Replace with CreditialFile (Same as test2)
-SERVICE_ACCOUNT_FILE = 'apiketget-ad9721240cbb.json'
+SERVICE_ACCOUNT_FILE = '.json'
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 #This is the ID of a test drive I made
-#TODO Test this ID
+#TODO Change to clients drive
 SUBMISSION_FOLDER_ID = "1o0w7mOrhZh5tCuaVXnpBa8195J5iUBz2"
 # path to where the test and training data will be created if it does not exists
 DATA_PATH = 'submissions'
