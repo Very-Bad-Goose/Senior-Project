@@ -1,27 +1,15 @@
-# Senior Project
-![image](https://github.com/Very-Bad-Goose/Senior-Project/assets/71528875/e1188759-313a-422f-8232-3cd898f4fc5c)
+## TechTutor
 
-# Add a logo
+![image](https://github.com/Very-Bad-Goose/Senior-Project/assets/71528875/bbd8112f-7414-4646-b828-abc9ef22a103)
 
-# Contributors
+TechTutor, developed by the Byte Brigade team, is a Python-based project leveraging PyTorch for machine learning tasks. The primary objective of TechTutor is to simplify the process of grading students' homework by employing machine learning algorithms to analyze images submitted by students. The graded assignments are then conveniently uploaded to Google Drive for teachers' review. The grading process is facilitated by the input of a grading key by the teacher, which the program utilizes to assess and score the homework assignments.
 
-- Joaquim Pedroza
-- Jacob Sherer
-- Ryan Naveira
-- Chisom Iwunze
-- Collin Dunkle
-- Angelo Karam
-- Joshua Grindstaff
-- Austin Nolte
 
-# Synopsis
+## Development Instructions
 
-# Testing
+For those interested in using TechTutor, follow these instructions:
 
-# Development
-
-# Dev Instructions
-For Prototype 2, here are the installs and steps you need: Note we are using test2.ipynb now
+# For Prototype 2, here are the installs and steps you need: Note we are using test2.ipynb now
 1. First, ensure you are in your conda environment by typing this into your IDEs terminal
         `conda activate`
    You should now see (base) followed by your hostname if you are in the conda environment
@@ -73,3 +61,30 @@ python -m pip install img2pdf
 additional information on the library can be found at: https://pypi.org/project/img2pdf/
 
 
+## Jira Timeline
+
+For project management and tracking progress, refer to the following Jira timeline:
+
+- **Task 1:** Project Initiation - [Link to Jira](#)
+- **Task 2:** Feature Development - [Link to Jira](#)
+- **Task 3:** Testing and Quality Assurance - [Link to Jira](#)
+- **Task 4:** Deployment and Integration - [Link to Jira](#)
+- **Task 5:** Maintenance and Support - [Link to Jira](#)
+
+# Contributors
+
+- Joaquim Pedroza
+- Jacob Sherer
+- Ryan Naveira
+- Chisom Iwunze
+- Collin Dunkle
+- Angelo Karam
+- Joshua Grindstaff
+- Austin Nolte
+
+
+For more information or assistance, feel free to contact the Byte Brigade team.
+
+---
+
+© 2024 Byte Brigade. All rights reserved.
