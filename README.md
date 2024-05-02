@@ -2,6 +2,8 @@
 
 ![image](https://github.com/Very-Bad-Goose/Senior-Project/assets/71528875/bbd8112f-7414-4646-b828-abc9ef22a103)
 
+
+## Summary
 TechTutor, developed by the Byte Brigade team, is a Python-based project leveraging PyTorch for machine learning tasks. The primary objective of TechTutor is to simplify the process of grading students' homework by employing machine learning algorithms to analyze images submitted by students. The graded assignments are then conveniently uploaded to Google Drive for teachers' review. The grading process is facilitated by the input of a grading key by the teacher, which the program utilizes to assess and score the homework assignments.
 
 
@@ -26,18 +28,20 @@ For those interested in using TechTutor, follow these instructions:
         Enter a name and description for the service account. Click Create.
         You don’t need to grant this account any role on the Cloud project for this purpose, so click Done.
 
-        Step 2: Create Keys for the Service Account
+        Step 2:
+        Create Keys for the Service Account.
         Click on the service account you just made in the list. (take note of the email/copy it for later)
         Go to the Keys tab.
         Click Add Key, choose Create new key, and select JSON. Click Create.
         This action will download a JSON file to your computer (move to the Project directory)
-        Share the Google Sheet with the service account's email to give it access. (enter the email address of the service account in the share icon on the Google sheet. 
+        Share the Google Sheet with the service account's email to give it access.
+        (enter the email address of the service account in the share icon on the Google sheet. 
         Grant the service account “Editor” access so it can read and write to the sheet.
    
         Step 3:
         Now alter all the TODO locations to ensure your file paths/file names are set up correctly.
+
         Step 4:
-   
         For now, test the prototype with the sample image provided (should be in same directory as project.
         To do this, you need to use local host, since pulling that image off the internet can cause issues.
         Do this with `python -m http.server 8000` in the terminal, then RUN the code. 
