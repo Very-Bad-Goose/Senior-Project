@@ -19,7 +19,7 @@ For those interested in using TechTutor, follow these instructions:
         `pip install google-auth google-cloud-vision google-api-python-client google-auth-httplib2 google-auth-oauthlib`
 3. Create a service account to get an API key and JSON file:
 
-        Step 1:
+   Step 1:
         Go to the Google Cloud Console.
         At the top left, click on "No project selected" and create a new project
         Navigate to APIs & Services on the Dashboard to the left and click ENABLE APIS AND SERVICES to search for Google Sheets API, then hit enable.
@@ -28,7 +28,7 @@ For those interested in using TechTutor, follow these instructions:
         Enter a name and description for the service account. Click Create.
         You don’t need to grant this account any role on the Cloud project for this purpose, so click Done.
 
-        Step 2:
+   Step 2:
         Create Keys for the Service Account.
         Click on the service account you just made in the list. (take note of the email/copy it for later)
         Go to the Keys tab.
@@ -38,10 +38,10 @@ For those interested in using TechTutor, follow these instructions:
         (enter the email address of the service account in the share icon on the Google sheet. 
         Grant the service account “Editor” access so it can read and write to the sheet.
    
-        Step 3:
+   Step 3:
         Now alter all the TODO locations to ensure your file paths/file names are set up correctly.
 
-        Step 4:
+   Step 4:
         For now, test the prototype with the sample image provided (should be in same directory as project.
         To do this, you need to use local host, since pulling that image off the internet can cause issues.
         Do this with `python -m http.server 8000` in the terminal, then RUN the code. 
@@ -49,21 +49,21 @@ For those interested in using TechTutor, follow these instructions:
 # Kivy download instructions for UI
 In order to install kivy into your virtual environment for python use pip install and run
 
-        ```python -m pip install "kivy[base]"```
+        python -m pip install "kivy[base]"
 
 More Information at: https://kivy.org/doc/stable/gettingstarted/installation.html#install-pip
 
 # Lightning installation instructions
 open a terminal an enter the following command
 
-```python -m pip install lightning```
+        python -m pip install lightning
 
 additional information on the library can be found at: https://github.com/Lightning-AI/pytorch-lightning
 
 # img2pdf installation instructions
 open a terminal an enter the following command
 
-```python -m pip install img2pdf```
+        python -m pip install img2pdf
 
 additional information on the library can be found at: https://pypi.org/project/img2pdf/
 
