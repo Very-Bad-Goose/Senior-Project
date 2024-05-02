@@ -16,7 +16,7 @@ For those interested in using TechTutor, follow these instructions:
         `conda activate`
    You should now see (base) followed by your hostname if you are in the conda environment
 2. Use pip to install the necessary packages:
-        `pip install google-auth google-cloud-vision google-api-python-client google-auth-httplib2 google-auth-oauthlib`
+   ```pip install google-auth google-cloud-vision google-api-python-client google-auth-httplib2 google-auth-oauthlib```
 3. Create a service account to get an API key and JSON file:
 
    Step 1:
@@ -44,26 +44,26 @@ For those interested in using TechTutor, follow these instructions:
    Step 4:
         For now, test the prototype with the sample image provided (should be in same directory as project.
         To do this, you need to use local host, since pulling that image off the internet can cause issues.
-        Do this with `python -m http.server 8000` in the terminal, then RUN the code. 
+        Do this with ```python -m http.server 8000``` in the terminal, then RUN the code. 
 
 # Kivy download instructions for UI
 In order to install kivy into your virtual environment for python use pip install and run
 
-        python -m pip install "kivy[base]"
+```python -m pip install "kivy[base]"```
 
 More Information at: https://kivy.org/doc/stable/gettingstarted/installation.html#install-pip
 
 # Lightning installation instructions
 open a terminal an enter the following command
 
-        python -m pip install lightning
+```python -m pip install lightning```
 
 additional information on the library can be found at: https://github.com/Lightning-AI/pytorch-lightning
 
 # img2pdf installation instructions
 open a terminal an enter the following command
 
-        python -m pip install img2pdf
+```python -m pip install img2pdf```
 
 additional information on the library can be found at: https://pypi.org/project/img2pdf/
 
