@@ -72,11 +72,14 @@ additional information on the library can be found at: https://pypi.org/project/
 
 For project management and tracking progress, refer to the following Jira timeline:
 
-- **Task 1:** Project Initiation - [Link to Jira](#)
-- **Task 2:** Feature Development - [Link to Jira](#)
-- **Task 3:** Testing and Quality Assurance - [Link to Jira](#)
-- **Task 4:** Deployment and Integration - [Link to Jira](#)
-- **Task 5:** Maintenance and Support - [Link to Jira](#)
+- **Sprint 5:** Train AI on handwriting recognission
+- **Sprint 6:** Train AI on Desk Recognition
+- **Sprint 7:** Train AI on Other Submissions
+- **Sprint 8:** UI Finishing Touches
+- **Sprint 9:** Testing - Get Accuracy > 95%
+- **Sprint 10:** Final Testing
+
+Link to Jira Backlog: https://bad-goose.atlassian.net/jira/software/projects/PROJECT01/boards/2/backlog
 
 # Contributors
 
