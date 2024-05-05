@@ -80,6 +80,9 @@ For project management and tracking progress, refer to the following Jira timeli
 - **Sprint 10:** Final Testing
 
 Link to Jira Backlog: https://bad-goose.atlassian.net/jira/software/projects/PROJECT01/boards/2/backlog
+# Testing
+
+# Deployment
 
 # Contributors
 
