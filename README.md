@@ -13,9 +13,7 @@ TechTutor has a very simple UI. It consists of a button to start, stop, and chan
 
 # Developer Instructions
 
-For those interested in using TechTutor, follow these instructions:
-
-## For Prototype 2, here are the installs and steps you need: Note we are using test2.ipynb now
+For those interested in using TechTutor, follow these instructions: (Note we are using test2.ipynb now)
 1. First, ensure you are in your conda environment by typing this into your IDEs terminal
         `conda activate`
    You should now see (base) followed by your hostname if you are in the conda environment
@@ -48,7 +46,10 @@ For those interested in using TechTutor, follow these instructions:
    Step 4:
         For now, test the prototype with the sample image provided (should be in same directory as project.
         To do this, you need to use local host, since pulling that image off the internet can cause issues.
-        Do this with ```python -m http.server 8000``` in the terminal, then RUN the code. 
+        Do this with ```python -m http.server 8000``` in the terminal, then RUN the code.
+   
+This iteration of the AI works directly with Google Sheets, as follows:
+
 
 # Kivy download instructions for UI
 In order to install kivy into your virtual environment for python use pip install and run
