@@ -49,6 +49,11 @@ For those interested in using TechTutor, follow these instructions: (Note we are
         Do this with ```python -m http.server 8000``` in the terminal, then RUN the code.
    
 This iteration of the AI works directly with Google Sheets, as follows:
+This is an example of a input image, which you would place a link to (or path to) in a Google Sheet cell
+![image](https://github.com/Very-Bad-Goose/Senior-Project/blob/main/src/assests/dogcat.png)
+Here is an example of what you can set the Google Sheets to look like where you provide the link or path to the input
+image, followed by the cell/column where the AI can output what it "saw". Make sure to specify these cell numbers in your code.
+![image](https://github.com/Very-Bad-Goose/Senior-Project/blob/main/src/assests/googleSheetsView.png)
 
 
 # Kivy download instructions for UI
