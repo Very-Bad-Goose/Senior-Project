@@ -76,12 +76,34 @@ additional information on the library can be found at: https://pypi.org/project/
 
 For project management and tracking progress, refer to the following Jira timeline:
 
-- **Sprint 5:** Train AI on handwriting recognission
-- **Sprint 6:** Train AI on Desk Recognition
-- **Sprint 7:** Train AI on Other Submissions
-- **Sprint 8:** UI Finishing Touches
-- **Sprint 9:** Testing - Get Accuracy > 95%
-- **Sprint 10:** Final Testing
+- **Sprint 5:** Train AI on handwriting recognission (8/26/24 - 9/8/24)
+  - Train AI to read math symbols.
+  - Train AI to locate ID numbers on worksheets.
+  - Make sure AI can handle imperfections in paper.
+    - this includes blemishes and too blurry of pictures.
+  - Train AI to locate differences in images.
+  - Make the AI look at a submission and compare it against a "correct" image.
+  - Make AI determine the percent difference between grading key and submission.
+- **Sprint 6:** Train AI on Desk Recognition (9/9/24 - 9/22/24)
+  - Train AI to handle dents in desks.
+  - Train AI to make sure desk number is same as assigned desk numbers.
+  - Train AI to make sure calculator is in top left of desk.
+  - Train AI to make sure number on calculator matches desk number.
+  - Train AI to make sure side pouches are clean.
+  - Create test data sets.     
+- **Sprint 7:** Train AI on Other Submissions (9/23/24 - 10/6/24)
+  - Test AI on different types of assignments and different grading keys.
+  - Add ability for user to test if AI can read grading key correctly.
+  - Test submissions on different grading keys that are not correct.
+  - Implement a threashold for how good the image quality needs to be for AI to grade assignment.        
+- **Sprint 8:** UI Finishing Touches (10/7/24 - 10/20/24)
+  - Progress bar update with regards to current AI job.
+  - Make Start button start AI model.
+  - Make Stop button stop AI model.
+  - Make it so the grading key chosen by UI is the one being used by AI model.
+  - Add logging feature of AI to see why it made the decisions it did.
+- **Sprint 9:** Testing - Get Accuracy > 95% (10/21/24 - 11/3/24)
+- **Sprint 10:** Final Testing (11/4/24 - 11/17/24)
 
 Link to Jira Backlog: https://bad-goose.atlassian.net/jira/software/projects/PROJECT01/boards/2/backlog
 # Testing
