@@ -1,0 +1,3 @@
+Academic Score: 4
+Citizenship Score: 5
+Comments: Your answers are correct; however, please use the same notation that we are using in the class.  Part of this lesson is using math symbols to write arguments.

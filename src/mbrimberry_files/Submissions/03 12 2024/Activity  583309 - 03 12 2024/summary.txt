@@ -1,0 +1,3 @@
+Academic Score: 4
+Citizenship Score: 5
+Comments: Great job. You must be sure to write x = {-A,A} instead of just {-A,A}. 
