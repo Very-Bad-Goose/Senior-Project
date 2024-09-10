@@ -19,3 +19,5 @@
 *.app
 *.spyproject
 debug.log
+/data
+/src/mbrimberry_files/*
