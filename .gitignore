@@ -19,5 +19,8 @@
 *.app
 *.spyproject
 debug.log
+*.json
+*ignore.txt
+/submissions/*
 /data
 /src/mbrimberry_files/*
