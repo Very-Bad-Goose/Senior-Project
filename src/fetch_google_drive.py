@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 SKIP_EXIST_DIR = 1
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
-#TODO Replace with CreditialFile (Same as test2)
 SERVICE_ACCOUNT_FILE = '.json'
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
@@ -50,13 +49,13 @@ def updateTxtFile():
         for item in test:
             f.write("%s\n" % item)
 
-#Function to download all contents in a specified folder
-def download_folder(folder_id, save_path):
-    request = drive_service.files().list(q=f"'{folder_id}' in parents",fields="files(id,name,mimeType)").execute()
+# Function to download a folder and process images
+def download_folder_and_analyze(folder_id, save_path):
+    request = drive_service.files().list(q=f"'{folder_id}' in parents", fields="files(id,name,mimeType)").execute()
     files = request.get('files', [])
     current_dir = save_path
+    
     for file in files:
-        #grab file id and name
         file_id = file['id']
         file_name = file['name']
         file_mime_type = file.get('mimeType', '')
@@ -68,8 +67,7 @@ def download_folder(folder_id, save_path):
         else:
             download_file(file_id, next)
 
-    
-#Function to download a specific file to a specific local directory
+# Function to download a specific file
 def download_file(file_id, save_path):
     try:
         request = drive_service.files().get_media(fileId=file_id)      
@@ -85,12 +83,12 @@ def download_file(file_id, save_path):
     except HttpError as error:
         print(f"An error occurred: {error} \nFile {file_id} failed")
         return None
-    
-# Downloading the submissions folder
-request = drive_service.files().list(q=f"'{SUBMISSION_FOLDER_ID}' in parents",fields="files(id,name)").execute()
+
+# Download the submissions folder and process
+request = drive_service.files().list(q=f"'{SUBMISSION_FOLDER_ID}' in parents", fields="files(id,name)").execute()
 files = request.get('files', [])
+
 for file in files:
-    #grab file id and name
     file_id = file['id']
     file_name = file['name']
     if file_name in train:
@@ -115,4 +113,3 @@ for file in files:
         train.append(file_name)
     download_folder(file_id,file_path)
 updateTxtFile()
-
