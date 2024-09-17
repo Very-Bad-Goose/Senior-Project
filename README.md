@@ -57,9 +57,12 @@ image, followed by the cell/column where the AI can output what it "saw". Make s
 
 # Training Data Fetch
 1. Modify fetch_google_drive
-  * Change `SERVICE_ACCOUNT_FILE` to your .json file (The one you made in developer instructions)
-  * Change `SUBMISSION_FOLDER_ID` = to the Folder ID of the submission folder of the target drive. You can find the folder ID in the url when viewing the folder (may not need to changed).
-  * Change `DATA_PATCH` to the target folder where the test and training data will be created
+   
+   * Change `SERVICE_ACCOUNT_FILE` to your .json file (The one you made in developer instructions)
+   * Change `SUBMISSION_FOLDER_ID` = to the Folder ID of the submission folder of the target drive. You can find the folder ID in the url when viewing the folder (may not need to changed).
+   * ![Folder ID](https://github.com/user-attachments/assets/f1390b0c-151a-46b4-a2c0-5e9eba3c899e)
+   * Change `DATA_PATCH` to the target folder where the test and training data will be created
+
 2. Add the service account email to the submission folder share permission on the google drive
 3. Make sure to add the test.txt and train.txt files to your test and train folder. These text files keep track of which folders are for testing and for training so we can have consistency.
 
