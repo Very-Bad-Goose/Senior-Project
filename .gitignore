@@ -21,6 +21,9 @@
 debug.log
 *.json
 *ignore.txt
-/submissions/*
+/submissions/test/*
+/submissions/train/*
+!/submissions/train/train.txt
+!/submissions/test/test.txt
 /data
 /src/mbrimberry_files/*

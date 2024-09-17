@@ -55,6 +55,14 @@ Here is an example of what you can set the Google Sheets to look like where you 
 image, followed by the cell/column where the AI can output what it "saw". Make sure to specify these cell numbers in your code.
 ![image](https://github.com/Very-Bad-Goose/Senior-Project/blob/main/src/assests/googleSheetsView.png)
 
+# Training Data Fetch
+1. Modify fetch_google_drive
+  * Change `SERVICE_ACCOUNT_FILE` to your .json file (The one you made in developer instructions)
+  * Change `SUBMISSION_FOLDER_ID` = to the Folder ID of the submission folder of the target drive. You can find the folder ID in the url when viewing the folder (may not need to changed).
+  * Change `DATA_PATCH` to the target folder where the test and training data will be created
+2. Add the service account email to the submission folder share permission on the google drive
+3. Make sure to add the test.txt and train.txt files to your test and train folder. These text files keep track of which folders are for testing and for training so we can have consistency.
+
 
 # Kivy download instructions for UI
 In order to install kivy into your virtual environment for python use pip install and run
