@@ -27,5 +27,5 @@ debug.log
 !/submissions/test/test.txt
 /data
 /src/mbrimberry_files/*
-!/src/mbrimberry_files/Submissions/**/**/Activity\ Packet/*.txt
-!/src/mbrimberry_files/Submissions/**/**/Desk\ Images/*.txt
+!/src/mbrimberry_files/Submissions/**/**/**/*.txt
+
