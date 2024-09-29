@@ -26,3 +26,8 @@ debug.log
 !/submissions/train/train.txt
 !/submissions/test/test.txt
 /data
+/src/mbrimberry_files/**/*.png
+/src/mbrimberry_files/**/*.jpg
+/src/mbrimberry_files/**/*.jpeg
+
+
