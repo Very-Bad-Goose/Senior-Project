@@ -1,0 +1,6 @@
+Academic Score: 4
+Citizenship Score: 4
+Comments: When you write your final answers, be sure to write the three sentences such that each "x" is on top of each other:
+  x = { -# , # }
+  x ε R | x > 0
+∴ x = {#}

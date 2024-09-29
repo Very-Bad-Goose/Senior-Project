@@ -1,0 +1,3 @@
+Academic Score: 3
+Citizenship Score: 5
+Comments: Be careful with your symbols.  After you cancel the + on the left side, keep writing the "=" symbol.  After you square root both sides, be sure to write |x|, not [x].

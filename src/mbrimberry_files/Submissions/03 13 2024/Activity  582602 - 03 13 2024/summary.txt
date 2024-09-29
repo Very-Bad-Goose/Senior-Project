@@ -1,0 +1,3 @@
+Academic Score: 4
+Citizenship Score: 5
+Comments: Good job! For #1 through #6, you wrote ∴ = {A}.  You forgot to write the "x".  You must write ∴ x = {A}. 

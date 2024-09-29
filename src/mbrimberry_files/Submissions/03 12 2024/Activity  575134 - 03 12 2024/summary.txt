@@ -1,0 +1,3 @@
+Academic Score: 4
+Citizenship Score: 2
+Comments: Be sure to write the ∴ symbol in your last sentence.  You must write ∴ x = {#} instead of just x = {#}.

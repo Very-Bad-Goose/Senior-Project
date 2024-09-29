@@ -1,0 +1,6 @@
+Academic Score: 4
+Citizenship Score: 5
+Comments: When you write your three sentences, they must be on top of each other.  Also, be sure to write the symbol ∴ every time.
+     x = {-A, A}  
+     x ε R | x > 0  
+∴ x = {A}
