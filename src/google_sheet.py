@@ -4,14 +4,17 @@
 # have a few functions but those can be increased from ease in here
 # NOTE: Uses the gspread lib, you can install it with 'pip install gspread'
 
-# Additional Notes:
-# For now this is readonly for the sheets, but there will probably be a time where we want to 
-# use this class to write a value to a cell. 
+# Possible additions to add in here:
+# Logging functionality
+# Execution time
+# Processed/Unprocessed
+# Feedback is already taken care of
 
 import gspread
 from google.oauth2 import service_account
 
 class google_sheet:
+    
     
     # Init properties
     def __init__(self, credentials_json, sheet_id):
@@ -19,13 +22,13 @@ class google_sheet:
         self.sheet_id = sheet_id
         self.client = self._authenticate()
         self.sheet = self._initialize_sheet()
-        self.worksheet = self.get_worksheet()
+        self.worksheet = self.get_worksheet() 
 
     # Set the credentials
     def _authenticate(self):
         credentials_json = None
-        # Our scopes, as of now is readonly
-        scope = ["https://www.googleapis.com/auth/drive.readonly"]
+        # Our scopes, are read and write
+        scope = ["https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/spreadsheets"]
         try:
             credentials = service_account.Credentials.from_service_account_file(
             credentials_json, scopes=scope)
@@ -57,3 +60,16 @@ class google_sheet:
     #Returns true or false if value is the same as the cell's value
     def compare_cell(self, value, row, col):
         return value == self.get_cell(row, col)
+
+
+
+    
+    # Write operations
+    
+    # Updates a singular cell
+    def update_cell(self, row, col, string):
+        try:
+            self.worksheet.update_cell(row, col, string)
+        except Exception as e:
+            print(f"Error writing to cell: {e}")
+    
