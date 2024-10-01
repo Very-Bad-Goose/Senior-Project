@@ -10,6 +10,12 @@ from kivy.properties import NumericProperty,StringProperty
 from kivy.uix.widget import Widget
 from tkinter import filedialog
 
+from model_api import load_model,predict_model_test,stop_model,predict_model
+from temp_model import NeuralNet
+
+# ai model object
+model = None
+
 # loading kv language file
 Builder.load_file('TechTutor.kv')
 
@@ -29,11 +35,13 @@ class MyFloatLayout(FloatLayout):
         if(self.ids.progress_bar_background.set_value > 100):
             self.ids.progress_bar_background.set_value = 0
         self.progress_bar_value = self.ids.progress_bar_background.set_value
-        pass
+        
+        global model
+        predict_model_test(model,"src/mbrimberry_files")
+        
     # method for when stop button is pressed
     def stop_press(self):
-        print('here')
-        pass
+        stop_model()
 
     # method for when change grade key button is pressed
     def change_key_button(self):
@@ -67,6 +75,8 @@ class TechTutorApp(App):
         # setting window background to white
         Window.clearcolor = (49/255,51/255,56/255,1)
         return MyFloatLayout()
+    global model 
+    model = load_model("./model_test1.pt")
     
 if __name__ == '__main__':
     TechTutorApp().run()
