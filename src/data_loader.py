@@ -50,7 +50,7 @@ class DeskTopDataset(Dataset):
     # Initializes the dataset
     def __init__(self,targ_dir: str,transform=None):
         # This grabs all of the paths to the desk_1 images and puts them into a sorted list
-        img_paths = list(sorted(Path(targ_dir).glob("03 11 2024/*/Desk Images/desk_1.png")))  
+        img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.png")))  
         #img_paths = list(sorted(Path(targ_dir).glob("*/*/Activity Packet/activity*.png")))  
         self.paths = []
         for img in img_paths:
@@ -76,22 +76,23 @@ class DeskTopDataset(Dataset):
     def load_bbox(self, index: int) -> Tuple[int,torch.Tensor]:
         boundingbox_path = self.paths[index][1]
         # passing boundingbox file into the txtParse function to return the tensor and label
-        return txtParse(boundingbox_path, len(self.classes))
+        return bounding_box_txt_parse(boundingbox_path, len(self.classes))
     
     # function that returns the length of dataset
     def __len__(self) -> int:
         return len(self.paths)
     
+    # Function to get specified item, used by the data loader to obtain data
     def __getitem__(self, index: int) -> Tuple[torch.Tensor, torch.Tensor, int]:
         img = self.load_image(index)
         target = {}
         target["labels"], target['boxes'] = self.load_bbox(index)
-        # TODO Handle Transforms(have to apply them to coordinates also maybe)
         if self.transform:
             img, target = self.transform(img, target)
         return img, target
 
-def txtParse(txt_file, num_of_classes) -> Tuple[int,torch.tensor]:
+# This parses the txt file and gets the bounding box and their classes
+def bounding_box_txt_parse(txt_file, num_of_classes) -> Tuple[int,torch.tensor]:
     "Parses the JSON file get the bounding boxes"
     coords = []
     filled_class_idx = []
@@ -108,6 +109,7 @@ def txtParse(txt_file, num_of_classes) -> Tuple[int,torch.tensor]:
         bbox = torch.tensor(coords, dtype=torch.float32)
     else:
         return class_idx, torch.zeros(size=(num_of_classes,4), dtype=torch.float32)
+    # Fills tensor with zeros for remaining classes
     for num in class_idx:
         filled_class_idx.append(num)
         no_bbox = torch.zeros(size=(1,4), dtype=torch.float32)
