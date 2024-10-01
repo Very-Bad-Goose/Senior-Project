@@ -17,6 +17,7 @@
 *.exe
 *.out
 *.app
+*.pyc
 *.spyproject
 debug.log
 *.json

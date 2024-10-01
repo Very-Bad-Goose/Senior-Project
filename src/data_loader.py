@@ -49,14 +49,9 @@ class JSONDataset(Dataset):
 class DeskTopDataset(Dataset):
     # Initializes the dataset
     def __init__(self,targ_dir: str,transform=None):
-        # TODO check if these two (img_paths and bbox_paths) get the same index
         # This grabs all of the paths to the desk_1 images and puts them into a sorted list
-        img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.png")))  
+        img_paths = list(sorted(Path(targ_dir).glob("03 11 2024/*/Desk Images/desk_1.png")))  
         #img_paths = list(sorted(Path(targ_dir).glob("*/*/Activity Packet/activity*.png")))  
-        # This grabs the paths for all the txt files that has the bounding boxes and puts them into a sorted list
-        # self.bbox_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.txt")))
-        # self.bbox_paths = list(sorted(Path(targ_dir).glob("*/*/Activity Packet/activity*.txt")))
-        # The "globbed too hard" for loop
         self.paths = []
         for img in img_paths:
             img_name = img.stem + '.txt'
@@ -79,11 +74,9 @@ class DeskTopDataset(Dataset):
     
     # Helper Function for loading bounding boxes that __getitme will use
     def load_bbox(self, index: int) -> Tuple[int,torch.Tensor]:
-        if self.paths[index][1] == None:
-            return None,None
         boundingbox_path = self.paths[index][1]
         # passing boundingbox file into the txtParse function to return the tensor and label
-        return txtParse(boundingbox_path)
+        return txtParse(boundingbox_path, len(self.classes))
     
     # function that returns the length of dataset
     def __len__(self) -> int:
@@ -91,28 +84,39 @@ class DeskTopDataset(Dataset):
     
     def __getitem__(self, index: int) -> Tuple[torch.Tensor, torch.Tensor, int]:
         img = self.load_image(index)
-        class_idx, bbox = self.load_bbox(index)
+        target = {}
+        target["labels"], target['boxes'] = self.load_bbox(index)
         # TODO Handle Transforms(have to apply them to coordinates also maybe)
         if self.transform:
-            return self.transform(img, bbox, class_idx)
-        else:
-            return img, bbox, class_idx
+            img, target = self.transform(img, target)
+        return img, target
 
-def txtParse(txt_file) -> Tuple[int,torch.tensor]:
+def txtParse(txt_file, num_of_classes) -> Tuple[int,torch.tensor]:
     "Parses the JSON file get the bounding boxes"
+    coords = []
+    filled_class_idx = []
+    class_idx = list(range(num_of_classes))
     if txt_file:
-        print(str(txt_file))
         file = open(txt_file)
-        coords = []
-        class_idx = []
         for line in file:
             box_data = line.split()
-            class_idx.append(int(box_data.pop(0)))
+            idx = int(box_data.pop(0))
+            filled_class_idx.append(idx)
+            class_idx.remove(idx)
             coord = [float(word) for word in box_data]
             coords.append(coord)
+        bbox = torch.tensor(coords, dtype=torch.float32)
+    else:
+        return class_idx, torch.zeros(size=(num_of_classes,4), dtype=torch.float32)
+    for num in class_idx:
+        filled_class_idx.append(num)
+        no_bbox = torch.zeros(size=(1,4), dtype=torch.float32)
+        bbox = torch.cat((bbox, no_bbox), dim=0)
             
-        bbox = torch.tensor(coords)
-        return class_idx, bbox
+        
+    return filled_class_idx, bbox
+
+        
     
     
 def find_classes(targ_dir: str, pattern: str) -> Tuple[List[str], Dict[int, str]]:
@@ -127,7 +131,6 @@ def find_classes(targ_dir: str, pattern: str) -> Tuple[List[str], Dict[int, str]
         
     #Return classes and idx those classses
     for file in pathlib.Path(targ_dir).rglob(pattern):
-        print(f"Class File Found: {file}")
         txt = open(file)
         classes = [str.strip(line) for line in txt]
         class_to_idx = {class_name: i for i, class_name in enumerate(classes)}
@@ -144,17 +147,16 @@ def get_packet_data_loader(json_file, batch_size=32, shuffle=True, num_workers=0
 
 def get_desk_data_loader(targ_dir,txt_file, batch_size=32, shuffle=True, num_workers=0):
     dataset = DeskTopDataset(txt_file = txt_file, targ_dir = targ_dir)
-    #TODO add transforms
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers )
     
 
-# # Test the DataLoader
-# if __name__ == '__main__':
-#     json_path = 'path\to\file.json'  # Replace with our json file path
-#     dataloader = get_packet_data_loader(json_path, batch_size=4)
+# Test the DataLoader
+if __name__ == '__main__':
+    json_path = 'path\to\file.json'  # Replace with our json file path
+    dataloader = get_packet_data_loader(json_path, batch_size=4)
 
-#     # Iterate through the DataLoader
-#     for i, batch in enumerate(dataloader):
-#         print(f'Batch {i}:')
-#         print('Features:', batch['features'])
-#         print('Labels:', batch['label'])
+    # Iterate through the DataLoader
+    for i, batch in enumerate(dataloader):
+        print(f'Batch {i}:')
+        print('Features:', batch['features'])
+        print('Labels:', batch['label'])
