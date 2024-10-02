@@ -19,7 +19,6 @@ from typing import Dict, List, Tuple
 import re
 from PIL import Image
 
-filestructure = "*/Activity"
 class JSONDataset(Dataset):
     def __init__(self, json_file, transform=None):
         with open(json_file, 'r') as file:
@@ -51,7 +50,9 @@ class DeskTopDataset(Dataset):
     def __init__(self,targ_dir: str,transform=None):
         # This grabs all of the paths to the desk_1 images and puts them into a sorted list
         img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.png")))  
+        
         #img_paths = list(sorted(Path(targ_dir).glob("*/*/Activity Packet/activity*.png")))  
+        # This searches for the associated txt file for the image file
         self.paths = []
         for img in img_paths:
             img_name = img.stem + '.txt'
@@ -93,7 +94,7 @@ class DeskTopDataset(Dataset):
 
 # This parses the txt file and gets the bounding box and their classes
 def bounding_box_txt_parse(txt_file, num_of_classes) -> Tuple[int,torch.tensor]:
-    "Parses the JSON file get the bounding boxes"
+    "Parses the txt file get the bounding boxes"
     coords = []
     filled_class_idx = []
     class_idx = list(range(num_of_classes))
