@@ -142,6 +142,42 @@ def find_classes(targ_dir: str, pattern: str) -> Tuple[List[str], Dict[int, str]
         print("Class File Not Found.")  
         return
 
+# Returns image with bounding boxes drawn on   
+def DrawBox(img,box,classes):
+    bbox = box_convert(box,'cxcywh','xyxy')
+    for i in range(bbox.shape[0]):
+        bbox[i][0] = bbox[i][0] * img.shape[2]
+        bbox[i][1] = bbox[i][1] * img.shape[1]
+        bbox[i][2] = bbox[i][2] * img.shape[2]
+        bbox[i][3] = bbox[i][3] * img.shape[1]
+    colors = []
+    class_to_colors = {
+            0 : "blue",
+            1 : "yellow"
+    }
+    for i in classes:
+        if isinstance(i, torch.Tensor):
+            colors.append(class_to_colors[i.item()])
+        else:
+            colors.append(class_to_colors[i])
+        
+    bimg = draw_bounding_boxes(img, bbox, colors=colors, width=5)
+    return bimg
+
+def collate_fn(batch):
+    images = []
+    bboxes = []
+    labels = []
+    for item in batch:
+        images.append(item[0])
+        bboxes.append(item[1]["boxes"])
+        labels.append(torch.tensor(item[1]["labels"]))
+    images = torch.stack(images,dim=0)
+    bboxes = torch.stack(bboxes,dim=0)
+    labels = torch.stack(labels,dim=0)
+    targets = {"boxes" : bboxes,
+               "labels" : labels}
+    return images, targets
 
 # Create the DataLoader
 def get_packet_data_loader(json_file, batch_size=32, shuffle=True, num_workers=0):
