@@ -45,13 +45,15 @@ class JSONDataset(Dataset):
 
         return sample
 
-class DeskTopDataset(Dataset):
+class IndividualIMGDataset(Dataset):
     # Initializes the dataset
-    def __init__(self,targ_dir: str,transform=None):
+    def __init__(self,targ_dir: str,transform=None,type = "desk"):
         # This grabs all of the paths to the desk_1 images and puts them into a sorted list
-        img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.png")))  
-        
-        #img_paths = list(sorted(Path(targ_dir).glob("*/*/Activity Packet/activity*.png")))  
+        if type == "desk":
+            img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.png")))  
+        else:
+            img_paths = list(sorted(Path(targ_dir).glob("*/*/Activity Packet/activity*.png")))
+        #  
         # This searches for the associated txt file for the image file
         self.paths = []
         for img in img_paths:
@@ -184,10 +186,13 @@ def get_packet_data_loader(json_file, batch_size=32, shuffle=True, num_workers=0
     dataset = JSONDataset(json_file=json_file)
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
 
-def get_desk_data_loader(targ_dir,txt_file, batch_size=32, shuffle=True, num_workers=0):
-    dataset = DeskTopDataset(txt_file = txt_file, targ_dir = targ_dir)
-    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers )
-    
+def get_individual_data_loader(targ_dir, transform, batch_size=32, shuffle=False, num_workers=0, type = "desk"):
+    dataset = IndividualIMGDataset(targ_dir = targ_dir, transform=transform, type = type)
+    return DataLoader(dataset,
+                      batch_size=batch_size, 
+                      shuffle=shuffle, 
+                      collate_fn=collate_fn, 
+                      num_workers=num_workers )
 
 # Test the DataLoader
 if __name__ == '__main__':
