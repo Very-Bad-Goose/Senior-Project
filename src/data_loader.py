@@ -75,7 +75,7 @@ class IndividualIMGDataset(Dataset):
     # Helper Function for loading images that __getitem__ will use
     def load_image(self, index: int) -> Image.Image:
         image_path = self.paths[index][0]
-        return Image.open(image_path)
+        return Image.open(image_path).convert("RGB")
     
     # Helper Function for loading bounding boxes that __getitme will use
     def load_bbox(self, index: int) -> Tuple[int,torch.Tensor]:
