@@ -93,7 +93,7 @@ class IndividualIMGDataset(Dataset):
         target = {}
         target["labels"], target['boxes'] = self.load_bbox(index)
         if self.transform:
-            img, target = self.transform(img, target)
+            img, target['boxes'] = self.transform(img, target['boxes'])
         return img, target
 
 # This parses the txt file and gets the bounding box and their classes
