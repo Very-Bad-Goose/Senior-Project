@@ -70,7 +70,10 @@ class IndividualIMGDataset(Dataset):
         # We will apply this transform to the data (a transform can be a list of multiple other transforms)
         self.transform = transform
         # This is the set of classes defined by classes.txt, it also features a dictionary that has class_to_idx
-        self.classes, self.class_to_idx = find_classes(targ_dir,"Desk Images")
+        if type == "desk":
+            self.classes, self.class_to_idx = find_classes(targ_dir,"Desk Images")
+        else: 
+            self.classes, self.class_to_idx = find_classes(targ_dir,"Activity Packet")
         
     # Helper Function for loading images that __getitem__ will use
     def load_image(self, index: int) -> Image.Image:
