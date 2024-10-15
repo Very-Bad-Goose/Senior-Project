@@ -41,7 +41,7 @@ class SheetLogger:
             'message': error_message,
             'execution_time': exec_time
         })
-            
+        
     def time_operation(self, func, *args, **kwargs):
         """Decorator-like method to log the execution time of an operation."""
         start_time = time.time()
