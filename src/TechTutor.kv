@@ -21,6 +21,7 @@
     FloatLayout:
         
         # making size of layout the entire window
+        id: float_layout
         size: root.width,root.height
 
         #adding image to side
@@ -33,6 +34,7 @@
 
         # adding label above image
         Label:
+            id: current_key_lebel
             pos_hint:{'right': .95, 'top': .98}
             size_hint: (.45,.04)
             text: "Current Grading Key"
@@ -41,6 +43,7 @@
 
         # start button
         Button:
+            id: start_button
             size_hint: (.2,.1)
             pos_hint: {'right': .22,'top': .13}
             background_normal: 'ui_images/gray4.png'
@@ -62,6 +65,7 @@
 
         # stop button
         Button:
+            id: stop_button
             size_hint:(.2,.1)
             pos_hint: {'right': .45,'top': .13}
             background_normal: 'ui_images/gray4.png'
@@ -72,6 +76,7 @@
 
         #change grade key button
         Button:
+            id: change_key_button
             size_hint: (.45,.05)
             pos_hint: {'right': .95, 'top': .07}
             background_normal: 'ui_images/gray4.png'
@@ -87,6 +92,7 @@
             pos_hint: {'right': .45, 'top': .18}
 
         Label:
+            id: percent_done_label
             pos_hint:{'right': .45, 'top': .18}
             size_hint: (.43,.03)
             text: str(root.progress_bar_value) + '% Done'
