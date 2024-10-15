@@ -12,34 +12,49 @@
 
 import gspread
 from google.oauth2 import service_account
+from googleapiclient.discovery import build
 import time
 from datetime import datetime
 from logger import SheetLogger
 
+
+
 class google_sheet:
-    # Init properties
     def __init__(self, credentials_json, sheet_id):
         self.credentials_json = credentials_json
         self.sheet_id = sheet_id
         self.client = self._authenticate()
+        print(f"Authenticated client: {self.client}")
         self.sheet = self._initialize_sheet()
         self.worksheet = self.get_worksheet()
         self.logsheet = self.check_or_create_log_sheet("Log")
         self.logger = SheetLogger(self, self.logsheet)
-        
-    # Set the credentials
-    def _authenticate(self):
-        credentials_json = None
-        # Our scopes, are read and write
-        scope = ["https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/spreadsheets"]
-        try:
-            credentials = service_account.Credentials.from_service_account_file(
-            credentials_json, scopes=scope)
-            return gspread.authorize(credentials)
-        except Exception as e:
-            print(f"Error loading credentials: {e}")
-            return None
+    
 
+
+    # Uncomment above to add text api key readability        
+    """ 
+    api_key_file_path = '' # TODO add file path for your api.txt file
+    
+    def get_api_key_from_file(file_path):
+        try:
+            with open(file_path, 'r') as file:
+                lines = file.readlines()
+                return lines[0].strip()
+        except Exception as e:
+            print(f"Failed to read api key from file: {e}")
+            return None
+        
+    API_KEY = get_api_key_from_file(api_key_file_path)
+    """ 
+    # Authenticates with the google sheet object using json credentials and api key
+    def _authenticate(self):
+        SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+        credentials = service_account.Credentials.from_service_account_file(
+            self.credentials_json, scopes=SCOPES)
+        service = build('sheets', 'v4', credentials=credentials)
+        return gspread.authorize(credentials)
+    
     # Inits the sheet for us to use later
     def _initialize_sheet(self):
         return self.client.open_by_key(self.sheet_id)
@@ -50,7 +65,7 @@ class google_sheet:
     
     # Return a specified cell
     def get_cell(self, row, col):
-        return self.worksheet(row,col).value
+        return self.worksheet.cell(row,col).value
     
     # Return a specified row
     def get_row(self, row):
@@ -66,7 +81,6 @@ class google_sheet:
 
     # Check to see if we have a log sheet, return if it exists, if not then create one
     def check_or_create_log_sheet(self, log_sheet_name="Log"):
-        operation_name = "Check or create log sheet"
         try:
             # Check if the log sheet exists by trying to access it
             try:
@@ -76,11 +90,11 @@ class google_sheet:
             except gspread.WorksheetNotFound:
                 # If the log sheet doesn't exist, create it
                 log_sheet = self.sheet.add_worksheet(title=log_sheet_name, rows=1000, cols=10)
+                # Create top of log sheet
+                # TODO
                 print(f"Log sheet '{log_sheet_name}' created successfully.")
                 return log_sheet
         except Exception as e:
-            self.logger.log_failure(operation_name, str(e))
-            print(f"Error checking or creating log sheet: {e}")
             return None
     
 
@@ -124,6 +138,7 @@ class google_sheet:
             self.logger.log_failure(operation_name, str(e))
             print(f"Error marking cell as processed: {str(e)}")
 
+    # Logs the result of an operation to the log worksheet
     def log_result(self, message):
         try:
             log_sheet = self.logsheet
