@@ -13,7 +13,12 @@
     
     # Warnings:
         Update_cell is marked as a failure in logs, but still writes to sheet
-    
+            'dict' object is not callable
+        Mark Processed 'NoneType' object is not callable
+        
+        Issue of possibly not having enough Write requests per minute
+            I believe currently there is 100 write requests per minute
+
     
 
 
@@ -147,7 +152,7 @@ def test_populated_sheet(credentials_json, sheet_id):
         sheet.update_cell(5, col, "Test Case 7")
     test7 = sheet.get_row(5)
     print(test7)
-    """
+    
     
     # Test Case 8:
     # Loop through a 2d array and update cells, then mark as processed
@@ -162,7 +167,7 @@ def test_populated_sheet(credentials_json, sheet_id):
             #sheet.mark_processed(row, col)
     print("Test 8 complete")
     
-    """
+    
     # Test Case 9:
     # Get Unprocessed Cells
     # Success case - Successfully returns list of unprocessed cells
@@ -179,13 +184,34 @@ def test_populated_sheet(credentials_json, sheet_id):
     print("Testing Case 10:")
     test10 = sheet.compare_cell("Test Case 6", 1, 5)
     print(test10)
+    
+    # Test Case 11:
+    # Wait timer
+    # Success case - Timer waits for one minute and shows time in console
+    # Result - Success
+    # Date - 10/15/2024
+    print("Testing Case 11:")
+    sheet.wait_one_minute()
+    
+    # Test Case 12:
+    # Max Requests
+    # Measures the max amount of "Update Cell" calls we can make
+    # Result - Looks like 62 requests went through, will wait one minute and try again
+    # Date - 
+    print("Testing Case 12:")
+    counter = 0
+    while(counter < 150):
+        sheet.update_cell(1,1,counter)
+        counter = counter + 1
+    
+    # Test Case 13:
+    # Max Requests with Wait Timer
+    # Same as last test case, however the update_cell code has been modified with a wrapper for a timer
+    # Result - Success, the limit is hit and a timer makes the process wait until more requests can be made
+    # Date - 10/15/2024
     """
-
     
     
-
-
-
 
 # Main Call
 if __name__ == '__main__':

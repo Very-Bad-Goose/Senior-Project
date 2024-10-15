@@ -10,8 +10,17 @@
 # Processed/Unprocessed
 # Feedback is already taken care of
 
+# Additional functionality
+# Google Sheets API has a requests per minute limit, for users it's only 100 requests per
+# minute, and service accounts it's 500.
+# Need a function that if a requests max is reached then it starts a timer and waits, 
+# once the timer is complete it starts the process again
+
+
 import gspread
 from google.oauth2 import service_account
+from googleapiclient.errors import HttpError
+from gspread.exceptions import APIError
 from googleapiclient.discovery import build
 import time
 from datetime import datetime
@@ -121,8 +130,10 @@ class google_sheet:
     def update_cell(self, row, col, string):
         operation_name = "Update Cell"
         try:
-            result = self.logger.time_operation(self.worksheet.update_cell(row, col, string))
-            self.logger.log(operation_name, result)
+            self.retry_on_rate_limit(self.worksheet.update_cell, row, col, string)
+            #self.worksheet.update_cell(row,col,string)
+            #result = self.logger.time_operation(self.worksheet.update_cell(row, col, string))
+            #self.logger.log(operation_name, result)
         except Exception as e:
             self.logger.log_failure(operation_name, str(e))
             print(f"Error writing to cell: {e}")
@@ -132,8 +143,9 @@ class google_sheet:
         operation_name = "Mark Processed"
         try:
             message_value = 1   # TODO change to value of column expectation
-            result = self.logger.time_operation(self.update_cell(row, col, message_value))
-            self.logger.log(operation_name, result)
+            #result = self.logger.time_operation(self.update_cell(row, col, message_value))
+            #self.logger.log(operation_name, result)
+            self.worksheet.update_cell(row,col,message_value)
         except Exception as e:
             self.logger.log_failure(operation_name, str(e))
             print(f"Error marking cell as processed: {str(e)}")
@@ -146,3 +158,26 @@ class google_sheet:
             print(f"Logged message: {message}")
         except Exception as e:
             print(f"Error logging message: {e}")
+            
+    # Timer function that will cause the process to wait for 60 seconds        
+    def wait_fifteen(self):
+        print("Waiting for 15 seconds...")
+        for remaining in range(15, 0, -1):
+            print(f"Time remaining: {remaining} seconds", end='\r')
+            time.sleep(1)
+        print("\nFifteen Seconds have passed.")
+
+    # Wrapper to go around our update cell call so that we can wait and not lose progress
+    def retry_on_rate_limit(self, func, *args, **kwargs):
+        while True:
+            try:
+                print("Running function")
+                return func(*args, **kwargs)
+            except APIError as error:
+                print("Hit Quota Max")
+                if error.response.status_code == 429:
+                    print("Retrying after wait!")
+                    self.wait_fifteen()
+                else:
+                    raise
+                
