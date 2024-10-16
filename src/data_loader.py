@@ -52,7 +52,9 @@ class IndividualIMGDataset(Dataset):
     def __init__(self,targ_dir: str,transform=None,type = "desk"):
         # This grabs all of the paths to the desk_1 images and puts them into a sorted list
         if type == "desk":
-            img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.png")))  
+            img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.png")))
+        if type == "caddy":
+            img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_2.png")))  
         else:
             img_paths = list(sorted(Path(targ_dir).glob("*/*/Activity Packet/activity*.png")))
         #  
@@ -70,7 +72,7 @@ class IndividualIMGDataset(Dataset):
         # We will apply this transform to the data (a transform can be a list of multiple other transforms)
         self.transform = transform
         # This is the set of classes defined by classes.txt, it also features a dictionary that has class_to_idx
-        if type == "desk":
+        if type == "desk" or type == "caddy":
             self.classes, self.class_to_idx = find_classes(targ_dir,"Desk Images")
         else: 
             self.classes, self.class_to_idx = find_classes(targ_dir,"Activity Packet")
