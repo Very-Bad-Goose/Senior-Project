@@ -10,6 +10,8 @@ class SheetLogger:
     def log(self, operation_name, result, details=None):
         """Logs information about an operation to the log sheet."""
         try:
+            if not isinstance(result, dict):
+                raise ValueError(f"Expected result to be dictionary but got {type(result)}")
             # Capture the current time and date
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
@@ -25,6 +27,9 @@ class SheetLogger:
                 result.get('message', ''),         # Any result message or detail
                 details                            # Any additional details or metadata (optional)
             ]
+            
+            # Log the message content for debugging
+            print(f"Logging data: {log_message}")
             
             # Append the log message to the log sheet
             self.google_sheet_instance.log_result(log_message)

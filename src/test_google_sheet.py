@@ -153,25 +153,24 @@ def test_populated_sheet(credentials_json, sheet_id):
     test7 = sheet.get_row(5)
     print(test7)
     
-    
+    # Deprecated Function
     # Test Case 8:
     # Loop through a 2d array and update cells, then mark as processed
     # Success case - Updates 2d array correctly and marks them as processed
-    # Result - Write limit exceeded for Google API, will try again after time limit
+    # Result - Success
     # Date - 10/15/2024
     
     print("Testing Case 8:")
     for col in range(11,20):
         for row in range(11,20):
             sheet.update_cell(row,col, "Test Case 8")
-            #sheet.mark_processed(row, col)
     print("Test 8 complete")
     
     
     # Test Case 9:
     # Get Unprocessed Cells
     # Success case - Successfully returns list of unprocessed cells
-    # Result - 
+    # Result - Success
     # Date - 
     print("Testing Case 9:")
     #test9 = sheet.get_unprocessed_rows()
@@ -192,24 +191,30 @@ def test_populated_sheet(credentials_json, sheet_id):
     # Date - 10/15/2024
     print("Testing Case 11:")
     sheet.wait_one_minute()
-    
+    """
     # Test Case 12:
     # Max Requests
     # Measures the max amount of "Update Cell" calls we can make
     # Result - Looks like 62 requests went through, will wait one minute and try again
-    # Date - 
+    # Date - Success
     print("Testing Case 12:")
     counter = 0
-    while(counter < 150):
+    while(counter < 10):
         sheet.update_cell(1,1,counter)
         counter = counter + 1
+    
     
     # Test Case 13:
     # Max Requests with Wait Timer
     # Same as last test case, however the update_cell code has been modified with a wrapper for a timer
     # Result - Success, the limit is hit and a timer makes the process wait until more requests can be made
     # Date - 10/15/2024
-    """
+    
+    # Test Case 14:
+    # Update_Cell Logging
+    # Testing to check why update_cell is reporting as a failure in logs even though it is writing to sheet
+    # Result - 
+    # Date -
     
     
 

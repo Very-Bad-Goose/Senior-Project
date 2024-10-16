@@ -107,6 +107,9 @@ class google_sheet:
             return None
     
 
+    """"
+    DEPRECATED FUNCTION
+
     # Returns an array of rows that have not been marked as processed by the program iterating through it
     def get_unprocessed_rows(self, start_row, end_row, status_col):
         operation_name = "Get Unprocessed Rows"
@@ -123,6 +126,7 @@ class google_sheet:
             self.logger.log_failure(operation_name, str(e))
             print(f"Error fetching unprocessed rows: {e}")
             return []
+    """
     
     # Write operations
     
@@ -130,26 +134,25 @@ class google_sheet:
     def update_cell(self, row, col, string):
         operation_name = "Update Cell"
         try:
-            self.retry_on_rate_limit(self.worksheet.update_cell, row, col, string)
-            #self.worksheet.update_cell(row,col,string)
-            #result = self.logger.time_operation(self.worksheet.update_cell(row, col, string))
-            #self.logger.log(operation_name, result)
+            result = self.logger.time_operation(self.retry_on_rate_limit(self.worksheet.update_cell, row, col, string))
+            self.logger.log(operation_name, result)
         except Exception as e:
             self.logger.log_failure(operation_name, str(e))
             print(f"Error writing to cell: {e}")
+    
+    """
+    DEPRECATED FUNCTION
     
     # Marks the cell that keeps track if a row has been processed or not as processed
     def mark_processed(self, row, col):
         operation_name = "Mark Processed"
         try:
             message_value = 1   # TODO change to value of column expectation
-            #result = self.logger.time_operation(self.update_cell(row, col, message_value))
-            #self.logger.log(operation_name, result)
-            self.worksheet.update_cell(row,col,message_value)
+            self.update_cell(row,col,message_value)
         except Exception as e:
             self.logger.log_failure(operation_name, str(e))
             print(f"Error marking cell as processed: {str(e)}")
-
+    """
     # Logs the result of an operation to the log worksheet
     def log_result(self, message):
         try:
