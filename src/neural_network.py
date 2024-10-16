@@ -12,10 +12,17 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 
+# UNCOMMENT BELOW IF YOU HAVE A CUDA-ENABLED NVIDIA GPU, otherwise uses CPU
+#device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# USE THIS IF YOU HAVE A MAC WITH APPLE SILICON
+# device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
+
 num_epochs = 2
 batch_size = 32
-# needs to be a custom made data set from our data. Will be added later when custom data sets are made
-train_loader = None
+
+
+train_loader = DataLoader(TextDataset('PATH\TO\train.txt'), batch_size=batch_size, shuffle=True)  # replace with path to data
 
 class Neural_Net_CNN(nn.Module):
     def __init__(self):
@@ -35,33 +42,37 @@ class Neural_Net_CNN(nn.Module):
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        x = torch.flatten(x,1)
+        x = torch.flatten(x, 1)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
 
-model = Neural_Net_CNN()
+model = Neural_Net_CNN().to(device) # 
 
 # Loss fucntion and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr = 0.001, momentum = 0.9)
 
 
+# Train
 for epoch in range(num_epochs):
-    for i,data in enumerate(train_loader,0):
-        
-        # getting inputs and labels from dataset
-        inputs,labels = data
-        
-        # Forward pass, backwards pass, and optimize 
+    for i, data in enumerate(train_loader, 0):
+
+        inputs, labels = data
+        # convert inputs to a suitable tensor representation
+        inputs = torch.tensor(inputs)  # Convert your text to tensors appropriately
+        labels = torch.tensor(labels).to(device)
+
+        # Forward, back and optimization
         optimizer.zero_grad()
-        outputs = model(inputs)
-        loss = criterion(outputs,labels)
+        outputs = model(inputs.to(device))
+        loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
-        # To print out what epoch number its on and loss rate
-        if (i+1) % 100 == 0:
-            print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{len(train_loader)}], Loss: {loss.item():.4f}')
-        
+
+        # Print out what epoch number its on and loss rate
+        if (i + 1) % 100 == 0:
+            print(f'Epoch [{epoch + 1}/{num_epochs}], Step [{i + 1}/{len(train_loader)}], Loss: {loss.item():.4f}')
+
 print("Finished Training")

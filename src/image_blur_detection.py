@@ -36,10 +36,10 @@ def detect_image_blur(path: str, folder_path: str):
         if file_made == 0:
             file_made = 1
             with open(os.getcwd() + "\image_blur_results.txt", "w") as output_file:
-                output_file.write(f"{print_path} is too blurry with laplacian var of {laplacian_var}\n")
+                output_file.write(f"{print_path}\n")
         else:
             with open(os.getcwd() + "\image_blur_results.txt", "a") as output_file:
-                output_file.write(f"{print_path} is too blurry with laplacian var of {laplacian_var}\n")
+                output_file.write(f"{print_path}\n")
 
 def detect_image_blur_helper(folder_path: str):
     
@@ -59,5 +59,3 @@ def detect_image_blur_helper(folder_path: str):
                 if file.endswith((".png",".jpeg",".jpeg",".heic")):
                     image_path = os.path.join(path,file)
                     detect_image_blur(image_path, path)
-                    
-detect_image_blur_helper(os.getcwd() + "/src/mbrimberry_files/Submissions")
