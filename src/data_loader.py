@@ -122,7 +122,7 @@ def bounding_box_txt_parse(txt_file, num_of_classes) -> Tuple[int,torch.tensor]:
         filled_class_idx.append(num)
         no_bbox = torch.zeros(size=(1,4), dtype=torch.float32)
         bbox = torch.cat((bbox, no_bbox), dim=0)
-            
+                
         
     return filled_class_idx, bbox
 

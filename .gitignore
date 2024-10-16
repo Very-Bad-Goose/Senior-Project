@@ -32,3 +32,4 @@ debug.log
 /src/mbrimberry_files/**/*.jpeg
 
 
+/src/__pycache__
