@@ -19,6 +19,7 @@
 *.app
 *.pyc
 *.spyproject
+*.DS_Store
 debug.log
 *.json
 *ignore.txt
