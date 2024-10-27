@@ -199,7 +199,7 @@ def test_populated_sheet(credentials_json, sheet_id):
     # Date - Success
     print("Testing Case 12:")
     counter = 0
-    while(counter < 10):
+    while(counter < 150):
         sheet.update_cell(1,1,counter)
         counter = counter + 1
     
