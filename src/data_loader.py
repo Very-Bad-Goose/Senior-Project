@@ -20,6 +20,7 @@ import re
 from PIL import Image
 from torchvision.ops import box_convert
 from torchvision.utils import draw_bounding_boxes
+import torchvision.transforms.functional as F
 
 class JSONDataset(Dataset):
     def __init__(self, json_file, transform=None):
@@ -55,7 +56,7 @@ class IndividualIMGDataset(Dataset):
             img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.png")))
         if type == "caddy":
             img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_2.png")))  
-        else:
+        if type == "packet":
             img_paths = list(sorted(Path(targ_dir).glob("*/*/Activity Packet/activity*.png")))
         #  
         # This searches for the associated txt file for the image file
@@ -172,7 +173,10 @@ def DrawBox(img,box,classes):
         
     bimg = draw_bounding_boxes(img, bbox, colors=colors, width=5)
     return bimg
-
+def CropBox(img,box):
+    bbox = box_convert(box,'cxcywh','xywh')
+    cropped_image = F.crop(img,int(bbox[1] * img.shape[1]),int(bbox[0] * img.shape[2]),int(bbox[3] * img.shape[1]),int(bbox[2] * img.shape[2]))
+    return cropped_image
 def collate_fn(batch):
     images = []
     bboxes = []
