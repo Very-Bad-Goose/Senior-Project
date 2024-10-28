@@ -55,7 +55,7 @@ class IndividualIMGDataset(Dataset):
             img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.png")))
         if type == "caddy":
             img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_2.png")))  
-        else:
+        if type == "packet":
             img_paths = list(sorted(Path(targ_dir).glob("*/*/Activity Packet/activity*.png")))
         #  
         # This searches for the associated txt file for the image file
