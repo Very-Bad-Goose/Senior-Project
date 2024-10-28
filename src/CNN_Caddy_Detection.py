@@ -58,7 +58,7 @@ class Caddy_Detection_CNN(nn.Module):
                                kernel_size=2,
                                stride = 1,
                                padding = 0)
-        final_cnn_size = hidden_units * 262*201
+        final_cnn_size = hidden_units * 262*202
         
         # Localization Layer
         self.bbox_output = nn.Linear(in_features=final_cnn_size,out_features=self.num_boxes*4)
@@ -75,9 +75,9 @@ class Caddy_Detection_CNN(nn.Module):
 
 # model = Caddy_Detection_CNN(3,10,1,1).to(device) # Initialize model and set to the target device (GPU or CPU)
 
-Loss fucntion and optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr = 0.001, momentum = 0.9)
+# Loss fucntion and optimizer
+# criterion = nn.CrossEntropyLoss()
+# optimizer = optim.SGD(model.parameters(), lr = 0.001, momentum = 0.9)
 
 
 # # Train
