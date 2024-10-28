@@ -10,7 +10,10 @@ import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-
+import data
+import data_loader
+from pathlib import Path
+from torch.utils.data import DataLoader
 
 # UNCOMMENT BELOW IF YOU HAVE A CUDA-ENABLED NVIDIA GPU, otherwise uses CPU
 #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -22,7 +25,24 @@ num_epochs = 2
 batch_size = 32
 
 
-train_loader = DataLoader(TextDataset('PATH\TO\train.txt'), batch_size=batch_size, shuffle=True)  # replace with path to data
+
+
+trans = transforms.Compose(
+    [
+        transforms.ToImage(),
+        transforms.ToDtype(torch.float32, scale=True),
+        transforms.Resize(size=(1056,816))
+    ])
+
+# Change datapath to the path to where the data is. The file structure that it comes in is the right file structure.
+train_datapath = Path("submissions/train") 
+test_datapath = Path("submissions/test")
+# Might need to seperate the data into test and training folders, the test and train folder should emulate the clients submissions folder
+train_packet_dataset = data_loader.IndividualIMGDataset(targ_dir=train_datapath,transform=trans,type="packet") 
+test_packet_dataset = data_loader.IndividualIMGDataset(targ_dir=test_datapath, transform=trans,type="packet")
+# Datasets turn into dataloaders
+train_loader = DataLoader(train_packet_dataset, batch_size=batch_size, shuffle=True)  
+test_loader = DataLoader(test_packet_dataset, batch_size=batch_size, shuffle=True)
 
 class Neural_Net_CNN(nn.Module):
     def __init__(self):
