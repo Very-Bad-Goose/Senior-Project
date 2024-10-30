@@ -3,7 +3,7 @@ from datetime import datetime
 import google_sheet
 import os
 
-"""
+
 class SheetLogger:
     def __init__(self, google_sheet_instance, log_sheet_name="Log"):
         self.google_sheet_instance = google_sheet_instance
@@ -70,8 +70,7 @@ class SheetLogger:
                 'message': str(e),
                 'execution_time': exec_time
             }
-            
-            """
+
 class FileLogger:
     def __init__(self, log_dir="logs"):
         """
@@ -155,4 +154,3 @@ class FileLogger:
                 'message': str(e),
                 'execution_time': exec_time
             }
-            
