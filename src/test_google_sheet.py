@@ -79,7 +79,7 @@ def test_google_sheet_operations(credentials_json, sheet_id):
 # Function to test on sheet with current data format
 def test_populated_sheet(credentials_json, sheet_id):
     sheet = google_sheet(credentials_json, sheet_id)
-    """
+    
     # Test Case 1:
     # Read from cell (1,1)
     # Success case - Successfully print cell value
@@ -89,7 +89,7 @@ def test_populated_sheet(credentials_json, sheet_id):
     test1 = sheet.get_cell(1,1)
     print(f"Value from cell 1,1: {test1}")
     
-    
+    """
     # Test Case 2:
     # Read entire column of A
     # Success case - Returns correct values for column A
@@ -199,7 +199,7 @@ def test_populated_sheet(credentials_json, sheet_id):
     # Date - Success
     print("Testing Case 12:")
     counter = 0
-    while(counter < 10):
+    while(counter < 150):
         sheet.update_cell(1,1,counter)
         counter = counter + 1
     
