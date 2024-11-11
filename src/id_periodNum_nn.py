@@ -5,6 +5,7 @@
 
 
 from typing import Tuple
+import PIL.Image
 import torch
 import torchvision
 import torchvision.transforms.v2 as transforms
@@ -13,11 +14,14 @@ import torchvision.transforms.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from data_loader import get_individual_data_loader, IndividualIMGDataset, collate_fn
-from torchvision.models.detection import fasterrcnn_resnet50_fpn as fasterrcnn_resnet50_fpn
+from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import Weights
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision.models.detection import FasterRCNN
 from torch.utils.data import random_split
 from PIL import Image
+import PIL
+import os
 
 import pathlib
 from pathlib import Path
@@ -39,11 +43,6 @@ transform = transforms.Compose(
         transforms.ToDtype(torch.float32, scale=True),
         transforms.Resize(size=(image_width,image_height))
     ])
-
-
-# train_loader = get_individual_data_loader("src/mbrimberry_files/Submissions",transform=transform,batch_size=32,shuffle=True,num_workers=4, type="assignments")
-
-
 
 # creating a split dataset of training and testing. First need a whole dataset of all images
 packet_dataset = IndividualIMGDataset(targ_dir="src/mbrimberry_files/Submissions",transform=transform,type="packet")
@@ -74,8 +73,17 @@ test_loader = DataLoader(
     num_workers= 0
 )
 
-def create_model(num_objects_to_predict:int) -> fasterrcnn_resnet50_fpn:
+def create_model(num_objects_to_predict:int) -> FasterRCNN:
     "Creates a model for num_objects_to_predict"
+    
+    # Failure cases
+    
+    if not isinstance(num_objects_to_predict,(int)):
+        raise TypeError("num_objects_to_predict must be int")
+    
+    if num_objects_to_predict <= 0:
+        raise ValueError("num_objects_to_predict must be greater than 0")
+    
     # as there is not a lot of data, using a pre trained model is best for a starting point, using faster rcnn for this purpose
     model = fasterrcnn_resnet50_fpn(pretrained=True,weights="DEFAULT")
     
@@ -85,8 +93,21 @@ def create_model(num_objects_to_predict:int) -> fasterrcnn_resnet50_fpn:
     
     return model
 
-def train_model(model:fasterrcnn_resnet50_fpn, num_epochs: int):
+def train_model(model:FasterRCNN, num_epochs: int):
     "Trains model passed in using train_loader for num_epochs"
+    
+    # Failure cases
+    
+    if not isinstance(model, FasterRCNN):
+        raise TypeError("model must be type torchvision.models.detection.FasterRCNN")
+    
+    if not isinstance(num_epochs,(int)):
+        raise TypeError("num_epochs must be type int")
+    
+    if num_epochs <= 0:
+        raise ValueError("num_epochs must be greater than 0")
+    
+    
     model.to(device)
     
     # parameters for early stopping
@@ -186,8 +207,14 @@ def train_model(model:fasterrcnn_resnet50_fpn, num_epochs: int):
         
     print("Done Training")
 
-def test_model(model: fasterrcnn_resnet50_fpn):
+def test_model(model: FasterRCNN):
     "Tests model using test loader"
+    
+    # Failure cases
+    
+    if not isinstance(model, FasterRCNN):
+        raise TypeError("model must be type torchvision.models.detection.FasterRCNN")
+    
     model.eval()
     
     with torch.no_grad():
@@ -212,40 +239,109 @@ def test_model(model: fasterrcnn_resnet50_fpn):
         assert(type(scores) is torch.Tensor)
     print('Done Testing after Train')
         
-def save_model(model: fasterrcnn_resnet50_fpn, path:str):
-    "Saves model to given path, path must be str and model must be fasterrcnn_resnet50_fpn"
+def save_model(model: FasterRCNN, path:str):
+    "Saves model to given path, path must be str and model must be FasterRCNN"
+    
+    # Failure Cases
+    if not isinstance(model, FasterRCNN):
+        raise TypeError("model must be type torchvision.models.detection.FasterRCNN")
+    
+    if not isinstance(path, str):
+        raise TypeError("path must be type str")
+    
+    
     try:
         torch.save(model.state_dict(), path)
     except IOError:
         print("Error saving Model")
         
-def save_checkpoint(model:fasterrcnn_resnet50_fpn, path:str):
+def save_checkpoint(model:FasterRCNN, path:str):
     "saves a checkpoint of the model during training"
+    
+    # Failure Cases
+    if not isinstance(model, FasterRCNN):
+        raise TypeError("model must be type torchvision.models.detection.FasterRCNN")
+    
+    if not isinstance(path, str):
+        raise TypeError("path must be type str")
+    
+    if not os.path.exists(path):
+        raise FileNotFoundError("path does not exist")
+    
     torch.save(model.state_dict(),path)
     
-def load_checkpoint(model:fasterrcnn_resnet50_fpn,path:str):
+def load_checkpoint(model:FasterRCNN,path:str):
     "loads a checkpoint of the model at that checkpoint"
+    
+    # Failure Cases
+    if not isinstance(model, FasterRCNN):
+        raise TypeError("model must be type torchvision.models.detection.FasterRCNN")
+    
+    if not isinstance(path, str):
+        raise TypeError("path must be type str")
+    
+    if not os.path.exists(path):
+        raise FileNotFoundError("path does not exist")
+    
+    
     model.load_state_dict(torch.load(path))
 
-def create_and_train_model(num_epochs:int):
-    "This function creates and trains a model based on the dataloaders already coded into the file. Will save to ./models/id_periodNum_model.pt, num_epochs must be int"
+def create_and_train_model(num_epochs:int, model_path: str, checkpoint_path: str):
+    "This function creates and trains a model based on the dataloaders already coded into the file. Will save to model_path, num_epochs must be int checkpoint_path is where checkpoints will be saved, else will be saved to ./models/checkpoints"
+    
+    # Failure Cases
+    if not isinstance(num_epochs,(int)):
+        raise TypeError("num_epochs must be type int")
+    
+    if num_epochs <= 0:
+        raise ValueError("num_epochs must be greater than 0")
+    
+    if not isinstance(model_path,(str)):
+        raise TypeError("model_path must be type str")
+    
+    if not os.path.exists(model_path):
+        raise FileNotFoundError("model_path does not exist")
+    
+    if not isinstance(checkpoint_path,(str)) and checkpoint_path is not None:
+        raise TypeError("checkpoint_path must be type str or None")
+    
+    if checkpoint_path is not None and not os.path.exists(checkpoint_path):
+        raise FileNotFoundError("checkpoint_path does not exist")
+    
+    
     # Creating model
     model = create_model(2)
     # training
     train_model(model,num_epochs)
-    load_checkpoint(model,f"./models/checkpoints/checkpoint_epoch_{best_loss_epoch}.pth")
-    save_model(model,"./models/id_periodNum_model.pt")
+    if checkpoint_path:
+        load_checkpoint(model,checkpoint_path)
+    elif best_loss_epoch is not None:
+        load_checkpoint(model,f"./models/checkpoints/checkpoint_epoch_{best_loss_epoch}.pth")
+    save_model(model,model_path)
     # testing
     test_model(model)
 
-def predict_with_id_model(image) -> Tuple:
+def predict_with_id_model(image, model_path:str) -> Tuple:
     """
     uses id_periodNum_model, will use cuda or mac, will try and use cuda first then mac then cpu, image must be string or tensor 
-    
+    loads model from path, which must be a str
+    image must be path to a image or a PIL.Image
     Returns:
         A tuple of(bounding_box_id,bounding_box_period_num,confidence_id_box,confidence_label_box,cropped id image, cropped periodNum Image).
     
     """
+    
+    if not isinstance(image, (str,PIL.Image.Image)):
+        raise TypeError("image must be type str or PIL.Image")
+    
+    if not isinstance(model_path,str):
+        raise TypeError("model_path must be type str")
+    
+    if isinstance(image,str) and not os.path.exists(image):
+        raise FileNotFoundError("image path does not exist")
+    
+    if not os.path.exists(model_path):
+        raise FileNotFoundError("model_path does not exist")
     
     if torch.cuda.is_available():
         torch.device('cuda')
@@ -255,7 +351,7 @@ def predict_with_id_model(image) -> Tuple:
         torch.device('cpu')
     
     model = create_model(2)
-    model.load_state_dict(torch.load("./models/id_periodNum_model.pt", weights_only=True))
+    model.load_state_dict(torch.load(model_path, weights_only=True))
     model.to(device)
     
     model.eval()
@@ -301,6 +397,7 @@ def predict_with_id_model(image) -> Tuple:
         id_image = None
         period_num_image = None
         
+        return_tuple = None
         
         for i in range(len(scores)):
             if scores[i].item() > confidence_score_threshold:
@@ -310,31 +407,45 @@ def predict_with_id_model(image) -> Tuple:
                 elif labels[i].item() == 2 and scores[i].item() > highest_confidence_2:
                     highest_confidence_2 = labels[i].item()
                     highest_confidence_2_index = i
-                
-        x_min_1 = int(boxes[highest_confidence_1_index][0].item())
-        y_min_1 = int(boxes[highest_confidence_1_index][1].item())
-        x_max_1 = int(boxes[highest_confidence_1_index][2].item())
-        y_max_1 = int(boxes[highest_confidence_1_index][3].item())
         
-        x_min_2 = int(boxes[highest_confidence_2_index][0].item())
-        y_min_2 = int(boxes[highest_confidence_2_index][1].item())
-        x_max_2 = int(boxes[highest_confidence_2_index][2].item())
-        y_max_2 = int(boxes[highest_confidence_2_index][3].item())
+        if len(boxes) != 0:     
+            x_min_1 = int(boxes[highest_confidence_1_index][0].item())
+            y_min_1 = int(boxes[highest_confidence_1_index][1].item())
+            x_max_1 = int(boxes[highest_confidence_1_index][2].item())
+            y_max_1 = int(boxes[highest_confidence_1_index][3].item())
+            
+            x_min_2 = int(boxes[highest_confidence_2_index][0].item())
+            y_min_2 = int(boxes[highest_confidence_2_index][1].item())
+            x_max_2 = int(boxes[highest_confidence_2_index][2].item())
+            y_max_2 = int(boxes[highest_confidence_2_index][3].item())
         
-        width_1 = x_max_1 - x_min_1
-        height_1 = y_max_1 - y_min_1
-        
-        width_2 = x_max_2 - x_min_2
-        height_2 = y_max_2 - y_min_2
+            width_1 = x_max_1 - x_min_1
+            height_1 = y_max_1 - y_min_1
+            
+            width_2 = x_max_2 - x_min_2
+            height_2 = y_max_2 - y_min_2
     
-        # prediction_box is in format (x_min,y_min,x_max,y_max)
-        prediction_box_id = (x_min_1,y_min_1,x_max_1,y_max_1)
-        prediction_box_period_num = (x_min_2,y_min_2,x_max_2,y_max_2)
-    
-        # prediction_label_score is in format (label,confidence socre of label)
-        prediction_label_score_id = (labels[highest_confidence_1].item(),scores[highest_confidence_1].item())
-        prediction_label_score_period_num = (labels[highest_confidence_2].item(),scores[highest_confidence_2].item())
-        id_image = F.crop(image_to_crop,y_min_1,x_min_1,height_1,width_1)
-        period_num_image = F.crop(image_to_crop,y_min_2,x_min_2,height_2,width_2)
+            # prediction_box is in format (x_min,y_min,x_max,y_max)
+            prediction_box_id = (x_min_1,y_min_1,x_max_1,y_max_1)
+            prediction_box_period_num = (x_min_2,y_min_2,x_max_2,y_max_2)
         
-        return prediction_box_id,prediction_box_period_num,prediction_label_score_id,prediction_label_score_period_num,id_image,period_num_image
+            # prediction_label_score is in format (label,confidence socre of label)
+            prediction_label_score_id = (labels[highest_confidence_1].item(),scores[highest_confidence_1].item())
+            prediction_label_score_period_num = (labels[highest_confidence_2].item(),scores[highest_confidence_2].item())
+            id_image = F.crop(image_to_crop,y_min_1,x_min_1,height_1,width_1)
+            period_num_image = F.crop(image_to_crop,y_min_2,x_min_2,height_2,width_2)
+            return_tuple = (prediction_box_id,prediction_box_period_num,prediction_label_score_id,prediction_label_score_period_num,id_image,period_num_image)
+        
+        
+        if return_tuple:
+            return return_tuple
+        else:
+            return () 
+
+# id_box, period_num_box, label_score, id_score, id_image, period_num_image = predict_with_id_model("./src/mbrimberry_files/Submissions/03 13 2024/Activity  474756 - 03 13 2024/Activity Packet/activity_1.png", model_path="./models/id_periodNum_model.pt")
+
+# id_box, period_num_box, label_score, id_score, id_image, period_num_image = predict_with_id_model(image_path="./src/test_files/obj_detect_test/test_image.png",model_path="./models/id_periodNum_model.pt")
+# if period_num_image:
+    # period_num_image.show()
+# if id_image:
+    # id_image.show()
