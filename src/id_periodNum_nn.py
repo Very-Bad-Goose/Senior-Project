@@ -41,6 +41,7 @@ model_path = Path("models/")
 checkpoint_path = Path("models/checkpoints")
 test_loader:DataLoader
 train_loader:DataLoader
+transform:transforms.Compse
 # epoch of best loss for checkpoint loading
 global best_loss_epoch
 best_loss_epoch = None
@@ -49,6 +50,7 @@ best_loss_epoch = None
 def create_dataloaders(targ_dir, type):
     global test_loader
     global train_loader
+    global transform
     transform = transforms.Compose(
     [
         transforms.ToImage(),
