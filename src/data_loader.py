@@ -73,10 +73,11 @@ class IndividualIMGDataset(Dataset):
         # We will apply this transform to the data (a transform can be a list of multiple other transforms)
         self.transform = transform
         # This is the set of classes defined by classes.txt, it also features a dictionary that has class_to_idx
-        if type == "desk" or type == "caddy":
-            self.classes, self.class_to_idx = find_classes(targ_dir,"Desk Images")
-        else: 
-            self.classes, self.class_to_idx = find_classes(targ_dir,"Activity Packet")
+        self.classes, self.class_to_idx = hardcoded_classes(type)
+        # if type == "desk" or type == "caddy":
+        #     self.classes, self.class_to_idx = find_classes(targ_dir,"Desk Images")
+        # else: 
+        #     self.classes, self.class_to_idx = find_classes(targ_dir,"Activity Packet")
         
     # Helper Function for loading images that __getitem__ will use
     def load_image(self, index: int) -> Image.Image:
@@ -112,9 +113,20 @@ def bounding_box_txt_parse(txt_file, num_of_classes) -> Tuple[int,torch.tensor]:
         file = open(txt_file)
         for line in file:
             box_data = line.split()
-            idx = int(box_data.pop(0))
-            filled_class_idx.append(idx)
-            class_idx.remove(idx)
+            if box_data:
+                idx = int(box_data.pop(0))
+            else:
+                print("Bounding Box text file has no additional bounding boxes")
+                continue
+        
+            if idx in class_idx:
+                filled_class_idx.append(idx)
+                class_idx.remove(idx)
+            else:
+                print(f"Class idx: {idx} in bounding box file is not instansiated or is already assigned a bounding box")
+                print(txt_file)
+                continue
+
             coord = [float(word) for word in box_data]
             coords.append(coord)
         bbox = torch.tensor(coords, dtype=torch.float32)
@@ -151,6 +163,16 @@ def find_classes(targ_dir: str, pattern: str) -> Tuple[List[str], Dict[int, str]
     else:
         print("Class File Not Found.")  
         return
+
+def hardcoded_classes(type: str):
+    if type == "packet":
+        return ['ID', 'Period'],{'ID' : 0,'Period' : 1}
+    elif type == "desk":
+        return ['Calculator', 'Desk number'],{'Calculator': 0, 'Desk number': 1}
+    elif type == "caddy":
+        return ['Caddy number'],{'Caddy number': 0}
+    print("Invalid Type")
+    return [],{}
 
 # Returns image with bounding boxes drawn on   
 def DrawBox(img,box,classes):
