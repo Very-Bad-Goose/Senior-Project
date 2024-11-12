@@ -34,53 +34,52 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # USE THIS IF YOU HAVE A MAC WITH APPLE SILICON
 # device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
 
-# Transform to apply to data coming in
+# Data used by functions
 image_width  = 816
 image_height = 1056
+model_path = Path("models/")
+checkpoint_path = Path("models/checkpoints")
+test_loader:DataLoader
+train_loader:DataLoader
+# epoch of best loss for checkpoint loading
+global best_loss_epoch
+best_loss_epoch = None
 
-transform = transforms.Compose(
+# train_loader = get_individual_data_loader("src/mbrimberry_files/Submissions",transform=transform,batch_size=32,shuffle=True,num_workers=4, type="assignments")
+def create_dataloaders(targ_dir, type):
+    global test_loader
+    global train_loader
+    transform = transforms.Compose(
     [
         transforms.ToImage(),
         transforms.Grayscale(),
         transforms.ToDtype(torch.float32, scale=True),
         transforms.Resize(size=(image_width,image_height))
     ])
-model_path = Path("models/")
-checkpoint_path = Path("models/checkpoints")
+    # creating a split dataset of training and testing. First need a whole dataset of all images
+    packet_dataset = IndividualIMGDataset(targ_dir=targ_dir,transform=transform,type=type)
 
-# train_loader = get_individual_data_loader("src/mbrimberry_files/Submissions",transform=transform,batch_size=32,shuffle=True,num_workers=4, type="assignments")
-targ_dir = Path("src/mbrimberry_files/Submissions")
-
-
-# creating a split dataset of training and testing. First need a whole dataset of all images
-packet_dataset = IndividualIMGDataset(targ_dir=targ_dir,transform=transform,type="caddy")
-
-# adjust for percentage of train-to-test split, default to 80-20
-train_dataset,test_dataset = random_split(packet_dataset,[0.8,0.2])
-
-# epoch of best loss for checkpoint loading
-global best_loss_epoch
-best_loss_epoch = None
-
-# need dataloaders for both test and training data
-train_loader = DataLoader(
-    dataset= train_dataset,
-    batch_size = 8,
-    shuffle = True,
-    collate_fn=collate_fn,
-    num_workers= 0
-)
-
-# don't want to shuffle test
-test_loader = DataLoader(
-    dataset= test_dataset,
-    batch_size = 8,
-    shuffle = False,
-    collate_fn=collate_fn,
-    num_workers= 0
-)
-
-def create_model(num_objects_to_predict:int) -> FasterRCNN:
+    # adjust for percentage of train-to-test split, default to 80-20
+    train_dataset,test_dataset = random_split(packet_dataset,[0.8,0.2])
+    
+    # need dataloaders for both test and training data
+    train_loader = DataLoader(
+        dataset= train_dataset,
+        batch_size = 8,
+        shuffle = True,
+        collate_fn=collate_fn,
+        num_workers= 0
+    )
+    print(train_loader)
+    # don't want to shuffle test
+    test_loader = DataLoader(
+        dataset= test_dataset,
+        batch_size = 8,
+        shuffle = False,
+        collate_fn=collate_fn,
+        num_workers= 0
+    )
+def create_model(num_objects_to_predict:int,type:str) -> FasterRCNN:
     "Creates a model for num_objects_to_predict"
     
     # Failure cases
@@ -91,6 +90,11 @@ def create_model(num_objects_to_predict:int) -> FasterRCNN:
     if num_objects_to_predict <= 0:
         raise ValueError("num_objects_to_predict must be greater than 0")
     
+    if not isinstance(type,(str)):
+        raise TypeError("type must be string")
+    
+    targ_dir = Path("src/mbrimberry_files/Submissions")
+    create_dataloaders(targ_dir, type)
     # as there is not a lot of data, using a pre trained model is best for a starting point, using faster rcnn for this purpose
     model = fasterrcnn_resnet50_fpn(pretrained=True,weights="DEFAULT")
     
@@ -114,9 +118,11 @@ def train_model(model:FasterRCNN, num_epochs: int):
     if num_epochs <= 0:
         raise ValueError("num_epochs must be greater than 0")
     
+    if train_loader is None:
+        raise TypeError("train_loader is None")
+    
     
     model.to(device)
-    
     # parameters for early stopping
     best_loss = None
     patience = 5 # patience is number of epochs it waits to see if loss gets better before stopping
@@ -225,7 +231,7 @@ def test_model(model: FasterRCNN):
     model.eval()
     
     with torch.inference_mode():
-        for images,targets in test_loader:
+        for images,targets in tqdm(test_loader):
             # putting images on device, necessary for evaluation
             images = [image.to(device) for image in images]
             predictions = model(images)
@@ -293,7 +299,7 @@ def load_checkpoint(model:FasterRCNN,path:str):
     
     model.load_state_dict(torch.load(path))
 
-def create_and_train_model(num_epochs:int,num_objects_to_predict:int, model_path: str):
+def create_and_train_model(num_epochs:int,num_objects_to_predict:int, model_path: str, type:str):
     "This function creates and trains a model based on the dataloaders already coded into the file. Will save to model_path, num_epochs must be int checkpoint_path is where checkpoints will be saved, else will be saved to ./models/checkpoints"
     
     # Failure Cases
@@ -317,7 +323,7 @@ def create_and_train_model(num_epochs:int,num_objects_to_predict:int, model_path
     
     
     # Creating model
-    model = create_model(num_objects_to_predict=num_objects_to_predict)
+    model = create_model(num_objects_to_predict=num_objects_to_predict,type=type)
     # training
     train_model(model,num_epochs)
     # if checkpoint_path:
