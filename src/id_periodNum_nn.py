@@ -311,9 +311,9 @@ def create_and_train_model(num_epochs:int,num_objects_to_predict:int, model_path
     
     if not isinstance(model_path,(str)):
         raise TypeError("model_path must be type str")
-    
-    if not os.path.exists(model_path):
-        raise FileNotFoundError("model_path does not exist")
+    # Shouldn't we be able to make a new model?
+    # if not os.path.exists(model_path):
+    #     raise FileNotFoundError("model_path does not exist")
     
     # if not isinstance(checkpoint_path,(str)) and checkpoint_path is not None:
     #     raise TypeError("checkpoint_path must be type str or None")
