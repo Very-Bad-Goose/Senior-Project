@@ -5,6 +5,8 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.lang import Builder
 from kivy.config import Config
 import time
+import os
+import shutil
 from kivy.core.window import Window
 from kivy.properties import NumericProperty,StringProperty
 from kivy.uix.widget import Widget
@@ -62,6 +64,9 @@ class MyFloatLayout(FloatLayout):
     # Change Account Info
     #====================================================================================
     # Opens a file explorer to select a json file    
+    # Should change this later to save the json file itself into a folder in the project and then have the
+    # app read the json straight from src instead of the path, that way you don't have to always link the account
+    # every time you run the application.
     def select_json_file(self):
         # Open file dialog for JSON file selection
         json_file = filedialog.askopenfile(
@@ -78,26 +83,41 @@ class MyFloatLayout(FloatLayout):
         else:
             self.error_file = ''
             # Save the selected JSON file path to a configuration file
-            self.save_config(json_file.name)
-
-    # Saves the path of the selected json from the def above to a specified file
-    def save_config(self, file_path):
-        # Define the configuration file path
-        config_file_path = 'src\json_config.txt'
-
-        # Write the selected path to a configuration file
-        with open(config_file_path, 'w') as config_file:
-            config_file.write(file_path)
-
-        # Update the UI or console to confirm the file was saved
-        print(f"Configuration file path saved: {file_path}")
-        self.load_config()
-    
-    # Reads from the file and returns the string    
-    def load_config(self):
-        print("Loading string from config")
+            self.save_json_file(json_file.name)
+            
+    # Save the JSON file to a designated folder and return its new path
+    def save_json_file(self, file_path):
+        config_dir = 'src/config_files'
+        os.makedirs(config_dir, exist_ok=True)
+        
+        file_name = os.path.basename(file_path)
+        destination_path = os.path.join(config_dir, file_name)
+        
         try:
-            with open('src\json_config.txt', 'r') as config_file:
+            shutil.copy(file_path, destination_path)
+            print(f"JSON file saved to: {destination_path}")
+            self.save_config(destination_path)
+        except Exception as e:
+            print(f"Failed to save JSON file: {e}")
+            return None
+
+    # Save the path of the saved JSON file to json_config.txt
+    def save_config(self, file_path):
+        config_file_path = 'src/json_config.txt'
+
+        try:
+            with open(config_file_path, 'w') as config_file:
+                config_file.write(file_path)
+            print(f"Configuration file path saved to {config_file_path}: {file_path}")
+            self.load_config()
+        except Exception as e:
+            print(f"Failed to save configuration file: {e}")
+
+    # Read and return the saved configuration path from json_config.txt
+    def load_config(self):
+        config_file_path = 'src/json_config.txt'
+        try:
+            with open(config_file_path, 'r') as config_file:
                 file_path = config_file.read().strip()
                 print(f"Loaded file path from config: {file_path}")
                 return file_path
