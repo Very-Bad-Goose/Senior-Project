@@ -96,9 +96,11 @@ def create_model(num_objects_to_predict:int,type="None") -> FasterRCNN:
     
     if not isinstance(type,(str)):
         raise TypeError("type must be string")
-    
-    targ_dir = Path("src/mbrimberry_files/Submissions")
-    create_dataloaders(targ_dir, type)
+    if type != "None":
+        targ_dir = Path("src/mbrimberry_files/Submissions")
+        create_dataloaders(targ_dir, type)
+    else:
+        create_transforms()
     # as there is not a lot of data, using a pre trained model is best for a starting point, using faster rcnn for this purpose
     model = fasterrcnn_resnet50_fpn(pretrained=True,weights="DEFAULT")
     
@@ -474,7 +476,7 @@ def predict_with_caddy_model(image, model_path:str) -> Tuple:
     else:
         torch.device('cpu')
     
-    model = create_model(2)
+    model = create_model(1)
     model.load_state_dict(torch.load(model_path, weights_only=True))
     model.to(device)
     
@@ -514,8 +516,7 @@ def predict_with_caddy_model(image, model_path:str) -> Tuple:
         
         prediction_label_score_cnum = ()
         
-        id_image = None
-        period_num_image = None
+        cnum_image = None
         
         
         for i in range(len(scores)):
@@ -533,12 +534,12 @@ def predict_with_caddy_model(image, model_path:str) -> Tuple:
             height = y_max - y_min
     
         # prediction_box is in format (x_min,y_min,x_max,y_max)
-        print(prediction_box_cnum)
-        prediction_box_cnum = (x_min,y_min,x_max,y_max)
-        print(prediction_box_cnum)
-        # prediction_label_score is in format (label,confidence socre of label)
-        prediction_label_score_cnum = (labels[highest_confidence_1].item(),scores[highest_confidence_1].item())
-        cnum_image = F.crop(image_to_crop,y_min,x_min,height,width)
+            print(prediction_box_cnum)
+            prediction_box_cnum = (x_min,y_min,x_max,y_max)
+            print(prediction_box_cnum)
+            # prediction_label_score is in format (label,confidence socre of label)
+            prediction_label_score_cnum = (labels[highest_confidence_1].item(),scores[highest_confidence_1].item())
+            cnum_image = F.crop(image_to_crop,y_min,x_min,height,width)
         
         return prediction_box_cnum,prediction_label_score_cnum,cnum_image  
 # id_box, period_num_box, label_score, id_score, id_image, period_num_image = predict_with_id_model("./src/mbrimberry_files/Submissions/03 13 2024/Activity  474756 - 03 13 2024/Activity Packet/activity_1.png", model_path="./models/id_periodNum_model.pt")
