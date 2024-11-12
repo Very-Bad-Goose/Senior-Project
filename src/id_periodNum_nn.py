@@ -25,6 +25,8 @@ import os
 
 import pathlib
 from pathlib import Path
+from tqdm.auto import tqdm
+
 
 # UNCOMMENT BELOW IF YOU HAVE A CUDA-ENABLED NVIDIA GPU, otherwise uses CPU
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -43,9 +45,15 @@ transform = transforms.Compose(
         transforms.ToDtype(torch.float32, scale=True),
         transforms.Resize(size=(image_width,image_height))
     ])
+model_path = Path("models/")
+checkpoint_path = Path("models/checkpoints")
+
+# train_loader = get_individual_data_loader("src/mbrimberry_files/Submissions",transform=transform,batch_size=32,shuffle=True,num_workers=4, type="assignments")
+targ_dir = Path("src/mbrimberry_files/Submissions")
+
 
 # creating a split dataset of training and testing. First need a whole dataset of all images
-packet_dataset = IndividualIMGDataset(targ_dir="src/mbrimberry_files/Submissions",transform=transform,type="packet")
+packet_dataset = IndividualIMGDataset(targ_dir=targ_dir,transform=transform,type="caddy")
 
 # adjust for percentage of train-to-test split, default to 80-20
 train_dataset,test_dataset = random_split(packet_dataset,[0.8,0.2])
@@ -53,7 +61,6 @@ train_dataset,test_dataset = random_split(packet_dataset,[0.8,0.2])
 # epoch of best loss for checkpoint loading
 global best_loss_epoch
 best_loss_epoch = None
-
 
 # need dataloaders for both test and training data
 train_loader = DataLoader(
@@ -127,7 +134,7 @@ def train_model(model:FasterRCNN, num_epochs: int):
     for epoch in range(num_epochs):
         print(f"--------------- TRAINING EPOCH: {epoch + 1} ---------------")
         loss = 0
-        for images,targets in train_loader:
+        for images,targets in tqdm(train_loader):
             # putting images on device, necessary for gpu training
             images = [image.to(device) for image in images]
             # putting bouding boxes and labels on device, necessary for gpu training
@@ -189,7 +196,7 @@ def train_model(model:FasterRCNN, num_epochs: int):
         # early stopping setup and checking
         if best_loss is None:
             best_loss = losses.item()
-            save_checkpoint(model,f"./models/checkpoints/checkpoint_epoch_{epoch+1}.pth")
+            save_checkpoint(model, checkpoint_path / f"checkpoint_epoch_{epoch+1}.pth")
         elif losses.item() > best_loss:
             patience_counter +=1
             if patience_counter > patience:
@@ -201,7 +208,7 @@ def train_model(model:FasterRCNN, num_epochs: int):
             best_loss = losses.item()
             patience_counter = 0
             best_loss_epoch = epoch+1
-            save_checkpoint(model,f"./models/checkpoints/checkpoint_epoch_{epoch+1}.pth")
+            save_checkpoint(model, checkpoint_path / f"checkpoint_epoch_{epoch+1}.pth")
         
         print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {losses.item()}")
         
@@ -217,7 +224,7 @@ def test_model(model: FasterRCNN):
     
     model.eval()
     
-    with torch.no_grad():
+    with torch.inference_mode():
         for images,targets in test_loader:
             # putting images on device, necessary for evaluation
             images = [image.to(device) for image in images]
@@ -262,8 +269,8 @@ def save_checkpoint(model:FasterRCNN, path:str):
     if not isinstance(model, FasterRCNN):
         raise TypeError("model must be type torchvision.models.detection.FasterRCNN")
     
-    if not isinstance(path, str):
-        raise TypeError("path must be type str")
+    if not isinstance(path, str) and not isinstance(path, Path):
+        raise TypeError("path must be type str or Path")
     
     if not os.path.exists(path):
         raise FileNotFoundError("path does not exist")
@@ -286,7 +293,7 @@ def load_checkpoint(model:FasterRCNN,path:str):
     
     model.load_state_dict(torch.load(path))
 
-def create_and_train_model(num_epochs:int, model_path: str, checkpoint_path: str):
+def create_and_train_model(num_epochs:int,num_objects_to_predict:int, model_path: str):
     "This function creates and trains a model based on the dataloaders already coded into the file. Will save to model_path, num_epochs must be int checkpoint_path is where checkpoints will be saved, else will be saved to ./models/checkpoints"
     
     # Failure Cases
@@ -302,21 +309,21 @@ def create_and_train_model(num_epochs:int, model_path: str, checkpoint_path: str
     if not os.path.exists(model_path):
         raise FileNotFoundError("model_path does not exist")
     
-    if not isinstance(checkpoint_path,(str)) and checkpoint_path is not None:
-        raise TypeError("checkpoint_path must be type str or None")
+    # if not isinstance(checkpoint_path,(str)) and checkpoint_path is not None:
+    #     raise TypeError("checkpoint_path must be type str or None")
     
-    if checkpoint_path is not None and not os.path.exists(checkpoint_path):
-        raise FileNotFoundError("checkpoint_path does not exist")
+    # if checkpoint_path is not None and not os.path.exists(checkpoint_path):
+    #     raise FileNotFoundError("checkpoint_path does not exist")
     
     
     # Creating model
-    model = create_model(2)
+    model = create_model(num_objects_to_predict=num_objects_to_predict)
     # training
     train_model(model,num_epochs)
-    if checkpoint_path:
-        load_checkpoint(model,checkpoint_path)
-    elif best_loss_epoch is not None:
-        load_checkpoint(model,f"./models/checkpoints/checkpoint_epoch_{best_loss_epoch}.pth")
+    # if checkpoint_path:
+    #     load_checkpoint(model,checkpoint_path)
+    # elif best_loss_epoch is not None:
+    load_checkpoint(model,f"./models/checkpoints/checkpoint_epoch_{best_loss_epoch}.pth")
     save_model(model,model_path)
     # testing
     test_model(model)
@@ -362,7 +369,7 @@ def predict_with_id_model(image, model_path:str) -> Tuple:
     image_to_crop = image
     image = transform(image)
     
-    with torch.no_grad():
+    with torch.inference_mode():
         images = image.to(device)
         predictions = model([images])
         
@@ -441,7 +448,89 @@ def predict_with_id_model(image, model_path:str) -> Tuple:
             return return_tuple
         else:
             return () 
+def predict_with_caddy_model(image, model_path:str) -> Tuple:
+    """
+    uses caddy_model, will use cuda or mac, will try and use cuda first then mac then cpu, image must be string or tensor 
+    
+    Returns:
+        A tuple of(prediction_box_cnum,prediction_label_score_cnum,cnum_image).
+    
+    """
+    
+    if torch.cuda.is_available():
+        torch.device('cuda')
+    elif torch.backends.mps.is_available():
+        torch.device('mps')
+    else:
+        torch.device('cpu')
+    
+    model = create_model(2)
+    model.load_state_dict(torch.load(model_path, weights_only=True))
+    model.to(device)
+    
+    model.eval()
+    
+    if type(image) is str:
+        image = Image.open(image).convert("L")
+    
+    image_to_crop = image
+    image = transform(image)
+    
+    with torch.inference_mode():
+        images = image.to(device)
+        predictions = model([images])
+        
+        for prediction in predictions:
+            # checking that boudning boxes is of type tensor
+            boxes = prediction['boxes']
+            labels = prediction['labels']
+            scores = prediction['scores']
+            
+            # print(f"bounding box coardinates\n[{boxes}]")
+            # print(f"label\n[{labels}]")
+            # print(f"confidence scores\n[{scores}]")
 
+            assert(type(boxes) is torch.Tensor)    
+            assert(type(labels) is torch.Tensor)    
+            assert(type(scores) is torch.Tensor)
+        
+        confidence_score_threshold = 0.50
+        
+        highest_confidence_1 = 0
+        highest_confidence_1_index = 0
+        
+        prediction_box_cnum = ()
+
+        
+        prediction_label_score_cnum = ()
+        
+        id_image = None
+        period_num_image = None
+        
+        
+        for i in range(len(scores)):
+            if scores[i].item() > confidence_score_threshold:
+                if labels[i].item() == 1 and scores[i].item() > highest_confidence_1:
+                    highest_confidence_1 = labels[i].item()
+                    highest_confidence_1_index = i
+        if len(boxes) != 0:           
+            x_min = int(boxes[highest_confidence_1_index][0].item())
+            y_min = int(boxes[highest_confidence_1_index][1].item())
+            x_max = int(boxes[highest_confidence_1_index][2].item())
+            y_max = int(boxes[highest_confidence_1_index][3].item())
+            
+            width = x_max - x_min
+            height = y_max - y_min
+    
+        # prediction_box is in format (x_min,y_min,x_max,y_max)
+        print(prediction_box_cnum)
+        prediction_box_cnum = (x_min,y_min,x_max,y_max)
+        print(prediction_box_cnum)
+        # prediction_label_score is in format (label,confidence socre of label)
+        prediction_label_score_cnum = (labels[highest_confidence_1].item(),scores[highest_confidence_1].item())
+        cnum_image = F.crop(image_to_crop,y_min,x_min,height,width)
+        
+        return prediction_box_cnum,prediction_label_score_cnum,cnum_image  
 # id_box, period_num_box, label_score, id_score, id_image, period_num_image = predict_with_id_model("./src/mbrimberry_files/Submissions/03 13 2024/Activity  474756 - 03 13 2024/Activity Packet/activity_1.png", model_path="./models/id_periodNum_model.pt")
 
 # id_box, period_num_box, label_score, id_score, id_image, period_num_image = predict_with_id_model(image_path="./src/test_files/obj_detect_test/test_image.png",model_path="./models/id_periodNum_model.pt")
