@@ -38,7 +38,7 @@ class MyFloatLayout(FloatLayout):
     # method for when change grade key button is pressed
     def change_key_button(self):
         key_file = self.ids.grade_key_image.source
-        # using tkinter to create a fiel dialog so it looks like default system file explorer
+        # using tkinter to create a field dialog so it looks like default system file explorer
         new_key_file = filedialog.askopenfile(initialdir="/", 
             title = "Select a new grade key",
             filetypes=(("PNG","*.png"),
@@ -58,6 +58,54 @@ class MyFloatLayout(FloatLayout):
     # method for when pause button is pressed    
     def pause_press(self):
         print("here")
+        
+    # Change Account Info
+    #====================================================================================
+    # Opens a file explorer to select a json file    
+    def select_json_file(self):
+        # Open file dialog for JSON file selection
+        json_file = filedialog.askopenfile(
+            initialdir="/", 
+            title="Select configuration file",
+            filetypes=(("JSON files", "*.json"), ("All Files", "*.*"))
+        )
+        
+        if json_file is None:
+            return  # User cancelled the file selection
+
+        elif not json_file.name.endswith('.json'):
+            self.error_file = 'Only .json files are accepted for configuration'
+        else:
+            self.error_file = ''
+            # Save the selected JSON file path to a configuration file
+            self.save_config(json_file.name)
+
+    # Saves the path of the selected json from the def above to a specified file
+    def save_config(self, file_path):
+        # Define the configuration file path
+        config_file_path = 'src\json_config.txt'
+
+        # Write the selected path to a configuration file
+        with open(config_file_path, 'w') as config_file:
+            config_file.write(file_path)
+
+        # Update the UI or console to confirm the file was saved
+        print(f"Configuration file path saved: {file_path}")
+        self.load_config()
+    
+    # Reads from the file and returns the string    
+    def load_config(self):
+        print("Loading string from config")
+        try:
+            with open('src\json_config.txt', 'r') as config_file:
+                file_path = config_file.read().strip()
+                print(f"Loaded file path from config: {file_path}")
+                return file_path
+        except FileNotFoundError:
+            print("Configuration file not found.")
+            return None
+    #====================================================================================       
+    
 
 # main call loop for kivy to make application window
 class TechTutorApp(App):
