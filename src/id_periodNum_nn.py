@@ -549,3 +549,5 @@ def predict_with_caddy_model(image, model_path:str) -> Tuple:
     # period_num_image.show()
 # if id_image:
     # id_image.show()
+    
+create_and_train_model(num_epochs=10,num_objects_to_predict=2,model_path="./models/test_model.pt",type="packet")
