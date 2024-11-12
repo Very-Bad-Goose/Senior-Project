@@ -64,9 +64,7 @@ class MyFloatLayout(FloatLayout):
     # Change Account Info
     #====================================================================================
     # Opens a file explorer to select a json file    
-    # Should change this later to save the json file itself into a folder in the project and then have the
-    # app read the json straight from src instead of the path, that way you don't have to always link the account
-    # every time you run the application.
+    # Saves the file to src/config_files and then saves the path to the config file as well
     def select_json_file(self):
         # Open file dialog for JSON file selection
         json_file = filedialog.askopenfile(
