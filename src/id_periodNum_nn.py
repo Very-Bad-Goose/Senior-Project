@@ -41,7 +41,7 @@ model_path = Path("models/")
 checkpoint_path = Path("models/checkpoints")
 test_loader:DataLoader
 train_loader:DataLoader
-transform:transforms.Compse
+transform:transforms.Compose
 # epoch of best loss for checkpoint loading
 global best_loss_epoch
 best_loss_epoch = None
@@ -50,14 +50,7 @@ best_loss_epoch = None
 def create_dataloaders(targ_dir, type):
     global test_loader
     global train_loader
-    global transform
-    transform = transforms.Compose(
-    [
-        transforms.ToImage(),
-        transforms.Grayscale(),
-        transforms.ToDtype(torch.float32, scale=True),
-        transforms.Resize(size=(image_width,image_height))
-    ])
+    create_transforms()
     # creating a split dataset of training and testing. First need a whole dataset of all images
     packet_dataset = IndividualIMGDataset(targ_dir=targ_dir,transform=transform,type=type)
 
@@ -81,7 +74,16 @@ def create_dataloaders(targ_dir, type):
         collate_fn=collate_fn,
         num_workers= 0
     )
-def create_model(num_objects_to_predict:int,type:str) -> FasterRCNN:
+def create_transforms():
+    global transform
+    transform = transforms.Compose(
+    [
+        transforms.ToImage(),
+        transforms.Grayscale(),
+        transforms.ToDtype(torch.float32, scale=True),
+        transforms.Resize(size=(image_width,image_height))
+    ])
+def create_model(num_objects_to_predict:int,type="None") -> FasterRCNN:
     "Creates a model for num_objects_to_predict"
     
     # Failure cases
