@@ -63,6 +63,15 @@
         #    color: 0,0,0,1
         #    on_press: root.pause_press()
 
+        # Account Button
+        Button:
+            id: account_button
+            text: "Change Account Credentials"
+            size_hint: (0.3, 0.1)
+            pos_hint: {"center_x": 0.15, "center_y": 0.95}
+            on_press: root.select_json_file()
+
+
         # stop button
         Button:
             id: stop_button
