@@ -79,6 +79,31 @@
             font_size: 24
             color: .6,0,0,1
 
+    Label:
+            id: error_label
+            pos_hint: {'center_x': 0.5, 'top': 0.9}  # Adjusted to move above the white box area
+            size_hint: (0.8, 0.05)
+            text: root.error_file
+            font_size: 18
+            color: 0.6, 0, 0, 1
+
+  # Text input for sheet ID
+        TextInput:
+            id: sheet_id_input
+            size_hint: (0.25, 0.05)
+            pos_hint: {'center_x': 0.3, 'top': 0.08}  # Moved slightly up
+            hint_text: "Enter Sheet ID"
+            multiline: False
+            font_size: 18
+
+        # Button to save sheet ID
+        Button:
+            id: save_sheet_button
+            text: "Save Sheet ID"
+            size_hint: (0.25, 0.05)
+            pos_hint: {'center_x': 0.7, 'top': 0.08}  # Moved slightly up
+            on_press: root.save_sheet_id()
+
         #adding image to side
         Image:
             id: grade_key_image

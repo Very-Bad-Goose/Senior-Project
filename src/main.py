@@ -13,7 +13,7 @@ from kivy.uix.widget import Widget
 from tkinter import filedialog
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection import FasterRCNN
-
+from kivy.clock import Clock
 from model_api import load_model,predict_model_test,stop_model,predict_model
 
 # ai model object
@@ -107,6 +107,30 @@ class MyFloatLayout(FloatLayout):
         except FileNotFoundError:
             print("Configuration file not found.")
             return None
+
+    def save_sheet_id(self):
+            sheet_id = self.ids.sheet_id_input.text
+            temp = sheet_id.split("/")
+            print(temp)
+            sheet_id = temp[5]
+            print(sheet_id)
+            file_path = './sheet_id.txt'
+    
+            try:
+                # Open the file in append mode to add new IDs on new lines
+                with open(file_path, 'w') as file:
+                    file.write(sheet_id)  # Add a newline after each ID
+                    print(sheet_id)
+                self.error_file = "Sheet ID saved successfully!"
+    
+                # Clear the message after 2 seconds
+                Clock.schedule_once(self.clear_message, 2)
+            except Exception as e:
+                self.error_file = f"Error saving Sheet ID: {e}"
+    
+        def clear_message(self, *args):
+            self.error_file = ""  # Clears the success message
+
     #====================================================================================       
     
 
