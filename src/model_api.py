@@ -7,8 +7,6 @@
 import torch
 import threading
 from image_blur_detection import detect_image_blur_helper as detect_blur
-from temp_model import NeuralNet
-from temp_model import predict_with_model_test,predict_with_model
 import os
 
 predict_flag = False
@@ -21,19 +19,19 @@ def load_model(model_path: str):
     return model
 
 # use the model to make predictions, will image pre process first and not use those images, uses a thread to make predictions so it can be stopped by gui
-def predict_model_test(model:NeuralNet):
+def predict_model_test(model):
     global predict_flag
     predict_flag = True
     t1 = threading.Thread(target=predict_model_test_helper,args=(model,))
     t1.start()
 
 # use the model to make predictions, will image pre process first and not use those images
-def predict_model_test_helper(model: NeuralNet):
+def predict_model_test_helper(model):
     global predict_flag
     while predict_flag:
         # for testing purposes this will work with test model which does not use images, look at predict_model and predict_model_helper below for real functions
-        predict_with_model_test(model)
-
+        pass
+    
 # stop the model predicting 
 def stop_model():
     global predict_flag
