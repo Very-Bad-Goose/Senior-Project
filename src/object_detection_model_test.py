@@ -264,4 +264,4 @@ def test_predict_with_id_model():
     
     # Test Case 44: good input image, a proper image that should return a tuple of len 6
     test_tuple = id_periodNum_nn.predict_with_id_model(image=image_path,model_path=model_path)
-    assert(len(test_tuple) is 6)
+    assert(len(test_tuple) == 6)
