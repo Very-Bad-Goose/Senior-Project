@@ -29,3 +29,4 @@ debug.log
 /src/mbrimberry_files/*
 !/src/mbrimberry_files/Submissions/**/**/**/*.txt
 
+*.pth
