@@ -1,0 +1,85 @@
+1. Learning Rate (lr)
+Purpose: The learning rate controls how large of a step the optimizer takes in updating the model's weights during each iteration. A lower learning rate makes smaller adjustments, while a higher one makes bigger adjustments.
+Current value in your code: lr = 0.001
+Tuning Strategy:
+If the model is converging too slowly, try increasing the learning rate (e.g., lr = 0.01).
+If the model is oscillating or diverging, reduce the learning rate (e.g., lr = 0.0001).
+Use techniques like learning rate scheduling or adaptive optimizers (like Adam) to dynamically adjust the learning rate during training.
+2. Batch Size (batch_size)
+Purpose: Batch size defines the number of training samples processed before the model’s internal parameters are updated.
+Current value in your code: batch_size = 32
+Tuning Strategy:
+Smaller batch sizes (e.g., 16 or 32) allow the model to update weights more frequently and typically result in more stochastic updates, which may help the model generalize better but may introduce more noise.
+Larger batch sizes (e.g., 64, 128) make training faster and reduce noise but may require more memory and can overfit if too large.
+Experiment with powers of 2 (e.g., 16, 32, 64, 128), and monitor how it affects convergence, speed, and memory usage.
+3. Number of Epochs (num_epochs)
+Purpose: The number of epochs defines how many complete passes the model makes through the entire training dataset.
+Current value in your code: num_epochs = 2
+Tuning Strategy:
+Start with a low number of epochs (e.g., 5) and increase gradually.
+Early stopping techniques can be applied to avoid overfitting if the validation accuracy stops improving.
+You can plot the training/validation loss over epochs to determine the point where performance plateaus.
+4. Optimizer
+Purpose: The optimizer adjusts the model's weights based on the computed gradients to minimize the loss function. You are using Stochastic Gradient Descent (SGD).
+Current optimizer in your code: optim.SGD
+Tuning Strategy:
+SGD: SGD is effective but can be slow to converge. You can try adjusting the momentum parameter (currently momentum = 0.9) to help escape local minima.
+Alternative optimizers:
+Adam: Adaptive learning rate optimization algorithms like Adam (optim.Adam) often converge faster and require less tuning. It adjusts the learning rate during training and can perform well across different problems.
+RMSprop: Another popular alternative that works well in practice, especially with non-stationary objectives.
+5. Momentum
+Purpose: Momentum helps accelerate gradients vectors in the right direction, thus leading to faster converging.
+Current value in your code: momentum = 0.9
+Tuning Strategy:
+Typically, momentum values range from 0.8 to 0.99. A higher momentum value (like 0.9 or 0.95) can help in speeding up training.
+Reduce momentum if your model oscillates or overshoots the minima during optimization.
+6. Weight Initialization
+Purpose: The initial values of weights in the model can affect the speed of convergence and the model’s ability to escape local minima.
+Current weight initialization: PyTorch uses default initialization, but you can try more specific ones.
+Tuning Strategy:
+Consider initializing weights using strategies like Xavier (torch.nn.init.xavier_uniform_) or He initialization (torch.nn.init.kaiming_uniform_), especially if you're dealing with deeper networks or nonlinear activations (like ReLU).
+7. Regularization (Dropout, L2 regularization)
+Purpose: Regularization techniques like dropout and L2 regularization help prevent the model from overfitting by adding some noise during training or penalizing large weight values.
+Tuning Strategy:
+You can add Dropout layers in your model to randomly drop some units during training, forcing the model to learn more robust features. For example:
+python
+Copy code
+self.dropout = nn.Dropout(0.5)  # 50% dropout
+# Then apply it after each fully connected layer in the forward pass
+x = self.dropout(F.relu(self.fc1(x)))
+L2 regularization (weight decay) can be added to the optimizer:
+python
+Copy code
+optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-4)
+Regularization strength can be fine-tuned. Common values are 0.0001 to 0.01.
+8. Kernel Size in Convolutional Layers
+Purpose: The kernel size determines the size of the filters that slide over the input image during convolution.
+Current kernel size: You’re using a 3x3 kernel in both conv1 and conv2 layers.
+Tuning Strategy:
+Smaller kernels (e.g., 3x3) capture fine details in the image, making the network more sensitive to small features.
+Larger kernels (e.g., 5x5) can help capture broader patterns but may miss finer details.
+A good starting point for CNNs is 3x3, which usually works well. You can experiment with 5x5 or 7x7 for different types of input data (e.g., larger images).
+9. Number of Filters (Channels in Conv Layers)
+Purpose: The number of filters (output channels) in each convolutional layer defines the depth of the feature maps. More filters allow the model to capture more complex patterns but also increase the computational cost.
+Current number of filters:
+conv1: 6 filters
+conv2: 16 filters
+Tuning Strategy:
+Increase the number of filters (e.g., conv1 from 6 to 16, conv2 from 16 to 32) if you feel the model isn't capturing enough complexity, especially if you're dealing with more complex images like objects.
+Common filter numbers: [16, 32, 64], [32, 64, 128], etc.
+10. Activation Functions
+Purpose: Activation functions introduce non-linearity to the model, helping it learn more complex patterns.
+Current activation function: You're using ReLU.
+Tuning Strategy:
+ReLU is a good default for CNNs. You can try Leaky ReLU if the model suffers from dead neurons (where neurons get stuck during training):
+python
+Copy code
+F.leaky_relu(x)
+Example of Hyperparameter Tuning Process:
+Here’s how you might approach tuning:
+
+Start by training the model with default values (e.g., lr = 0.001, batch_size = 32, momentum = 0.9, epochs = 10).
+Check the learning rate first: If the model is converging too slowly, try increasing the learning rate to 0.01. If the model oscillates or the loss increases, lower the learning rate to 0.0001.
+Increase the number of epochs: If the loss is still decreasing steadily after 10 epochs, continue training with more epochs (e.g., 20 or 30).
+Try different optimizers: Switch to Adam if you feel SGD is converging too slowly or gets stuck in local minima.
+Adjust regularization: Add dropout and weight decay if the model overfits on the training data.

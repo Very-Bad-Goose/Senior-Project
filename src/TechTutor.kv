@@ -21,82 +21,51 @@
     FloatLayout:
         
         # making size of layout the entire window
+        id: float_layout
         size: root.width,root.height
-
-        #adding image to side
-        Image:
-            id: grade_key_image
-            source: ''
-            pos_hint:{'right': .95, 'top': .94}
-            size_hint: (.45,.85)
-            fit_mode: 'fill'
-
-        # adding label above image
-        Label:
-            pos_hint:{'right': .95, 'top': .98}
-            size_hint: (.45,.04)
-            text: "Current Grading Key"
-            font_size: 32
-            color: 0.710, 0.729, 0.757, 1
 
         # start button
         Button:
-            size_hint: (.2,.1)
-            pos_hint: {'right': .22,'top': .13}
+            id: start_button
+            size_hint: (.25,.1)
+            pos_hint: {'center_x': .5,'top': .13}
             background_normal: 'ui_images/gray4.png'
             background_down: 'ui_images/gray2.png'
             text: "Start"
             color: 0.710, 0.729, 0.757, 1
             on_press: root.start_press()
 
-        # pause button
-        #ToggleButton:
-        #    id: pause_button
-        #    size_hint:(.2,.1)
-        #    pos_hint: {'right': .25,'top': .33}
-        #    background_normal: ''
-        #    background_color: (217/255,215/255,95/255,1)
-        #    text: "Pause/Resume"
-        #    color: 0,0,0,1
-        #    on_press: root.pause_press()
-
         # Account Button
         Button:
             id: account_button
+            size_hint: (0.25, 0.1)
+            pos_hint: {'center_x': .8, 'top': .13}
+            background_normal: 'ui_images/gray4.png'
+            background_down: 'ui_images/gray2.png'
             text: "Change Account Credentials"
-            size_hint: (0.3, 0.1)
-            pos_hint: {"center_x": 0.15, "center_y": 0.95}
+            color: 0.710, 0.729, 0.757, 1
             on_press: root.select_json_file()
 
 
         # stop button
         Button:
-            size_hint:(.2,.1)
-            pos_hint: {'right': .45,'top': .13}
+            id: stop_button
+            size_hint:(.25,.1)
+            pos_hint: {'center_x': .2,'top': .13}
             background_normal: 'ui_images/gray4.png'
             background_down: 'ui_images/gray2.png'
             text:"Stop"
             color: 0.710, 0.729, 0.757, 1
             on_press: root.stop_press()
-
-        #change grade key button
-        Button:
-            size_hint: (.45,.05)
-            pos_hint: {'right': .95, 'top': .07}
-            background_normal: 'ui_images/gray4.png'
-            background_down: 'ui_images/gray2.png'
-            text:"Change Key"
-            font_size: 20
-            color: 0.710, 0.729, 0.757, 1
-            on_press: root.change_key_button()
         
         MyProgressBar:
             id: progress_bar_background
             size_hint: (.43,.03)
-            pos_hint: {'right': .45, 'top': .18}
+            pos_hint: {'center_x': .5, 'top': .18}
 
         Label:
-            pos_hint:{'right': .45, 'top': .18}
+            id: percent_done_label
+            pos_hint:{'center_x': .5, 'top': .22}
             size_hint: (.43,.03)
             text: str(root.progress_bar_value) + '% Done'
             font_size: 24
@@ -109,3 +78,11 @@
             text: root.error_file
             font_size: 24
             color: .6,0,0,1
+
+        #adding image to side
+        Image:
+            id: grade_key_image
+            source: './src/ui_images/logo.png'
+            pos_hint:{'center_x': .5, 'center_y': .6}
+            size_hint: (.4,.4)
+            fit_mode: 'fill'
