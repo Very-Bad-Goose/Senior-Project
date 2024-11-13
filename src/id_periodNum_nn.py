@@ -28,11 +28,12 @@ from pathlib import Path
 from tqdm.auto import tqdm
 
 
-# UNCOMMENT BELOW IF YOU HAVE A CUDA-ENABLED NVIDIA GPU, otherwise uses CPU
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-# USE THIS IF YOU HAVE A MAC WITH APPLE SILICON
-# device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
+if torch.cuda.is_available():
+    device = torch.device('cuda')
+elif torch.backends.mps.is_available():
+    device = torch.device('mps')
+else:
+    device = torch.device('cpu')
 
 # Data used by functions
 image_width  = 816
@@ -45,6 +46,7 @@ transform:transforms.Compose
 # epoch of best loss for checkpoint loading
 global best_loss_epoch
 best_loss_epoch = None
+num_classes = {"desk": 2,"caddy": 1,"packet": 2}
 
 # train_loader = get_individual_data_loader("src/mbrimberry_files/Submissions",transform=transform,batch_size=32,shuffle=True,num_workers=4, type="assignments")
 def create_dataloaders(targ_dir, type):
@@ -52,10 +54,10 @@ def create_dataloaders(targ_dir, type):
     global train_loader
     create_transforms()
     # creating a split dataset of training and testing. First need a whole dataset of all images
-    packet_dataset = IndividualIMGDataset(targ_dir=targ_dir,transform=transform,type=type)
+    full_dataset = IndividualIMGDataset(targ_dir=targ_dir,transform=transform,type=type)
 
     # adjust for percentage of train-to-test split, default to 80-20
-    train_dataset,test_dataset = random_split(packet_dataset,[0.8,0.2])
+    train_dataset,test_dataset = random_split(full_dataset,[0.8,0.2])
     
     # need dataloaders for both test and training data
     train_loader = DataLoader(
@@ -284,10 +286,15 @@ def save_checkpoint(model:FasterRCNN, path:str):
     if not isinstance(path, str) and not isinstance(path, Path):
         raise TypeError("path must be type str or Path")
     
-    if not os.path.exists(path):
-        raise FileNotFoundError("path does not exist")
+    #if not os.path.exists(path):
+    #    raise FileNotFoundError("path does not exist")
     
-    torch.save(model.state_dict(),path)
+    #if not os.path.exists(path):
+    #    raise FileNotFoundError("path does not exist")
+    try:
+        torch.save(model.state_dict(), path)
+    except IOError:
+        print("Error saving Model")
     
 def load_checkpoint(model:FasterRCNN,path:str):
     "loads a checkpoint of the model at that checkpoint"
@@ -340,14 +347,13 @@ def create_and_train_model(num_epochs:int,num_objects_to_predict:int, model_path
     # testing
     test_model(model)
 
-def predict_with_id_model(image, model_path:str) -> Tuple:
+def predict_with_id_model(image, model_path:str, type:str):
     """
     uses id_periodNum_model, will use cuda or mac, will try and use cuda first then mac then cpu, image must be string or tensor 
     loads model from path, which must be a str
     image must be path to a image or a PIL.Image
     Returns:
         A tuple of(bounding_box_id,bounding_box_period_num,confidence_id_box,confidence_label_box,cropped id image, cropped periodNum Image).
-    
     """
     
     if not isinstance(image, (str,PIL.Image.Image)):
@@ -362,20 +368,19 @@ def predict_with_id_model(image, model_path:str) -> Tuple:
     if not os.path.exists(model_path):
         raise FileNotFoundError("model_path does not exist")
     
-    if torch.cuda.is_available():
-        torch.device('cuda')
-    elif torch.backends.mps.is_available():
-        torch.device('mps')
-    else:
-        torch.device('cpu')
+    #make sure type is in dictionary
+    type = type.lower()
+    if type not in num_classes:
+        raise KeyError(type + "does not exist in dictionary of known class types")
     
-    model = create_model(2)
+    model = create_model(num_classes.get(type),type)
     model.load_state_dict(torch.load(model_path, weights_only=True))
     model.to(device)
     
     model.eval()
     
-    if type(image) is str:
+    #convert to grayscale image
+    if isinstance(image, str):
         image = Image.open(image).convert("L")
     
     image_to_crop = image
@@ -386,80 +391,56 @@ def predict_with_id_model(image, model_path:str) -> Tuple:
         predictions = model([images])
         
         for prediction in predictions:
-            # checking that boudning boxes is of type tensor
+            # checking that bounding boxes is of type tensor
             boxes = prediction['boxes']
             labels = prediction['labels']
             scores = prediction['scores']
             
-            # print(f"bounding box coardinates\n[{boxes}]")
+            # print(f"bounding box coordinates\n[{boxes}]")
             # print(f"label\n[{labels}]")
             # print(f"confidence scores\n[{scores}]")
 
-            assert(type(boxes) is torch.Tensor)    
-            assert(type(labels) is torch.Tensor)    
-            assert(type(scores) is torch.Tensor)
+            assert(isinstance(boxes, torch.Tensor))
+            assert(isinstance(labels, torch.Tensor))
+            assert(isinstance(scores, torch.Tensor))
         
         confidence_score_threshold = 0.50
         
-        highest_confidence_1 = 0
-        highest_confidence_1_index = 0
+        #iterate through all the classes provided from dataset starting from index 1 to the length of labels list
+        #using lowercase "L" as label index to not get mixed up with other indices
+        for l in range(0,num_classes.get(type)):
+            #initialize data for each iteration
+            highest_confidence = 0
+            highest_confidence_index = 0
+            prediction_box = ()
+            prediction_label_score = ()
+            new_image = None
+            return_tuple = None
         
-        highest_confidence_2 = 0
-        highest_confidence_2_index = 0
-        
-        prediction_box_id = ()
-        prediction_box_period_num = ()
-        
-        prediction_label_score_id = ()
-        prediction_label_score_period_num = ()
-        
-        id_image = None
-        period_num_image = None
-        
-        return_tuple = None
-        
-        for i in range(len(scores)):
-            if scores[i].item() > confidence_score_threshold:
-                if labels[i].item() == 1 and scores[i].item() > highest_confidence_1:
-                    highest_confidence_1 = labels[i].item()
-                    highest_confidence_1_index = i
-                elif labels[i].item() == 2 and scores[i].item() > highest_confidence_2:
-                    highest_confidence_2 = labels[i].item()
-                    highest_confidence_2_index = i
-        
-        if len(boxes) != 0:     
-            x_min_1 = int(boxes[highest_confidence_1_index][0].item())
-            y_min_1 = int(boxes[highest_confidence_1_index][1].item())
-            x_max_1 = int(boxes[highest_confidence_1_index][2].item())
-            y_max_1 = int(boxes[highest_confidence_1_index][3].item())
+            for i in range(len(scores)):
+                if scores[i].item() > confidence_score_threshold:
+                    if labels[i].item() == l+1 and scores[i].item() > highest_confidence:
+                        highest_confidence = labels[i].item()
+                        highest_confidence_index = i
             
-            x_min_2 = int(boxes[highest_confidence_2_index][0].item())
-            y_min_2 = int(boxes[highest_confidence_2_index][1].item())
-            x_max_2 = int(boxes[highest_confidence_2_index][2].item())
-            y_max_2 = int(boxes[highest_confidence_2_index][3].item())
-        
-            width_1 = x_max_1 - x_min_1
-            height_1 = y_max_1 - y_min_1
+            if len(boxes) != 0:     
+                x_min = int(boxes[highest_confidence_index][0].item())
+                y_min = int(boxes[highest_confidence_index][1].item())
+                x_max = int(boxes[highest_confidence_index][2].item())
+                y_max = int(boxes[highest_confidence_index][3].item())
             
-            width_2 = x_max_2 - x_min_2
-            height_2 = y_max_2 - y_min_2
-    
-            # prediction_box is in format (x_min,y_min,x_max,y_max)
-            prediction_box_id = (x_min_1,y_min_1,x_max_1,y_max_1)
-            prediction_box_period_num = (x_min_2,y_min_2,x_max_2,y_max_2)
-        
-            # prediction_label_score is in format (label,confidence socre of label)
-            prediction_label_score_id = (labels[highest_confidence_1].item(),scores[highest_confidence_1].item())
-            prediction_label_score_period_num = (labels[highest_confidence_2].item(),scores[highest_confidence_2].item())
-            id_image = F.crop(image_to_crop,y_min_1,x_min_1,height_1,width_1)
-            period_num_image = F.crop(image_to_crop,y_min_2,x_min_2,height_2,width_2)
-            return_tuple = (prediction_box_id,prediction_box_period_num,prediction_label_score_id,prediction_label_score_period_num,id_image,period_num_image)
-        
-        
-        if return_tuple:
-            return return_tuple
-        else:
-            return () 
+                width = x_max - x_min
+                height = y_max - y_min
+
+                # prediction_box is in format (x_min,y_min,x_max,y_max)
+                prediction_box = (x_min,y_min,x_max,y_max)
+            
+                # prediction_label_score is in format (label,confidence socre of label)
+                prediction_label_score = (labels[highest_confidence].item(),scores[highest_confidence].item())
+                new_image = F.crop(image_to_crop,y_min,x_min,height,width)
+                return_tuple = (prediction_box,prediction_label_score,new_image, l)
+                #return tuples using yield so the state of the loop can be saved and iterated to find multiple boxes.
+                yield return_tuple
 def predict_with_caddy_model(image, model_path:str) -> Tuple:
     """
     uses caddy_model, will use cuda or mac, will try and use cuda first then mac then cpu, image must be string or tensor 
@@ -550,4 +531,15 @@ def predict_with_caddy_model(image, model_path:str) -> Tuple:
 # if id_image:
     # id_image.show()
     
-create_and_train_model(num_epochs=10,num_objects_to_predict=2,model_path="./models/test_model.pt",type="packet")
+if __name__ == "__main__":
+
+    #create and train model for packet
+    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/packetmodel.pt",type="packet")
+    #train model for desk caddy
+    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/caddymodel.pt",type="caddy")
+    #train model for desk
+    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/deskmodel.pt",type="desk")
+    #test trained model with sample image. will iterate through generator function outputting tuples of boxes
+    image_generator = predict_with_id_model(image="src/mbrimberry_files/Submissions/03 14 2024/Activity  478411 - 03 14 2024/Desk Images/desk_1.png",type="desk",model_path="models/deskmodel.pt")
+    for i in image_generator:
+        print(i)
