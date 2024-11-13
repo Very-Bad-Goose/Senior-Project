@@ -532,7 +532,14 @@ def predict_with_caddy_model(image, model_path:str) -> Tuple:
     # id_image.show()
     
 if __name__ == "__main__":
-    #create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/deskmodel.pt",type="desk")
+
+    #create and train model for packet
+    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/packetmodel.pt",type="packet")
+    #train model for desk caddy
+    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/caddymodel.pt",type="caddy")
+    #train model for desk
+    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/deskmodel.pt",type="desk")
+    #test trained model with sample image. will iterate through generator function outputting tuples of boxes
     image_generator = predict_with_id_model(image="src/mbrimberry_files/Submissions/03 14 2024/Activity  478411 - 03 14 2024/Desk Images/desk_1.png",type="desk",model_path="models/deskmodel.pt")
     for i in image_generator:
         print(i)
