@@ -1,0 +1,20 @@
+1. Open neural_network.py
+2. Add at the top of the file, depending on which method you want to use. 
+
+	"""UNCOMMENT BELOW IF YOU HAVE A CUDA-ENABLED NVIDIA GPU, otherwise uses CPU"""
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+"""USE THIS IF YOU HAVE A MAC WITH APPLE SILICON"""
+device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
+
+3. Example of Hyperparameter Tuning Process:
+	Here’s how you might approach tuning:
+
+	Start by training the model with default values (e.g., lr = 0.001, batch_size = 32, momentum = 0.9, epochs = 10).
+	Check the learning rate first: If the model is converging too slowly, try increasing the learning rate to 0.01. If the model oscillates or the loss increases, lower the learning rate to 0.0001.
+	Increase the number of epochs: If the loss is still decreasing steadily after 10 epochs, continue training with more epochs (e.g., 20 or 30).
+	Try different optimizers: Switch to Adam if you feel SGD is converging too slowly or gets stuck in local minima.
+	Adjust regularization: Add dropout and weight decay if the model overfits on the training data.
+
+4. Run neural_network.py within the environment. 
+5. Analyze output generated on the console. We are trying to minimize loss, so if your loss is not going down with subsequent runs, tweak parameters again and rerun. 

@@ -17,7 +17,9 @@
 *.exe
 *.out
 *.app
+*.pyc
 *.spyproject
+*.DS_Store
 debug.log
 *.json
 *ignore.txt
@@ -26,7 +28,21 @@ debug.log
 !/submissions/train/train.txt
 !/submissions/test/test.txt
 /data
+<<<<<<< HEAD
 /src/mbrimberry_files/*
 !/src/mbrimberry_files/Submissions/**/**/**/*.txt
 
 *.pth
+=======
+/src/mbrimberry_files/**/*.png
+/src/mbrimberry_files/**/*.jpg
+/src/mbrimberry_files/**/*.jpeg
+
+
+/src/__pycache__
+/models/checkpoints
+models/id_periodNum_model.pt
+/src/result_images
+src/test_files/obj_detect_test/checkpoints/test.pth
+src/test_files/obj_detect_test/test.pt
+>>>>>>> main
