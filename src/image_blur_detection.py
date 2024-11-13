@@ -10,7 +10,7 @@ import cv2
 from pathlib import Path as PathLib
 
 # threshold for laplacian variance, adjustable here
-threshold = 30 
+threshold = 50 
 
 # Global Boolean to detect if the program has already written output file to append instead of overwriting
 global file_made 

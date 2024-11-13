@@ -404,7 +404,7 @@ def predict_with_id_model(image, model_path:str, type:str):
             assert(isinstance(labels, torch.Tensor))
             assert(isinstance(scores, torch.Tensor))
         
-        confidence_score_threshold = 0.50
+        confidence_score_threshold = 0.10
         
         #iterate through all the classes provided from dataset starting from index 1 to the length of labels list
         #using lowercase "L" as label index to not get mixed up with other indices
@@ -416,7 +416,6 @@ def predict_with_id_model(image, model_path:str, type:str):
             prediction_label_score = ()
             new_image = None
             return_tuple = None
-        
             for i in range(len(scores)):
                 if scores[i].item() > confidence_score_threshold:
                     if labels[i].item() == l+1 and scores[i].item() > highest_confidence:
@@ -436,7 +435,7 @@ def predict_with_id_model(image, model_path:str, type:str):
                 prediction_box = (x_min,y_min,x_max,y_max)
             
                 # prediction_label_score is in format (label,confidence socre of label)
-                prediction_label_score = (labels[highest_confidence].item(),scores[highest_confidence].item())
+                prediction_label_score = (labels[highest_confidence_index].item(),scores[highest_confidence_index].item())
                 new_image = F.crop(image_to_crop,y_min,x_min,height,width)
                 return_tuple = (prediction_box,prediction_label_score,new_image, l)
                 #return tuples using yield so the state of the loop can be saved and iterated to find multiple boxes.
@@ -487,7 +486,7 @@ def predict_with_caddy_model(image, model_path:str) -> Tuple:
             assert(type(labels) is torch.Tensor)    
             assert(type(scores) is torch.Tensor)
         
-        confidence_score_threshold = 0.50
+        confidence_score_threshold = 0
         
         highest_confidence_1 = 0
         highest_confidence_1_index = 0
@@ -534,12 +533,12 @@ def predict_with_caddy_model(image, model_path:str) -> Tuple:
 if __name__ == "__main__":
 
     #create and train model for packet
-    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/packetmodel.pt",type="packet")
+    # create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/packetmodel.pt",type="packet")
     #train model for desk caddy
-    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/caddymodel.pt",type="caddy")
+    # create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/caddymodel.pt",type="caddy")
     #train model for desk
-    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/deskmodel.pt",type="desk")
+    # create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/deskmodel2.pt",type="desk")
     #test trained model with sample image. will iterate through generator function outputting tuples of boxes
-    image_generator = predict_with_id_model(image="src/mbrimberry_files/Submissions/03 14 2024/Activity  478411 - 03 14 2024/Desk Images/desk_1.png",type="desk",model_path="models/deskmodel.pt")
-    for i in image_generator:
-        print(i)
+    # image_generator = predict_with_id_model(image="src/mbrimberry_files/Submissions/03 14 2024/Activity  478411 - 03 14 2024/Desk Images/desk_1.png",model_path="./models/deskmodel2.pt",type="desk")
+    # image_generator = predict_with_id_model(image="./src/mbrimberry_files/Submissions/03 13 2024/Activity  474756 - 03 13 2024/Activity Packet/activity_1.png", model_path="./models/id_periodNum_model.pt", type="packet")
+    pass

@@ -7,14 +7,16 @@
 import torch
 import threading
 from image_blur_detection import detect_image_blur_helper as detect_blur
+from id_periodNum_nn import predict_with_caddy_model, predict_with_id_model
 import os
+from PIL import Image
 
 predict_flag = False
 t1 = None
 
 # Loads model, will be called at startup, edit model_path variable to ensure correct model loaded
 def load_model(model_path: str):    
-    model = torch.load(model_path,weights_only=False)
+    model = torch.load(model_path,weights_only=True)
     print("Model succesfully loaded")
     return model
 
@@ -62,11 +64,32 @@ def predict_model_helper(model, folder_path:str):
             for path,sub_path,files in os.walk(folder_path):
                 for file in files:
                     # check if file is supported and if it passed blur check
+                    if not predict_flag:
+                        break
                     if file.endswith((".png",".jpeg",".jpeg",".heic")):
                         image_path = os.path.join(path,file)
                         check_path = image_path.split('\\')
-                        check_path = check_path[-3] + "\\" + check_path[-2] + "\\" + check_path[-1]
+                        
+                        check_path = check_path[-3] + "/" + check_path[-2] + "/" + check_path[-1]
                         if check_path not in image_blur_results:
                             # use line below once model has been trained and function has been made 
-                            #predict_with_model(model,image_path)
-                            print(image_path)
+                            if "Activity Packet" in image_path:
+                                test = predict_with_id_model(image_path,"./models/id_periodNum_model.pt","packet")
+                                processed_path = check_path.replace('/','_')
+                                for i in test:
+                                    pred_box,score,image,label = i
+                                    if label == 0:
+                                        image.save(f"./src/result_images/id_num{processed_path}")
+                                    elif label == 1:
+                                        image.save(f"./src/result_images/period_num{processed_path}")
+                                pass
+                                
+                            elif "Desk Images" in image_path:
+                                test = predict_with_id_model(image_path,"./models/deskmodel.pt","desk")
+                                processed_path = check_path.replace('/','_')
+                                for i in test:
+                                    pred_box,score,image,label = i
+                                    if label == 0:
+                                        image.save(f"./src/result_images/calculator{processed_path}")
+                                    elif label == 1:
+                                        image.save(f"./src/result_images/desk_number{processed_path}")
