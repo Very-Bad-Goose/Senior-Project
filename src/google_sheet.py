@@ -18,6 +18,7 @@
 
 
 import gspread
+import re
 from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
 from gspread.exceptions import APIError
@@ -58,9 +59,13 @@ class google_sheet:
     """ 
     # Authenticates with the google sheet object using json credentials and api key
     def _authenticate(self):
-        SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+        SCOPES = [
+            'https://www.googleapis.com/auth/spreadsheets',
+            'https://www.googleapis.com/auth/drive.readonly'
+        ]
         credentials = service_account.Credentials.from_service_account_file(
             self.credentials_json, scopes=SCOPES)
+        self.drive_service = build('drive', 'v3', credentials=credentials)  # Add Drive service
         service = build('sheets', 'v4', credentials=credentials)
         return gspread.authorize(credentials)
     
@@ -183,4 +188,60 @@ class google_sheet:
                     self.wait_fifteen()
                 else:
                     raise
-                
+
+    # Google Drive Operations
+    @staticmethod
+    def extract_folder_id(drive_url):
+        match = re.search(r"drive\.google\.com\/drive\/folders\/([a-zA-Z0-9_-]+)", drive_url)
+        if match:
+            return match.group(1)
+        else:
+            raise ValueError("Invalid Google Drive folder URL")
+        
+    def list_drive_folder_contents(self, folder_url):
+        folder_id = self.extract_folder_id(folder_url)
+        try:
+            results = self.drive_service.files().list(
+                q=f"'{folder_id}' in parents",
+                fields="files(id, name)"
+            ).execute()
+            files = results.get('files', [])
+            return [{"name": file['name'], "id": file['id']} for file in files]
+        except HttpError as error:
+            print(f"Error accessing Drive folder: {error}")
+            return []
+    
+    # Searches the Root Directory (Parent) for a subfolder by name
+    # Based on the client's policies, the folder names should always be:
+    # "Desk Images" and "Activity Packet"
+    # Inside the "Desk Images" Folder there should be "desk_1.png"
+    def get_folder_id_by_name(self, parent_folder_id, folder_name):
+        """Get the ID of a subfolder by its name."""
+        try:
+            query = f"'{parent_folder_id}' in parents and mimeType='application/vnd.google-apps.folder' and name='{folder_name}'"
+            results = self.drive_service.files().list(
+                q=query,
+                fields="files(id, name)"
+            ).execute()
+            files = results.get('files', [])
+            if files:
+                return files[0]['id']  # Assuming folder names are unique
+            else:
+                raise ValueError(f"Folder '{folder_name}' not found.")
+        except HttpError as error:
+            print(f"Error fetching folder '{folder_name}': {error}")
+            return None
+
+    def list_png_files_in_folder(self, folder_id):
+        """List all PNG files in a given folder."""
+        try:
+            query = f"'{folder_id}' in parents and mimeType='image/png'"
+            results = self.drive_service.files().list(
+                q=query,
+                fields="files(id, name, webContentLink)"
+            ).execute()
+            files = results.get('files', [])
+            return [{"name": file['name'], "id": file['id'], "url": file.get('webContentLink')} for file in files]
+        except HttpError as error:
+            print(f"Error fetching PNG files: {error}")
+            return []
