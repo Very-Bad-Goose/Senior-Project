@@ -128,8 +128,8 @@ class MyFloatLayout(FloatLayout):
             except Exception as e:
                 self.error_file = f"Error saving Sheet ID: {e}"
     
-        def clear_message(self, *args):
-            self.error_file = ""  # Clears the success message
+    def clear_message(self, *args):
+        self.error_file = ""  # Clears the success message
 
     #====================================================================================       
     
