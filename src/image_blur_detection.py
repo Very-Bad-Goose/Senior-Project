@@ -18,27 +18,21 @@ file_made = 0
 
 def detect_image_blur(path: str, folder_path: str):
     
-    # read in image into cv2 format
+    print_path = os.path.relpath(path)
+
+    # Read the image and process as before
     image_file = cv2.imread(path)
-    
-    # convert to grayscale
-    image_file = cv2.cvtColor(image_file,cv2.COLOR_BGR2GRAY)
-    
-    # apply laplacian filter to detect blur
+    image_file = cv2.cvtColor(image_file, cv2.COLOR_BGR2GRAY)
     laplacian = cv2.Laplacian(image_file, cv2.CV_64F)
-    
-    # making laplacian the variance
     laplacian_var = laplacian.var()
     global file_made
-    print_path = path.split('\\')
-    print_path = print_path[-3] + "\\" + print_path[-2] + "\\" + print_path[-1]
     if laplacian_var < threshold:
         if file_made == 0:
             file_made = 1
-            with open(os.getcwd() + "\image_blur_results.txt", "w") as output_file:
+            with open(os.path.join(os.getcwd(), "image_blur_results.txt"), "w") as output_file:
                 output_file.write(f"{print_path}\n")
         else:
-            with open(os.getcwd() + "\image_blur_results.txt", "a") as output_file:
+            with open(os.path.join(os.getcwd(), "image_blur_results.txt"), "a") as output_file:
                 output_file.write(f"{print_path}\n")
 
 def detect_image_blur_helper(folder_path: str):
