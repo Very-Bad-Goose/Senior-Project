@@ -13,7 +13,7 @@ import torch.nn as nn
 import torchvision.transforms.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from data_loader import get_individual_data_loader, IndividualIMGDataset, collate_fn
+from data_loader import IndividualIMGDataset, collate_fn
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import Weights
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
@@ -532,7 +532,6 @@ def predict_with_caddy_model(image, model_path:str) -> Tuple:
     # id_image.show()
     
 if __name__ == "__main__":
-
     #create and train model for packet
     create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/packetmodel.pt",type="packet")
     #train model for desk caddy
