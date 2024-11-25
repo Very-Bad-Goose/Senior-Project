@@ -7,7 +7,7 @@
 import torch
 import threading
 from image_blur_detection import detect_image_blur_helper as detect_blur
-from id_periodNum_nn import predict_with_caddy_model, predict_with_id_model
+from id_periodNum_nn import predict_with_id_model
 import os
 from PIL import Image
 
@@ -16,7 +16,16 @@ t1 = None
 
 # Loads model, will be called at startup, edit model_path variable to ensure correct model loaded
 def load_model(model_path: str):    
-    model = torch.load(model_path,weights_only=True)
+    if torch.cuda.is_available():
+        torch.device('cuda')
+        model = torch.load(model_path,weights_only=True,map_location=torch.device('cuda'))
+    elif torch.backends.mps.is_available():
+        torch.device('mps')
+        model = torch.load(model_path,weights_only=True,map_location=torch.device('mps'))
+    else:
+        torch.device('cpu')
+        model = torch.load(model_path,weights_only=True,map_location=torch.device('cpu'))
+        
     print("Model succesfully loaded")
     return model
 

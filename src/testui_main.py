@@ -1,13 +1,10 @@
-# tests the functionality of the UI
-# I was unable to get the tests to run when line 79 from main.py was uncommented.
-# line 79 from main.py:     model = load_model("./model_test1.pt")
-
 import main
 from main import MyFloatLayout
 import unittest
 import os
 import model_api
 from unittest.mock import MagicMock
+import pytest
 
 class TestMain(unittest.TestCase):
     # Checks for the exitance of the TechTutor App
@@ -48,18 +45,18 @@ class TestMain(unittest.TestCase):
         gui = app.build()
         children = gui.children
         grandchildren = children[0].children
-
-        completion_label = grandchildren[1].text
-        changekey_label = grandchildren[3].text
-        stop_label = grandchildren[4].text
-        start_label = grandchildren[5].text
-        currentkey_label = grandchildren[6].text
-
+        completion_label = grandchildren[5].text
+        change_label = grandchildren[8].text
+        stop_label = grandchildren[7].text
+        start_label = grandchildren[9].text
+        save_sheet = grandchildren[1].text
+        
+        
+        self.assertEqual(save_sheet,"Save Sheet ID")
         self.assertEqual(completion_label, "0% Done")
-        self.assertEqual(changekey_label, "Change Key")
         self.assertEqual(stop_label, "Stop")
         self.assertEqual(start_label, "Start")
-        self.assertEqual(currentkey_label, "Current Grading Key")
+        self.assertEqual(change_label, "Change Account Credentials")
 
     def setUp(self):
         self.layout = MyFloatLayout()
@@ -76,13 +73,8 @@ class TestMain(unittest.TestCase):
         button.trigger_action()
         self.layout.stop_press.assert_called_once()
 
-    def test_key_button(self):
-        button = self.layout.ids['change_key_button']
-        self.layout.change_key_button = MagicMock()
-        button.trigger_action()
-        self.layout.change_key_button.assert_called_once()
-
 if __name__ == '__main__':
     unittest.main()
 
-
+def test_gui():
+    unittest.main()

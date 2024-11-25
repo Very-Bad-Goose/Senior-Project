@@ -126,8 +126,11 @@ def train_model(model:FasterRCNN, num_epochs: int):
     if num_epochs <= 0:
         raise ValueError("num_epochs must be greater than 0")
     
+    global train_loader
+    global test_loader
+    
     if train_loader is None:
-        raise TypeError("train_loader is None")
+       raise TypeError("train_loader is None")
     
     
     model.to(device)
@@ -289,8 +292,6 @@ def save_checkpoint(model:FasterRCNN, path:str):
     #if not os.path.exists(path):
     #    raise FileNotFoundError("path does not exist")
     
-    #if not os.path.exists(path):
-    #    raise FileNotFoundError("path does not exist")
     try:
         torch.save(model.state_dict(), path)
     except IOError:
@@ -310,7 +311,7 @@ def load_checkpoint(model:FasterRCNN,path:str):
         raise FileNotFoundError("path does not exist")
     
     
-    model.load_state_dict(torch.load(path))
+    model.load_state_dict(torch.load(path, weights_only=True))
 
 def create_and_train_model(num_epochs:int,num_objects_to_predict:int, model_path: str, type:str):
     "This function creates and trains a model based on the dataloaders already coded into the file. Will save to model_path, num_epochs must be int checkpoint_path is where checkpoints will be saved, else will be saved to ./models/checkpoints"
@@ -324,15 +325,9 @@ def create_and_train_model(num_epochs:int,num_objects_to_predict:int, model_path
     
     if not isinstance(model_path,(str)):
         raise TypeError("model_path must be type str")
-    # Shouldn't we be able to make a new model?
-    # if not os.path.exists(model_path):
-    #     raise FileNotFoundError("model_path does not exist")
     
-    # if not isinstance(checkpoint_path,(str)) and checkpoint_path is not None:
-    #     raise TypeError("checkpoint_path must be type str or None")
-    
-    # if checkpoint_path is not None and not os.path.exists(checkpoint_path):
-    #     raise FileNotFoundError("checkpoint_path does not exist")
+    if not os.path.exists(model_path):
+        raise FileNotFoundError("model_path does not exist")
     
     
     # Creating model
@@ -355,7 +350,6 @@ def predict_with_id_model(image, model_path:str, type:str):
     Returns:
         A tuple of(bounding_box_id,bounding_box_period_num,confidence_id_box,confidence_label_box,cropped id image, cropped periodNum Image).
     """
-    
     if not isinstance(image, (str,PIL.Image.Image)):
         raise TypeError("image must be type str or PIL.Image")
     
@@ -368,10 +362,13 @@ def predict_with_id_model(image, model_path:str, type:str):
     if not os.path.exists(model_path):
         raise FileNotFoundError("model_path does not exist")
     
+    if not isinstance(type,str):
+        raise TypeError("type must be a str of either pakcet,desk, or caddy")
+    
     #make sure type is in dictionary
     type = type.lower()
     if type not in num_classes:
-        raise KeyError(type + "does not exist in dictionary of known class types")
+        raise KeyError(type + " does not exist in dictionary of known class types")
     
     model = create_model(num_classes.get(type),type)
     model.load_state_dict(torch.load(model_path, weights_only=True))
@@ -440,23 +437,18 @@ def predict_with_id_model(image, model_path:str, type:str):
                 return_tuple = (prediction_box,prediction_label_score,new_image, l)
                 #return tuples using yield so the state of the loop can be saved and iterated to find multiple boxes.
                 yield return_tuple
-# id_box, period_num_box, label_score, id_score, id_image, period_num_image = predict_with_id_model("./src/mbrimberry_files/Submissions/03 13 2024/Activity  474756 - 03 13 2024/Activity Packet/activity_1.png", model_path="./models/id_periodNum_model.pt")
+                
 
-# id_box, period_num_box, label_score, id_score, id_image, period_num_image = predict_with_id_model(image_path="./src/test_files/obj_detect_test/test_image.png",model_path="./models/id_periodNum_model.pt")
-# if period_num_image:
-    # period_num_image.show()
-# if id_image:
-    # id_image.show()
+if __name__ == '__main__':
+    model_path = "./src/test_files/obj_detect_test/test.pt"
+    image_path = "./src/test_files/obj_detect_test/test_image.png"
+    bad_image_path = "./src/test_files/obj_detect_test/bad_image.png"
     
-if __name__ == "__main__":
-
-    #create and train model for packet
-    # create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/packetmodel.pt",type="packet")
-    #train model for desk caddy
-    # create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/caddymodel.pt",type="caddy")
-    #train model for desk
-    # create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/deskmodel2.pt",type="desk")
-    #test trained model with sample image. will iterate through generator function outputting tuples of boxes
-    # image_generator = predict_with_id_model(image="src/mbrimberry_files/Submissions/03 14 2024/Activity  478411 - 03 14 2024/Desk Images/desk_1.png",model_path="./models/deskmodel2.pt",type="desk")
-    # image_generator = predict_with_id_model(image="./src/mbrimberry_files/Submissions/03 13 2024/Activity  474756 - 03 13 2024/Activity Packet/activity_1.png", model_path="./models/id_periodNum_model.pt", type="packet")
-    pass
+    try:
+        # Provide a valid image path
+        gen = predict_with_id_model(image=None, model_path=model_path, type="packet")
+        next(gen)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    
+    print("done")

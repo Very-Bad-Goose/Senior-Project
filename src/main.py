@@ -20,7 +20,7 @@ from model_api import load_model,predict_model_test,stop_model,predict_model
 model:FasterRCNN
 
 # loading kv language file
-Builder.load_file('TechTutor.kv')
+Builder.load_file('./src/TechTutor.kv')
 
 # disbaling touch screen emulation on mouse
 Config.set("input","mouse","mouse,disable_multitouch")

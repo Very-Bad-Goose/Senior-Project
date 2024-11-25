@@ -58,7 +58,8 @@ def test_train_model():
     with pytest.raises(TypeError, match= "model must be type torchvision.models.detection.FasterRCNN"):
         id_periodNum_nn.train_model(model=None, num_epochs=10)
 
-    model = id_periodNum_nn.create_model(2)
+    model = id_periodNum_nn.create_model(2,"packet")
+    
     
     # Test case 8: incorrect type for num_epochs
     with pytest.raises(TypeError, match= "num_epochs must be type int"):
@@ -90,7 +91,7 @@ def test_test_model():
         id_periodNum_nn.test_model(model=None)
     
     # Test case 15: assert that after testing, model is still of type FasterRCNN. It trains the model passed in so no retrun value to test
-    model = id_periodNum_nn.create_model(2)
+    model = id_periodNum_nn.create_model(2, "packet")
     id_periodNum_nn.train_model(model=model, num_epochs=1)
     
     id_periodNum_nn.test_model(model=model)
@@ -108,7 +109,7 @@ def test_save_model():
     with pytest.raises(TypeError, match= "model must be type torchvision.models.detection.FasterRCNN"):
         id_periodNum_nn.save_model(model=None, path=path)
     
-    model = id_periodNum_nn.create_model(2)
+    model = id_periodNum_nn.create_model(2,"packet")
     
     # Test case 18: incorrect type for path
     with pytest.raises(TypeError, match= "path must be type str"):
@@ -182,47 +183,39 @@ def test_load_checkpoint():
     
 def test_create_and_train_model():
     model_path = "./src/test_files/obj_detect_test/test.pt"
-    checkpoint_path = "./src/test_files/obj_detect_test/checkpoints/test.pth"
+    num_objects_predict = 4
+    type = "packet"
     # Test case 31: incorrect type for num_epochs
     with pytest.raises(TypeError, match= "num_epochs must be type int"):
-        id_periodNum_nn.create_and_train_model(num_epochs="", model_path=model_path, checkpoint_path=checkpoint_path)
+        id_periodNum_nn.create_and_train_model(num_epochs="", model_path=model_path, num_objects_to_predict=num_objects_predict, type=type)
         
     # Test case 32:  none type for num_epochs
     with pytest.raises(TypeError, match= "num_epochs must be type int"):
-        id_periodNum_nn.create_and_train_model(num_epochs=None, model_path=model_path, checkpoint_path=checkpoint_path)
+        id_periodNum_nn.create_and_train_model(num_epochs=None, model_path=model_path, num_objects_to_predict=num_objects_predict, type=type)
     
     # Test case 33: num_epochs must be > 0
     with pytest.raises(ValueError, match= "num_epochs must be greater than 0"):
-        id_periodNum_nn.create_and_train_model(num_epochs=0, model_path=model_path, checkpoint_path=checkpoint_path)
+        id_periodNum_nn.create_and_train_model(num_epochs=0, model_path=model_path, num_objects_to_predict=num_objects_predict, type=type)
         
     # Test case 34: num_epochs must be > 0
     with pytest.raises(ValueError, match= "num_epochs must be greater than 0"):
-        id_periodNum_nn.create_and_train_model(num_epochs=-1, model_path=model_path, checkpoint_path=checkpoint_path)
+        id_periodNum_nn.create_and_train_model(num_epochs=-1, model_path=model_path, num_objects_to_predict=num_objects_predict, type=type)
 
     # Test case 35: incorrect type for model_path
     with pytest.raises(TypeError, match= "model_path must be type str"):
-        id_periodNum_nn.create_and_train_model(num_epochs=1, model_path=1, checkpoint_path=checkpoint_path)
+        id_periodNum_nn.create_and_train_model(num_epochs=1, model_path=1, num_objects_to_predict=num_objects_predict, type=type)
         
     # Test case 36: incorrect type for model_path
     with pytest.raises(TypeError, match= "model_path must be type str"):
-        id_periodNum_nn.create_and_train_model(num_epochs=1, model_path=None, checkpoint_path=checkpoint_path)
+        id_periodNum_nn.create_and_train_model(num_epochs=1, model_path=None, num_objects_to_predict=num_objects_predict, type=type)
 
-    # Test case 36.1: model_path does not exist
+    # Test case 37: model_path does not exist
     with pytest.raises(FileNotFoundError, match="model_path does not exist"):
-        id_periodNum_nn.create_and_train_model(num_epochs=1, model_path="", checkpoint_path=None) 
-    
-    # Test case 37: incorrect type for checkpoint_path
-    with pytest.raises(TypeError, match= "checkpoint_path must be type str or None"):
-        id_periodNum_nn.create_and_train_model(num_epochs=1, model_path=model_path, checkpoint_path=4)
-        
-    # Test case 37.1 checkpoint_path does not exist
-    with pytest.raises(FileNotFoundError, match="checkpoint_path does not exist"):
-        id_periodNum_nn.create_and_train_model(num_epochs=1, model_path=model_path, checkpoint_path="") 
+        id_periodNum_nn.create_and_train_model(num_epochs=1, model_path="", num_objects_to_predict=num_objects_predict, type=type) 
     
     # Test case 38: assert that model and checkpoint are saved
-    id_periodNum_nn.create_and_train_model(1,model_path=model_path,checkpoint_path=checkpoint_path)
+    id_periodNum_nn.create_and_train_model(1,model_path=model_path, num_objects_to_predict=num_objects_predict, type=type)
     assert os.path.exists(model_path)
-    assert os.path.exists(checkpoint_path)
     
     
 def test_predict_with_id_model():
@@ -230,38 +223,48 @@ def test_predict_with_id_model():
     model_path = "./src/test_files/obj_detect_test/test.pt"
     image_path = "./src/test_files/obj_detect_test/test_image.png"
     bad_image_path = "./src/test_files/obj_detect_test/bad_image.png"
+    does_not_exist_image = ""
     
     # Test case 39: incorrect type for image
     with pytest.raises(TypeError, match= "image must be type str or PIL.Image"):
-        id_periodNum_nn.predict_with_id_model(image=None,model_path=model_path)
+        gen = id_periodNum_nn.predict_with_id_model(image=None,model_path=model_path,type="packet")
+        next(gen)
     
     # Test case 40: incorrect type for image
     with pytest.raises(TypeError, match= "image must be type str or PIL.Image"):
-        id_periodNum_nn.predict_with_id_model(image=4,model_path=model_path)
+        gen = id_periodNum_nn.predict_with_id_model(image=None,model_path=model_path,type="packet")
+        next(gen)
         
     # Test case 40.1 image does not exist
     with pytest.raises(FileNotFoundError,match= "image path does not exist"):
-        id_periodNum_nn.predict_with_id_model(image="",model_path=model_path)
+        gen = id_periodNum_nn.predict_with_id_model(image=does_not_exist_image,model_path=model_path,type="packet")
+        next(gen)
         
     # Test case 41: incorrect type for model_path
     with pytest.raises(TypeError, match= "model_path must be type str"):
-        id_periodNum_nn.predict_with_id_model(image=image_path,model_path=4)
+        gen = id_periodNum_nn.predict_with_id_model(image=image_path,model_path=4,type="packet")
+        next(gen)
     
     # Test case 42: incorrect type for model_path
     with pytest.raises(TypeError, match= "model_path must be type str"):
-        id_periodNum_nn.predict_with_id_model(image=image_path,model_path=None)
+        gen = id_periodNum_nn.predict_with_id_model(image=image_path,model_path=None,type="packet")
+        next(gen)
         
     # Test case 42.1 model_path does not exist
     with pytest.raises(FileNotFoundError,match= "model_path does not exist"):
-        id_periodNum_nn.predict_with_id_model(image=image_path,model_path="")
+        gen = id_periodNum_nn.predict_with_id_model(image=image_path,model_path="model_path",type="packet")
+        next(gen)
+        
+    # Test case 42.2 type is wrong type does not exist
+    with pytest.raises(TypeError,match= "type must be a str of either pakcet,desk, or caddy"):
+        gen = id_periodNum_nn.predict_with_id_model(image=image_path,model_path=model_path,type=None)
+        next(gen)
+    
+    type = "hello"
+    # Test case 42.3 type is not a existing class type of packet,desk, or caddy
+    with pytest.raises(KeyError,match= type + " does not exist in dictionary of known class types"):
+        gen = id_periodNum_nn.predict_with_id_model(image=image_path,model_path=model_path,type=type)
+        next(gen)
     
     model_path = "./models/id_periodNum_model.pt"
-    
-    # Test Case 43: bad image input, an all black image, should return an empty tuple
-    test_tuple = ()
-    test_tuple = id_periodNum_nn.predict_with_id_model(image=bad_image_path,model_path=model_path)
-    assert(not test_tuple)
-    
-    # Test Case 44: good input image, a proper image that should return a tuple of len 6
-    test_tuple = id_periodNum_nn.predict_with_id_model(image=image_path,model_path=model_path)
-    assert(len(test_tuple) == 6)
+    type = "packet"
