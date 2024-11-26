@@ -91,7 +91,7 @@
         TextInput:
             id: sheet_id_input
             size_hint: (0.25, 0.05)
-            pos_hint: {'center_x': 0.3, 'top': 0.08}  # Moved slightly up
+            pos_hint: {'center_x': 0.35, 'top': 0.95}  # Moved slightly up
             hint_text: "Enter Sheet ID"
             multiline: False
             font_size: 18
@@ -101,10 +101,12 @@
             id: save_sheet_button
             text: "Save Sheet ID"
             size_hint: (0.25, 0.05)
-            pos_hint: {'center_x': 0.7, 'top': 0.08}  # Moved slightly up
+            pos_hint: {'center_x': 0.65, 'top': 0.95}  # Moved slightly up
+            background_normal: 'ui_images/gray4.png'
+            background_down: 'ui_images/gray2.png'
             on_press: root.save_sheet_id()
 
-        #adding image to side
+        #adding logo
         Image:
             id: grade_key_image
             source: './src/ui_images/logo.png'
