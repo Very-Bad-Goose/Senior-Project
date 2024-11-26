@@ -67,26 +67,26 @@ image, followed by the cell/column where the AI can output what it "saw". Make s
 3. Make sure to add the test.txt and train.txt files to your test and train folder. These text files keep track of which folders are for testing and for training so we can have consistency.
 
 
-# Kivy download instructions for UI
+# Kivy Download Instructions for UI
 In order to install kivy into your virtual environment for python use pip install and run
 
 ```python -m pip install "kivy[base]"```
 
 More Information at: https://kivy.org/doc/stable/gettingstarted/installation.html#install-pip
 
-# Lightning installation instructions
+# Lightning Installation Instructions
 open a terminal an enter the following command
 
 ```python -m pip install lightning```
 
-additional information on the library can be found at: https://github.com/Lightning-AI/pytorch-lightning
+Additional information on the library can be found at: https://github.com/Lightning-AI/pytorch-lightning
 
-# img2pdf installation instructions
+# IMG2PDF Installation Instructions
 open a terminal an enter the following command
 
 ```python -m pip install img2pdf```
 
-additional information on the library can be found at: https://pypi.org/project/img2pdf/
+Additional information on the library can be found at: https://pypi.org/project/img2pdf/
 
 
 ## Jira Timeline
@@ -129,7 +129,7 @@ Link to Jira Backlog: https://bad-goose.atlassian.net/jira/software/projects/PRO
 
 # Contributors
 
-- Joaquim Pedroza: Email address: joaquimpedroza@csus.edu Phone number: (530) 957-4456 
+- Joaquim Pedroza: Email address: joaquimpedroza@csus.edu Phone number: 530-957-4456 
 - Jacob Sherer: Email address: jacobsherer@csus.edu Phone number: 916-622-8684 
 - Ryan Naveira: Email address: rnaveira@csus.edu Phone number: 559-970-4024 
 - Chisom Iwunze: Email address: chisomiwunze@csus.edu Phone number: 9258486248
