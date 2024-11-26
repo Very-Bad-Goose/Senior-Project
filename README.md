@@ -129,14 +129,14 @@ Link to Jira Backlog: https://bad-goose.atlassian.net/jira/software/projects/PRO
 
 # Contributors
 
-- Joaquim Pedroza
-- Jacob Sherer
-- Ryan Naveira
-- Chisom Iwunze
-- Collin Dunkle
-- Angelo Karam
-- Joshua Grindstaff
-- Austin Nolte
+- Joaquim Pedroza: Email address: joaquimpedroza@csus.edu Phone number: (530) 957-4456 
+- Jacob Sherer: Email address: jacobsherer@csus.edu Phone number: 916-622-8684 
+- Ryan Naveira: Email address: rnaveira@csus.edu Phone number: 559-970-4024 
+- Chisom Iwunze: Email address: chisomiwunze@csus.edu Phone number: 9258486248
+- Collin Dunkle: Email address: cdunkle@csus.edu Phone number: 916-865-8355 
+- Angelo Karam: Email address: akaram@csus.edu Phone number: 916-809-4903 
+- Joshua Grindstaff: Email address: joshuagrindstaff@csus.edu Phone number: 916-647-7548 
+- Austin Nolte: Email address: arnolte@csus.edu Phone number: 209-352-7436 
 
 
 For more information or assistance, please contact the Byte Brigade team.
