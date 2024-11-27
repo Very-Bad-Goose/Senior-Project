@@ -129,7 +129,7 @@ class MyFloatLayout(FloatLayout):
                 self.error_file = f"Error saving Sheet ID: {e}"
     
     def clear_message(self, *args):
-        self.error_file = ""  # Clears the success message
+        self.error_file = ""  # Clears the message
 
     #====================================================================================       
     
