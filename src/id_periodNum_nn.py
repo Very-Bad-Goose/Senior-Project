@@ -13,7 +13,7 @@ import torch.nn as nn
 import torchvision.transforms.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from data_loader import get_individual_data_loader, IndividualIMGDataset, collate_fn
+from data_loader import IndividualIMGDataset, collate_fn
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import Weights
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
@@ -363,7 +363,7 @@ def predict_with_id_model(image, model_path:str, type:str):
         raise FileNotFoundError("model_path does not exist")
     
     if not isinstance(type,str):
-        raise TypeError("type must be a str of either pakcet,desk, or caddy")
+        raise TypeError("type must be a str of either packet,desk, or caddy")
     
     #make sure type is in dictionary
     type = type.lower()
@@ -437,18 +437,15 @@ def predict_with_id_model(image, model_path:str, type:str):
                 return_tuple = (prediction_box,prediction_label_score,new_image, l)
                 #return tuples using yield so the state of the loop can be saved and iterated to find multiple boxes.
                 yield return_tuple
-                
 
-if __name__ == '__main__':
-    model_path = "./src/test_files/obj_detect_test/test.pt"
-    image_path = "./src/test_files/obj_detect_test/test_image.png"
-    bad_image_path = "./src/test_files/obj_detect_test/bad_image.png"
-    
-    try:
-        # Provide a valid image path
-        gen = predict_with_id_model(image=None, model_path=model_path, type="packet")
-        next(gen)
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    
-    print("done")
+if __name__ == "__main__":
+    #create and train model for packet
+    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/packetmodel.pt",type="packet")
+    #train model for desk caddy
+    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/caddymodel.pt",type="caddy")
+    #train model for desk
+    create_and_train_model(num_epochs=100,num_objects_to_predict=2,model_path="./models/deskmodel.pt",type="desk")
+    #test trained model with sample image. will iterate through generator function outputting tuples of boxes
+    image_generator = predict_with_id_model(image="src/mbrimberry_files/Submissions/03 14 2024/Activity  478411 - 03 14 2024/Desk Images/desk_1.png",type="desk",model_path="models/deskmodel.pt")
+    for i in image_generator:
+        print(i)

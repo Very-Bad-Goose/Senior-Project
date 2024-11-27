@@ -10,7 +10,7 @@ test_loader = get_data_loader('test.json', batch_size=32)
 
 import torch
 from torch.utils.data import Dataset, DataLoader
-import torchvision.transforms.v2 as transforms
+import torchvision.transforms.v2
 import json
 import pathlib
 from pathlib import Path
@@ -21,7 +21,9 @@ from PIL import Image
 from torchvision.ops import box_convert
 from torchvision.utils import draw_bounding_boxes
 import torchvision.transforms.functional as F
+import inspect
 
+"""#this function isn't actually being used
 class JSONDataset(Dataset):
     def __init__(self, json_file, transform=None):
         with open(json_file, 'r') as file:
@@ -46,18 +48,49 @@ class JSONDataset(Dataset):
         if self.transform:
             sample = self.transform(sample)
 
-        return sample
+        return sample"""
 
 class IndividualIMGDataset(Dataset):
     # Initializes the dataset
     def __init__(self,targ_dir: str,transform=None,type = "desk"):
+
+        #raise exception if targ_dir does not exists
+        if not isinstance(targ_dir,str) or targ_dir =="":
+            raise TypeError("targ_dir must be a string")
+        
+        #raise exception if transforms contains wrong data type, break otherwise
+        while(True):
+            if isinstance(transform,torchvision.transforms.v2.Compose):
+                break
+            if transform != None:
+                if not inspect.isclass(transform): #does not work for transforms compose for some reason
+                    raise TypeError("'transform' must be of type torchvision.transforms.V2 or a list of torchvision.transforms.V2")
+                if not issubclass(transform,torchvision.transforms.v2) and not isinstance(transform,list):
+                    raise TypeError("'transform' must be of type torchvision.transforms.V2 or a list of torchvision.transforms.V2")
+                elif isinstance(transform,list):
+                    for i in transform:
+                        if not issubclass(i,torchvision.transforms.v2):
+                            raise TypeError("'transform' must be of type torchvision.transforms.V2 or a list of torchvision.transforms.V2")
+                    break
+                else: # is some type of class, but not a subclass of transform, not a list of transform sublasses, not an empty transform, and not a transform compose object
+                    raise TypeError("'transform' must be of type torchvision.transforms.V2 or a list of torchvision.transforms.V2")
+            else:
+                break
+            
+
+                
         # This grabs all of the paths to the desk_1 images and puts them into a sorted list
         if type == "desk":
             img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_1.png")))
-        if type == "caddy":
+        elif type == "caddy":
             img_paths = list(sorted(Path(targ_dir).glob("*/*/Desk Images/desk_2.png")))  
-        if type == "packet":
+        elif type == "packet":
             img_paths = list(sorted(Path(targ_dir).glob("*/*/Activity Packet/activity*.png")))
+        else:
+            raise ValueError("'type' must be a string of either 'desk' for desk images or 'assignments' for assignments")
+        #raise exception if no file paths are added to list
+        if len(img_paths) == 0:
+            raise FileNotFoundError
         #  
         # This searches for the associated txt file for the image file
         self.paths = []
@@ -104,13 +137,16 @@ class IndividualIMGDataset(Dataset):
         return img, target
 
 # This parses the txt file and gets the bounding box and their classes
-def bounding_box_txt_parse(txt_file, num_of_classes) -> Tuple[int,torch.tensor]:
+def bounding_box_txt_parse(txt_file:str, num_of_classes: int) -> Tuple[int,torch.tensor]:
     "Parses the txt file get the bounding boxes"
     coords = []
     filled_class_idx = []
     class_idx = list(range(num_of_classes))
     if txt_file:
-        file = open(txt_file)
+        try:
+            file = open(txt_file)
+        except:
+            raise FileNotFoundError
         for line in file:
             box_data = line.split()
             if box_data:
@@ -118,7 +154,6 @@ def bounding_box_txt_parse(txt_file, num_of_classes) -> Tuple[int,torch.tensor]:
             else:
                 print("Bounding Box text file has no additional bounding boxes")
                 continue
-        
             if idx in class_idx:
                 filled_class_idx.append(idx)
                 class_idx.remove(idx)
@@ -129,59 +164,71 @@ def bounding_box_txt_parse(txt_file, num_of_classes) -> Tuple[int,torch.tensor]:
 
             coord = [float(word) for word in box_data]
             coords.append(coord)
+        if len(coords) < num_of_classes:
+            raise ValueError("num_of_classes too large")
         bbox = torch.tensor(coords, dtype=torch.float32)
-    else:
+    else: #return class_idx and empty tensor if file is not passed to function
         return class_idx, torch.zeros(size=(num_of_classes,4), dtype=torch.float32)
     # Fills tensor with zeros for remaining classes
     for num in class_idx:
         filled_class_idx.append(num)
         no_bbox = torch.zeros(size=(1,4), dtype=torch.float32)
         bbox = torch.cat((bbox, no_bbox), dim=0)
-                
-        
+    
     return filled_class_idx, bbox
-
-        
     
-    
-def find_classes(targ_dir: str, pattern: str) -> Tuple[List[str], Dict[int, str]]:
-    "Find Classes from classes.txt files and returns a list of classes and the dictionary including the indexes to those classes"
-    #Handle specification of file
-    x = re.findall("classes.txt$", pattern)
-    if x:
-        print(pattern)
-    else:
-        pattern = pattern + "\classes.txt"
-        print(pattern)
-        
-    #Return classes and idx those classses
-    for file in pathlib.Path(targ_dir).rglob(pattern):
-        txt = open(file)
-        classes = [str.strip(line) for line in txt]
-        class_to_idx = {class_name: i for i, class_name in enumerate(classes)}
-        return classes, class_to_idx
-    else:
-        print("Class File Not Found.")  
-        return
+# def find_classes(targ_dir: str, pattern: str) -> Tuple[List[str], Dict[int, str]]:
+#     "Find Classes from classes.txt files and returns a list of classes and the dictionary including the indexes to those classes"
+#     #Handle specification of file
+#     #raise a value error if findall doesn't work with the provided pattern
+#     try:
+#         x = re.findall("classes.txt$", pattern)
+#     except:
+#         raise ValueError
+#     if not x:
+#         pattern = pattern + "\classes.txt"
+#         
+#     #Return classes and idx those classses
+#     for file in pathlib.Path(targ_dir).rglob(pattern):
+#         try:
+#             txt = open(file)
+#             classes = [str.strip(line) for line in txt]
+#             class_to_idx = {class_name: i for i, class_name in enumerate(classes)}
+#             return classes, class_to_idx
+#         except:
+#             raise FileNotFoundError
+#     else:
+#         raise FileNotFoundError
 
 def hardcoded_classes(type: str):
+    #convert string to lowercase to make it not case-sensitive
+    type = type.lower()
     if type == "packet":
         return ['ID', 'Period'],{'ID' : 0,'Period' : 1}
     elif type == "desk":
         return ['Calculator', 'Desk number'],{'Calculator': 0, 'Desk number': 1}
     elif type == "caddy":
         return ['Caddy number'],{'Caddy number': 0}
-    print("Invalid Type")
-    return [],{}
+    else:
+        raise ValueError
 
 # Returns image with bounding boxes drawn on   
-def DrawBox(img,box,classes):
+def DrawBox(img:torch.Tensor,box:torch.Tensor,classes: torch.Tensor):
+    if not isinstance(img,torch.Tensor):
+        raise TypeError("img must be of type torch.Tensor")
+    if not isinstance(box,torch.Tensor):
+        raise TypeError("box must be of type torch.Tensor")
+    if not isinstance(classes,torch.Tensor):
+        raise TypeError("classes must be of type torch.Tensor")
     bbox = box_convert(box,'cxcywh','xyxy')
-    for i in range(bbox.shape[0]):
-        bbox[i][0] = bbox[i][0] * img.shape[2]
-        bbox[i][1] = bbox[i][1] * img.shape[1]
-        bbox[i][2] = bbox[i][2] * img.shape[2]
-        bbox[i][3] = bbox[i][3] * img.shape[1]
+    try:
+        for i in range(bbox.shape[0]):
+            bbox[i][0] = bbox[i][0] * img.shape[2]
+            bbox[i][1] = bbox[i][1] * img.shape[1]
+            bbox[i][2] = bbox[i][2] * img.shape[2]
+            bbox[i][3] = bbox[i][3] * img.shape[1]
+    except:
+        raise ValueError
     colors = []
     class_to_colors = {
             0 : "blue",
@@ -199,38 +246,51 @@ def CropBox(img,box):
     bbox = box_convert(box,'cxcywh','xywh')
     cropped_image = F.crop(img,int(bbox[1] * img.shape[1]),int(bbox[0] * img.shape[2]),int(bbox[3] * img.shape[1]),int(bbox[2] * img.shape[2]))
     return cropped_image
-def collate_fn(batch):
+def collate_fn(batch: list[torch.Tensor,torch.Tensor,dict[int,str]]):
     images = []
     bboxes = []
     labels = []
-    for item in batch:
-        images.append(item[0])
-        bboxes.append(item[1]["boxes"])
-        labels.append(torch.tensor(item[1]["labels"]))
-    images = torch.stack(images,dim=0)
-    bboxes = torch.stack(bboxes,dim=0)
-    labels = torch.stack(labels,dim=0)
-    targets = {"boxes" : bboxes,
-               "labels" : labels}
-    return images, targets
+    try: #raise value error if unable to fill out the data. may need further testing for edge cases
+        for item in batch:
+            images.append(item[0])
+            bboxes.append(item[1]["boxes"])
+            labels.append(torch.tensor(item[1]["labels"]))
+
+        images = torch.stack(images,dim=0)
+        bboxes = torch.stack(bboxes,dim=0)
+        labels = torch.stack(labels,dim=0)
+        targets = {"boxes" : bboxes,
+                "labels" : labels}
+        return images, targets
+    except:
+        raise ValueError("batch must be of type list[torch.Tensor,torch.Tensor,dict[int,str]]")
+    
 
 # Create the DataLoader
+"""these functions aren't actually being used so they are commented out until they are needed
 def get_packet_data_loader(json_file, batch_size=32, shuffle=True, num_workers=0):
     dataset = JSONDataset(json_file=json_file)
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
-
 def get_individual_data_loader(targ_dir, transform, batch_size=32, shuffle=False, num_workers=0, type = "desk"):
     dataset = IndividualIMGDataset(targ_dir = targ_dir, transform=transform, type = type)
     return DataLoader(dataset,
                       batch_size=batch_size, 
                       shuffle=shuffle, 
                       collate_fn=collate_fn, 
-                      num_workers=num_workers )
+                      num_workers=num_workers )"""
 
 # Test the DataLoader
 if __name__ == '__main__':
-    json_path = 'path\to\file.json'  # Replace with our json file path
-    dataloader = get_packet_data_loader(json_path, batch_size=4)
+    #json_path = 'path\to\file.json'  # Replace with our json file path
+    #example code showing how to use dataloader
+    transform = torchvision.transforms.v2.Compose(
+    [
+        torchvision.transforms.v2.ToImage(),
+        torchvision.transforms.v2.Grayscale(),
+        torchvision.transforms.v2.ToDtype(torch.float32, scale=True),
+        torchvision.transforms.v2.Resize(size=(1920,1080))
+    ])
+    dataloader = IndividualIMGDataset(targ_dir="./mbrimberry_files/Submissions",transform = transform, type = "desk")
 
     # Iterate through the DataLoader
     for i, batch in enumerate(dataloader):
