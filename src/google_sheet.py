@@ -22,6 +22,8 @@ import re
 from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
 from gspread.exceptions import APIError
+from googleapiclient.http import MediaIoBaseDownload
+import os
 from googleapiclient.discovery import build
 import time
 from datetime import datetime
@@ -245,3 +247,53 @@ class google_sheet:
         except HttpError as error:
             print(f"Error fetching PNG files: {error}")
             return []
+        
+        
+    def download_file(self, file_id, destination_folder):
+        """
+        Downloads a file from Google Drive to a specified local folder.
+
+        :param file_id: ID of the file to download.
+        :param destination_folder: Local folder to save the file.
+        :return: Path to the downloaded file.
+        """
+        try:
+            # Ensure destination folder exists
+            if not os.path.exists(destination_folder):
+                os.makedirs(destination_folder)
+
+            # Fetch file metadata to get the name
+            file_metadata = self.drive_service.files().get(fileId=file_id, fields="name").execute()
+            file_name = file_metadata.get("name")
+            file_path = os.path.join(destination_folder, file_name)
+
+            # Download the file
+            request = self.drive_service.files().get_media(fileId=file_id)
+            with open(file_path, "wb") as file:
+                downloader = MediaIoBaseDownload(file, request)
+                done = False
+                while not done:
+                    status, done = downloader.next_chunk()
+                    print(f"Download progress: {int(status.progress() * 100)}%")
+
+            print(f"File downloaded successfully: {file_path}")
+            return file_path
+        except HttpError as error:
+            print(f"Error downloading file: {error}")
+            return None
+        
+        
+    def delete_file(self, file_id):
+        """
+        Deletes a file from Google Drive.
+
+        :param file_id: ID of the file to delete.
+        :return: True if successful, False otherwise.
+        """
+        try:
+            self.drive_service.files().delete(fileId=file_id).execute()
+            print(f"File with ID {file_id} deleted successfully.")
+            return True
+        except HttpError as error:
+            print(f"Error deleting file: {error}")
+            return False

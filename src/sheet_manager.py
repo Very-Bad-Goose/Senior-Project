@@ -15,7 +15,7 @@ class SheetController:
         self.sheet_id = self.read_config(sheet_id_config_path)
         
         # Initialize the Google Sheet instance
-        self.sheet = google_sheet(self.credentials_json, self.sheet_id)
+        #self.sheet = google_sheet(self.credentials_json, self.sheet_id)
 
     @staticmethod
     def read_config(file_path):
@@ -65,3 +65,40 @@ class SheetController:
             print(f"Row {rows.index(row) + 1}: Column 4 value: '{col4_value}', "
                 f"Column 1 value: '{col1_value}', Comparison result: {result}")
             # Perform action based on comparison result (e.g., log, flag, or update the sheet)
+    
+    # MAIN LOOP        
+    def start_execution():
+        # Get the json path as string
+        with open('json_config.txt','r') as file:
+            jsonPath = file.read().strip()
+        # Get the Sheet string
+        with open('sheet_path.txt','r') as file:
+            sheet_id = file.read().strip()
+        
+        # Create a SheetController Object for the sheet
+        # Sheet Layout: 
+        # Column 1 - Date
+        # Column 2 - Student ID (Dropdowns)
+        # Column 3 - Class Period
+        # Column 4 - Assessment Score
+        # Column 5 - Citizenship Score
+        # Column 6 - Folder URL (Link)
+        # Column 7 - Family Name
+        # Column 8 - First Name
+        # Column 9 - Desk
+        # Column 10 - Comments
+        # Column 11 - Type
+        # Column 12 - Approved (Dropdown)
+        # Column 13 - Is Mailed? (Dropdown)
+        # Column 14 - AI (CheckBox)
+        mainSheet = google_sheet(jsonPath, sheet_id)
+        
+        studentID = mainSheet.get_col(2)
+        print(studentID)
+        
+        
+        
+            
+            
+    if __name__ == "__main__":
+        start_execution()
