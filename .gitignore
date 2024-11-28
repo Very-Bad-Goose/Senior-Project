@@ -35,7 +35,6 @@ debug.log
 
 /src/__pycache__
 /models/checkpoints
-models/id_periodNum_model.pt
 /src/result_images
 src/test_files/obj_detect_test/checkpoints/test.pth
 src/test_files/obj_detect_test/test.pt
