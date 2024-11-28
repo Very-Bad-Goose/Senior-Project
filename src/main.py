@@ -39,6 +39,7 @@ class MyFloatLayout(FloatLayout):
     progress_bar_value = NumericProperty(0)
     error_file = StringProperty("")
 
+    
         
     # method for when stop button is pressed
     def stop_press(self):
@@ -237,10 +238,10 @@ class MyFloatLayout(FloatLayout):
             googleSheet_object.delete_temp_folder(tempFolderPath)
             sheet_row_counter += 1
         
-        
-        
         global models
         model_predict(models,"./src/mbrimberry_files/")
+        
+
 
     #====================================================================================       
     
@@ -255,24 +256,22 @@ class TechTutorApp(App):
         return MyFloatLayout()
     
     global packet_model
-    #packet_model = load_model("./models/id_periodNum_model.pt", "packet")
+    packet_model = load_model("./models/id_periodNum_model.pt", "packet")
     
     global desk_model
-    #desk_model = load_model("./models/desk_model.pt", "desk")
+    desk_model = load_model("./models/desk_model.pt", "desk")
     
     global caddy_model
-    #caddy_model = load_model("./models/caddy_model.pt", "caddy")
+    caddy_model = load_model("./models/caddy_model.pt", "caddy")
     
     global models
     # must be in order of packet,desk,caddy model in tuple
-    #models = (packet_model,desk_model,caddy_model)
+    models = (packet_model,desk_model,caddy_model)
 
 if __name__ == '__main__':
     TechTutorApp().run()
     
 
-
-"""
 # helper functions to get the models
 def get_packet_model():
     if packet_model is not None:
@@ -285,4 +284,3 @@ def get_caddy_model():
 def get_desk_model():
     if desk_model is not None:
         return desk_model
-"""
