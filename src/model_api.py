@@ -6,44 +6,46 @@
 
 import torch
 import threading
-# from image_blur_detection import detect_image_blur_helper as detect_blur
 from image_blur_detection import detect_image_blur as detect_blur
-from id_periodNum_nn import predict_with_id_model
+from object_detection_model import predict_with_model, create_model
+from torchvision.models.detection import FasterRCNN
+from pathlib import Path
 import os
 from PIL import Image
 
+
+num_classes = {"desk": 2,"caddy": 1,"packet": 2}
 predict_flag = False
 t1 = None
 
 # Loads model, will be called at startup, edit model_path variable to ensure correct model loaded
-def load_model(model_path: str):    
+def load_model(model_path,model_type):    
+    
+    if not isinstance(model_path,(str,Path)):
+        raise TypeError("model_path must be type str or Path")
+    if not os.path.exists(model_path):
+        raise FileNotFoundError
+    
+    if not isinstance(model_type,str):
+        raise TypeError("model_type must be a str of either: 'packet', 'desk', or 'caddy'")
+    
+    model = create_model(num_classes.get(model_type),model_type)
+    
     if torch.cuda.is_available():
         torch.device('cuda')
-        model = torch.load(model_path,weights_only=True,map_location=torch.device('cuda'))
+        model.load_state_dict(torch.load(model_path,weights_only=False,map_location=torch.device('cuda')))
     elif torch.backends.mps.is_available():
         torch.device('mps')
-        model = torch.load(model_path,weights_only=True,map_location=torch.device('mps'))
+        model.load_state_dict(torch.load(model_path,weights_only=False,map_location=torch.device('mps')))
     else:
         torch.device('cpu')
-        model = torch.load(model_path,weights_only=True,map_location=torch.device('cpu'))
+        model.load_state_dict(torch.load(model_path,weights_only=False,map_location=torch.device('cpu')))
+        
+    # if not isinstance(model,FasterRCNN):
+        # raise TypeError("model_path must lead to a .pt file that is a model of type FasterRCNN")
         
     print("Model succesfully loaded")
     return model
-
-# use the model to make predictions, will image pre process first and not use those images, uses a thread to make predictions so it can be stopped by gui
-def predict_model_test(model):
-    global predict_flag
-    predict_flag = True
-    t1 = threading.Thread(target=predict_model_test_helper,args=(model,))
-    t1.start()
-
-# use the model to make predictions, will image pre process first and not use those images
-def predict_model_test_helper(model):
-    global predict_flag
-    while predict_flag:
-        # for testing purposes this will work with test model which does not use images, look at predict_model and predict_model_helper below for real functions
-        pass
-    
 # stop the model predicting 
 def stop_model():
     global predict_flag
@@ -54,13 +56,29 @@ def stop_model():
         t1.join()
         
 # this will become the real predict model, other one is just for testing purposes while real model is being made
-def predict_model(model, folder_path: str):
+def model_predict(models:tuple , folder_path):
+    if not isinstance(folder_path,(str,Path)):
+        raise TypeError("folder path must be type str or Path")
+    if not os.path.exists(folder_path):
+        raise FileNotFoundError
+    if not isinstance(models,tuple):
+        raise TypeError("models must be type tuple")
+    for model in models:
+        if not isinstance(model,FasterRCNN):
+            raise TypeError("model must be of type FasteRCNN")
+
+    
     global predict_flag
     predict_flag = True
-    t1 = threading.Thread(target=predict_model_helper,args=(model,folder_path,))
+    t1 = threading.Thread(target=model_predict_helper,args=(models,folder_path,))
     t1.start()
 
-def predict_model_helper(model, folder_path:str):
+def model_predict_helper(models:tuple, folder_path):
+    
+    # must be in order of packet,desk,caddy model in tuple
+    packet_model,desk_model,caddy_model = models
+    
+    
     global predict_flag
     # only need to run image blur check once, therefore outside of loop
     # if(predict_flag):
@@ -76,15 +94,18 @@ def predict_model_helper(model, folder_path:str):
                 # check if file is supported and if it passed blur check
                 if not predict_flag:
                     break
-                if file.endswith((".png",".jpeg",".jpeg",".heic")):
+                if file.endswith((".png",".jpeg",".jpg",".heic")):
                     image_path = os.path.join(path,file)
                     check_path = image_path.split('\\')
-                    blur_check = detect_blur(image_path)    
+                    try:
+                        blur_check = detect_blur(image_path)
+                    except Exception as e:
+                        print(f"Error: {e}")    
                     check_path = check_path[-3] + "/" + check_path[-2] + "/" + check_path[-1]
                     if not blur_check:
                         # use line below once model has been trained and function has been made 
                         if "Activity Packet" in image_path:
-                            test = predict_with_id_model(image_path,"./models/id_periodNum_model.pt","packet")
+                            test = predict_with_model(image=image_path,model=packet_model,type="packet")
                             processed_path = check_path.replace('/','_')
                             for i in test:
                                 pred_box,score,image,label = i
@@ -92,14 +113,22 @@ def predict_model_helper(model, folder_path:str):
                                     image.save(f"./src/result_images/id_num{processed_path}")
                                 elif label == 1:
                                     image.save(f"./src/result_images/period_num{processed_path}")
-                            pass
                             
                         elif "Desk Images" in image_path:
-                            test = predict_with_id_model(image_path,"./models/deskmodel.pt","desk")
-                            processed_path = check_path.replace('/','_')
-                            for i in test:
-                                pred_box,score,image,label = i
-                                if label == 0:
-                                    image.save(f"./src/result_images/calculator{processed_path}")
-                                elif label == 1:
-                                    image.save(f"./src/result_images/desk_number{processed_path}")
+                            if "desk_1" in image_path:
+                                test = predict_with_model(image=image_path,model=desk_model,type="desk")
+                                processed_path = check_path.replace('/','_')
+                                for i in test:
+                                    pred_box,score,image,label = i
+                                    if label == 0:
+                                        image.save(f"./src/result_images/calculator{processed_path}")
+                                    elif label == 1:
+                                        image.save(f"./src/result_images/desk_number{processed_path}")
+                            elif "desk_2" in image_path:
+                                print("here in desk_2")
+                                test = predict_with_model(image=image_path,model=caddy_model,type="caddy")
+                                
+                                processed_path = check_path.replace('/','_')
+                                for i in test:
+                                    pred_box,score,image,label = i
+                                    image.save(f"./src/result_images/caddy{processed_path}")

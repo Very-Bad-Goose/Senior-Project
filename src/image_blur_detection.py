@@ -7,7 +7,7 @@ Detection for how blurry an image is using laplacian filter
 
 import os
 import cv2
-from pathlib import Path as PathLib
+import pathlib
 
 # threshold for laplacian variance, adjustable here
 threshold = 50 
@@ -60,7 +60,13 @@ def detect_image_blur_helper(folder_path: str):
                     detect_image_blur(image_path, path)
 """
 
-def detect_image_blur(image_path: str):
+def detect_image_blur(image_path):
+    # Failure cases
+    
+    if not isinstance(image_path,(str,pathlib.Path)):
+        raise TypeError("image path must be type str or pathlib.Path")
+    
+    
     image_file = cv2.imread(image_path)
     image_file = cv2.cvtColor(image_file, cv2.COLOR_BGR2GRAY)
     laplacian = cv2.Laplacian(image_file, cv2.CV_64F)

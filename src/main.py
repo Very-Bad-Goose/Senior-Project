@@ -14,10 +14,15 @@ from tkinter import filedialog
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection import FasterRCNN
 from kivy.clock import Clock
-from model_api import load_model,predict_model_test,stop_model,predict_model
+from model_api import load_model,stop_model,model_predict
 
-# ai model object
-model:FasterRCNN
+# ai model objects
+desk_model:FasterRCNN
+packet_model:FasterRCNN
+caddy_model:FasterRCNN
+
+# tuple of ai models
+models:tuple
 
 # loading kv language file
 Builder.load_file('./src/TechTutor.kv')
@@ -39,8 +44,8 @@ class MyFloatLayout(FloatLayout):
             self.ids.progress_bar_background.set_value = 0
         self.progress_bar_value = self.ids.progress_bar_background.set_value
         
-        global model
-        predict_model(model,"./src/mbrimberry_files/")
+        global models
+        model_predict(models,"./src/mbrimberry_files/")
         
     # method for when stop button is pressed
     def stop_press(self):
@@ -142,8 +147,35 @@ class TechTutorApp(App):
         # setting window background to white
         Window.clearcolor = (49/255,51/255,56/255,1)
         return MyFloatLayout()
-    global model 
-    model = load_model("./models/id_periodNum_model.pt")
     
+    global packet_model
+    packet_model = load_model("./models/id_periodNum_model.pt", "packet")
+    
+    global desk_model
+    desk_model = load_model("./models/desk_model.pt", "desk")
+    
+    global caddy_model
+    caddy_model = load_model("./models/caddy_model.pt", "caddy")
+    
+    global models
+    # must be in order of packet,desk,caddy model in tuple
+    models = (packet_model,desk_model,caddy_model)
+
 if __name__ == '__main__':
     TechTutorApp().run()
+    
+
+
+
+# helper functions to get the models
+def get_packet_model():
+    if packet_model is not None:
+        return packet_model
+    
+def get_caddy_model():
+    if caddy_model is not None:
+        return caddy_model
+    
+def get_desk_model():
+    if desk_model is not None:
+        return desk_model
