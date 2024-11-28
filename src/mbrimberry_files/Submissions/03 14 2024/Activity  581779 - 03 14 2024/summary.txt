@@ -1,3 +1,0 @@
-Academic Score: 1
-Citizenship Score: 4
-Comments: Remember that the last sentence of your answer should be x = {#} instead of x = #.  You must write the braces.

@@ -1,3 +1,0 @@
-Academic Score: 4
-Citizenship Score: 5
-Comments: Please be sure to write the ∴ symbol in the last sentence of your answer.  You must write ∴ x = {A} instead of just x = {A}.

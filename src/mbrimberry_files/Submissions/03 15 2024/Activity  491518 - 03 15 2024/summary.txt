@@ -1,6 +1,0 @@
-Academic Score: 3
-Citizenship Score: 5
-Comments: After you have |x| = #, remember that you still need to write the three sentences of your final answer: 
-     x = { -# , # }
-     x ε R | x > 0
-∴ x = {#}

@@ -1,3 +1,0 @@
-Academic Score: 3
-Citizenship Score: 5
-Comments: In your answers, you wrote |x| = {-A,A}.  This is not correct.  There should not be an absolute value symbol in this sentence.  The sentence should be x = {-A,A}.

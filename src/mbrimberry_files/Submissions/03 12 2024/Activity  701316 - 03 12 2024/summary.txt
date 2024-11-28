@@ -1,3 +1,0 @@
-Academic Score: 4
-Citizenship Score: 5
-Comments: Be sure to show when you squareroot both sides. In your second sentence, you must write x > 0 instead of # > 0.  Also, in your third sentence, you must write the symbol ∴ carefully; there must be two dots on the bottom, and the third dot must be at the top in the middle.

@@ -1,3 +1,0 @@
-Academic Score: 3
-Citizenship Score: 4
-Comments: When you write your final answer, you must write x = {-#,#} instead of just {-#,#}.

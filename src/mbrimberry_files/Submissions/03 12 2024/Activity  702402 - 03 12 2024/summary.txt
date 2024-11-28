@@ -1,3 +1,0 @@
-Academic Score: 4
-Citizenship Score: 2
-Comments: When you write your second sentence, there is no = symbol.  For example, you must write x ε R | x > 0 instead of x = ε R | x > 0.  Also, please be sure there are four pencils in your desk caddy

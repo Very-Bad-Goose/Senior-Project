@@ -1,3 +1,0 @@
-Academic Score: 4
-Citizenship Score: 4
-Comments: When you write your answers, you must write the following: |x| = A, then x = {-A,A}, then x ε R | x > 0, then x = {A}.

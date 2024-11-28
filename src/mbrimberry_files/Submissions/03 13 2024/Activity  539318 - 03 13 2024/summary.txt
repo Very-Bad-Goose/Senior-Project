@@ -1,3 +1,0 @@
-Academic Score: 3
-Citizenship Score: 5
-Comments: Good job.  For the second sentence in your answer, do not write the = symbol.  It is just x ε R | x > 0.
