@@ -166,6 +166,7 @@ class MyFloatLayout(FloatLayout):
         row_total = googleSheet_object.get_row_count()      # Get the total amount of populated rows
         
         # Quick CheatSheet for us:
+        #----------------------------------------------
         # Column 2 = Student ID
         colStudentID = 2
         # Column 4 = Assessment Score
@@ -178,8 +179,10 @@ class MyFloatLayout(FloatLayout):
         colDeskNum = 9
         # Column 14 = AI checkbox
         colAICheck = 14
+        #----------------------------------------------
         
         # Begin Loop
+        tempFolderPath = "C:\\NewTemp"
         while(sheet_row_counter < 4):
             studentID = googleSheet_object.get_cell(sheet_row_counter, colStudentID)
             
@@ -191,7 +194,7 @@ class MyFloatLayout(FloatLayout):
                 try:
                     folderID = googleSheet_object.extract_folder_id(folderURL)
                     print(folderID)
-                    googleSheet_object.download_folder_as_normal_folder(folderID, "C:\\NewTemp")
+                    googleSheet_object.download_folder_as_normal_folder(folderID, tempFolderPath)
                 except Exception as e:
                     print(f"bad {e}")
             
@@ -203,6 +206,9 @@ class MyFloatLayout(FloatLayout):
             print(deskNumber)
             
             
+            # The google sheet object deletes files from your pc, because obviously that's the correct component
+            # to be deleting things (T-T)
+            googleSheet_object.delete_temp_folder(tempFolderPath)
             sheet_row_counter += 1
         
         
