@@ -1,3 +1,0 @@
-Academic Score: 4
-Citizenship Score: 0
-Comments: Make sure the three sentences in your answer are in the correct order. 1) x = {-#,#} 2) x ε R | x > 0  3) ∴ x = {#}

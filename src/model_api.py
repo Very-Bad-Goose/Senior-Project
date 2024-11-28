@@ -31,19 +31,16 @@ def load_model(model_path,model_type):
     
     model = create_model(num_classes.get(model_type),model_type)
     
+    # checking device
     if torch.cuda.is_available():
-        torch.device('cuda')
-        model.load_state_dict(torch.load(model_path,weights_only=False,map_location=torch.device('cuda')))
+        device = torch.device('cuda:0')
     elif torch.backends.mps.is_available():
-        torch.device('mps')
-        model.load_state_dict(torch.load(model_path,weights_only=False,map_location=torch.device('mps')))
+        device = torch.device('mps')
     else:
-        torch.device('cpu')
-        model.load_state_dict(torch.load(model_path,weights_only=False,map_location=torch.device('cpu')))
-        
-    # if not isinstance(model,FasterRCNN):
-        # raise TypeError("model_path must lead to a .pt file that is a model of type FasterRCNN")
-        
+        device = torch.device('cpu')
+    model.load_state_dict(torch.load(model_path,weights_only=False,map_location=device))
+    model.to(device)
+    
     print("Model succesfully loaded")
     return model
 # stop the model predicting 
@@ -57,15 +54,18 @@ def stop_model():
         
 # this will become the real predict model, other one is just for testing purposes while real model is being made
 def model_predict(models:tuple , folder_path):
+    
     if not isinstance(folder_path,(str,Path)):
         raise TypeError("folder path must be type str or Path")
     if not os.path.exists(folder_path):
         raise FileNotFoundError
     if not isinstance(models,tuple):
         raise TypeError("models must be type tuple")
+    if len(models) != 3:
+        raise ValueError("models must be of len 3 ")
     for model in models:
         if not isinstance(model,FasterRCNN):
-            raise TypeError("model must be of type FasteRCNN")
+            raise TypeError("model must be of type FasterRCNN")
 
     
     global predict_flag

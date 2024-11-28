@@ -1,3 +1,0 @@
-Academic Score: 3
-Citizenship Score: 0
-Comments: After you solve |x| = A, be sure to use braces.  You must x = {-A,A} instead of x = -A,A.  Your red desk numbers are not visible in your pictures.  Also, if there are any loose papers in your desk caddy, please throw them away.

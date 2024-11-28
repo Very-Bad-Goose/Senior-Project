@@ -132,6 +132,14 @@ def train_model(model:FasterRCNN, num_epochs: int):
     if train_loader is None:
        raise TypeError("train_loader is None")
     
+    # checking for device
+    if torch.cuda.is_available():
+        device = torch.device('cuda:0')
+    elif torch.backends.mps.is_available():
+        device = torch.device('mps')
+    else:
+        device = torch.device('cpu')
+    
     
     model.to(device)
     # parameters for early stopping
@@ -239,6 +247,17 @@ def test_model(model: FasterRCNN):
     if not isinstance(model, FasterRCNN):
         raise TypeError("model must be type torchvision.models.detection.FasterRCNN")
     
+    
+    # checking for device
+    if torch.cuda.is_available():
+        device = torch.device('cuda:0')
+    elif torch.backends.mps.is_available():
+        device = torch.device('mps')
+    else:
+        device = torch.device('cpu')
+    
+    
+    model.to(device)
     model.eval()
     
     with torch.inference_mode():
@@ -314,7 +333,8 @@ def load_checkpoint(model:FasterRCNN,path:str):
     model.load_state_dict(torch.load(path, weights_only=True))
 
 def create_and_train_model(num_epochs:int,num_objects_to_predict:int, model_path: str, type:str):
-    "This function creates and trains a model based on the dataloaders already coded into the file. Will save to model_path, num_epochs must be int checkpoint_path is where checkpoints will be saved, else will be saved to ./models/checkpoints"
+    """This function creates and trains a model based on the dataloaders already coded into the file. 
+    Will save to model_path, num_epochs must be int checkpoint_path is where checkpoints will be saved, else will be saved to ./models/checkpoints"""
     
     # Failure Cases
     if not isinstance(num_epochs,(int)):
@@ -367,6 +387,14 @@ def predict_with_model(image, model:FasterRCNN, type:str):
     type = type.lower()
     if type not in num_classes:
         raise KeyError(type + " does not exist in dictionary of known class types")
+    
+    # checking for device
+    if torch.cuda.is_available():
+        device = torch.device('cuda:0')
+    elif torch.backends.mps.is_available():
+        device = torch.device('mps')
+    else:
+        device = torch.device('cpu')
     
     model.to(device)
     
@@ -436,12 +464,12 @@ def predict_with_model(image, model:FasterRCNN, type:str):
 
 if __name__ == "__main__":
     #create and train model for packet
-    # create_and_train_model(num_epochs=100,num_objects_to_predict=num_classes.get("packet"),model_path="./models/packetmodel.pt",type="packet")
+    create_and_train_model(num_epochs=100,num_objects_to_predict=num_classes.get("packet"),model_path="./models/packetmodel.pt",type="packet")
     #train model for desk caddy
     create_and_train_model(num_epochs=100,num_objects_to_predict=num_classes.get("caddy"),model_path="./models/caddy_model.pt",type="caddy")
     #train model for desk
-    # create_and_train_model(num_epochs=100,num_objects_to_predict=num_classes.get("desk"),model_path="./models/desk_model.pt",type="desk")
+    create_and_train_model(num_epochs=100,num_objects_to_predict=num_classes.get("desk"),model_path="./models/desk_model.pt",type="desk")
     #test trained model with sample image. will iterate through generator function outputting tuples of boxes
-    # image_generator = predict_with_model(image="src/mbrimberry_files/Submissions/03 14 2024/Activity  478411 - 03 14 2024/Desk Images/desk_1.png",type="desk",model_path="models/deskmodel.pt")
-    # for i in image_generator:
-        # print(i)
+    image_generator = predict_with_model(image="src/mbrimberry_files/Submissions/03 14 2024/Activity  478411 - 03 14 2024/Desk Images/desk_1.png",type="desk",model_path="models/deskmodel.pt")
+    for i in image_generator:
+        print(i)
