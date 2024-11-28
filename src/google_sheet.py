@@ -16,18 +16,18 @@
 # Need a function that if a requests max is reached then it starts a timer and waits, 
 # once the timer is complete it starts the process again
 
-
 import gspread
+import re
 from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
 from gspread.exceptions import APIError
+from googleapiclient.http import MediaIoBaseDownload
+import os
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIOBaseDownload
 import time
 from datetime import datetime
 from logger import SheetLogger
-
-
+import gspread
 
 class google_sheet:
     def __init__(self, credentials_json, sheet_id):

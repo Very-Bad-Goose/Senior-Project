@@ -38,7 +38,7 @@ class MyProgressBar(Widget):
 class MyFloatLayout(FloatLayout):
     progress_bar_value = NumericProperty(0)
     error_file = StringProperty("")
-   
+
         
     # method for when stop button is pressed
     def stop_press(self):
