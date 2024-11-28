@@ -184,6 +184,16 @@ class MyFloatLayout(FloatLayout):
             studentID = googleSheet_object.get_cell(sheet_row_counter, colStudentID)
             
             folderURL = googleSheet_object.get_link(sheet_row_counter, colFolderURL)
+
+            print("outside try")
+            if(folderURL != None):
+                print(f"getting folderID for {sheet_row_counter}")
+                try:
+                    folderID = googleSheet_object.extract_folder_id(folderURL)
+                    print(folderID)
+                    googleSheet_object.download_folder_as_normal_folder(folderID, "C:\\NewTemp")
+                except Exception as e:
+                    print(f"bad {e}")
             
             
             deskNumber = googleSheet_object.get_cell(sheet_row_counter, colDeskNum)
