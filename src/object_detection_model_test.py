@@ -256,7 +256,7 @@ def test_predict_with_id_model():
         next(gen)
         
     # Test case 42.2 type is wrong type does not exist
-    with pytest.raises(TypeError,match= "type must be a str of either pakcet,desk, or caddy"):
+    with pytest.raises(TypeError,match= "type must be a str of either packet,desk, or caddy"):
         gen = id_periodNum_nn.predict_with_id_model(image=image_path,model_path=model_path,type=None)
         next(gen)
     
@@ -268,3 +268,6 @@ def test_predict_with_id_model():
     
     model_path = "./models/id_periodNum_model.pt"
     type = "packet"
+    
+if __name__ == '__main__':
+    test_train_model()

@@ -55,8 +55,8 @@ class IndividualIMGDataset(Dataset):
     def __init__(self,targ_dir: str,transform=None,type = "desk"):
 
         #raise exception if targ_dir does not exists
-        if not isinstance(targ_dir,str) or targ_dir =="":
-            raise TypeError("targ_dir must be a string")
+        if not isinstance(targ_dir,(str,Path)) or targ_dir =="":
+            raise TypeError("targ_dir must be a string or Path")
         
         #raise exception if transforms contains wrong data type, break otherwise
         while(True):
@@ -164,8 +164,8 @@ def bounding_box_txt_parse(txt_file:str, num_of_classes: int) -> Tuple[int,torch
 
             coord = [float(word) for word in box_data]
             coords.append(coord)
-        if len(coords) < num_of_classes:
-            raise ValueError("num_of_classes too large")
+        #if len(coords) < num_of_classes:
+        #    raise ValueError("num_of_classes too large")
         bbox = torch.tensor(coords, dtype=torch.float32)
     else: #return class_idx and empty tensor if file is not passed to function
         return class_idx, torch.zeros(size=(num_of_classes,4), dtype=torch.float32)

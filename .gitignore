@@ -39,3 +39,5 @@ models/id_periodNum_model.pt
 /src/result_images
 src/test_files/obj_detect_test/checkpoints/test.pth
 src/test_files/obj_detect_test/test.pt
+src/__pycache__/main.cpython-311.pyc
+*.pyc

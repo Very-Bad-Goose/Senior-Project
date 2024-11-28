@@ -6,7 +6,8 @@
 
 import torch
 import threading
-from image_blur_detection import detect_image_blur_helper as detect_blur
+# from image_blur_detection import detect_image_blur_helper as detect_blur
+from image_blur_detection import detect_image_blur as detect_blur
 from id_periodNum_nn import predict_with_id_model
 import os
 from PIL import Image
@@ -62,43 +63,43 @@ def predict_model(model, folder_path: str):
 def predict_model_helper(model, folder_path:str):
     global predict_flag
     # only need to run image blur check once, therefore outside of loop
-    if(predict_flag):
-        print("detecting image blur")
-        detect_blur(folder_path)
-        print("done detecting image blur")
-        # get image blur results into a string to be able to check
-        with open("image_blur_results.txt","r") as image_blur_file:
-            image_blur_results = image_blur_file.read()
+    # if(predict_flag):
+    #     print("detecting image blur")
+    #     detect_blur(folder_path)
+    #     print("done detecting image blur")
+    #     # get image blur results into a string to be able to check
+    #     with open("image_blur_results.txt","r") as image_blur_file:
+    #         image_blur_results = image_blur_file.read()
     while predict_flag:
-            for path,sub_path,files in os.walk(folder_path):
-                for file in files:
-                    # check if file is supported and if it passed blur check
-                    if not predict_flag:
-                        break
-                    if file.endswith((".png",".jpeg",".jpeg",".heic")):
-                        image_path = os.path.join(path,file)
-                        check_path = image_path.split('\\')
-                        
-                        check_path = check_path[-3] + "/" + check_path[-2] + "/" + check_path[-1]
-                        if check_path not in image_blur_results:
-                            # use line below once model has been trained and function has been made 
-                            if "Activity Packet" in image_path:
-                                test = predict_with_id_model(image_path,"./models/id_periodNum_model.pt","packet")
-                                processed_path = check_path.replace('/','_')
-                                for i in test:
-                                    pred_box,score,image,label = i
-                                    if label == 0:
-                                        image.save(f"./src/result_images/id_num{processed_path}")
-                                    elif label == 1:
-                                        image.save(f"./src/result_images/period_num{processed_path}")
-                                pass
-                                
-                            elif "Desk Images" in image_path:
-                                test = predict_with_id_model(image_path,"./models/deskmodel.pt","desk")
-                                processed_path = check_path.replace('/','_')
-                                for i in test:
-                                    pred_box,score,image,label = i
-                                    if label == 0:
-                                        image.save(f"./src/result_images/calculator{processed_path}")
-                                    elif label == 1:
-                                        image.save(f"./src/result_images/desk_number{processed_path}")
+        for path,sub_path,files in os.walk(folder_path):
+            for file in files:
+                # check if file is supported and if it passed blur check
+                if not predict_flag:
+                    break
+                if file.endswith((".png",".jpeg",".jpeg",".heic")):
+                    image_path = os.path.join(path,file)
+                    check_path = image_path.split('\\')
+                    blur_check = detect_blur(image_path)    
+                    check_path = check_path[-3] + "/" + check_path[-2] + "/" + check_path[-1]
+                    if not blur_check:
+                        # use line below once model has been trained and function has been made 
+                        if "Activity Packet" in image_path:
+                            test = predict_with_id_model(image_path,"./models/id_periodNum_model.pt","packet")
+                            processed_path = check_path.replace('/','_')
+                            for i in test:
+                                pred_box,score,image,label = i
+                                if label == 0:
+                                    image.save(f"./src/result_images/id_num{processed_path}")
+                                elif label == 1:
+                                    image.save(f"./src/result_images/period_num{processed_path}")
+                            pass
+                            
+                        elif "Desk Images" in image_path:
+                            test = predict_with_id_model(image_path,"./models/deskmodel.pt","desk")
+                            processed_path = check_path.replace('/','_')
+                            for i in test:
+                                pred_box,score,image,label = i
+                                if label == 0:
+                                    image.save(f"./src/result_images/calculator{processed_path}")
+                                elif label == 1:
+                                    image.save(f"./src/result_images/desk_number{processed_path}")
