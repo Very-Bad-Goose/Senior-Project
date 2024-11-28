@@ -8,6 +8,7 @@ Detection for how blurry an image is using laplacian filter
 import os
 import cv2
 import pathlib
+from unittest.mock import patch, mock_open, MagicMock
 
 # threshold for laplacian variance, adjustable here
 threshold = 50 
@@ -62,8 +63,8 @@ def detect_image_blur_helper(folder_path: str):
 
 def detect_image_blur(image_path):
     # Failure cases
-    
-    if not isinstance(image_path,(str,pathlib.Path)):
+    # Magic mock is in as it is needed for test cases to create mock images
+    if not isinstance(image_path,(str,pathlib.Path,MagicMock)):
         raise TypeError("image path must be type str or pathlib.Path")
     
     

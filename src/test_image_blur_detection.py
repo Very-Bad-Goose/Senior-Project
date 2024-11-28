@@ -93,6 +93,6 @@ def test_detect_image_blur(mock_open_file, mock_laplacian, mock_cvtColor, mock_i
     with pytest.raises(TypeError, match= "image path must be type str or pathlib.Path"):
         detect_image_blur(image_path=4)
         
-        # Test case 4: image_path is None
+    # Test case 4: image_path is None
     with pytest.raises(TypeError, match= "image path must be type str or pathlib.Path"):
         detect_image_blur(image_path=None)    

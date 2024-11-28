@@ -1,7 +1,6 @@
-import unittest
+import pytest
 from kivy.tests.common import GraphicUnitTest
 from main import TechTutorApp
-import pytest
 
 class TestTechTutorApp(GraphicUnitTest):
     
@@ -28,7 +27,3 @@ class TestTechTutorApp(GraphicUnitTest):
     def tearDown(self):
         # Stop the app after tests
         self.app.stop()
-
-
-def test_main():
-    unittest.main()
