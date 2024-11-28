@@ -1,3 +1,0 @@
-Academic Score: 4
-Citizenship Score: 5
-Comments: Great job! In your second sentence, you must write ε instead of E. Also, in your third sentence, you must write the symbol ∴.  For example, you must write ∴ x = {A} instead of just x = {A}.  

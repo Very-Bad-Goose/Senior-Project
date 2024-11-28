@@ -1,9 +1,0 @@
-Academic Score: 4
-Citizenship Score: 0
-Comments: The following three sentences must be in your answer.  Be sure that they are written on top of each other.
-
-     x = {-A, A}  
-     x ε R | x > 0  
-∴ x = {A}
-
-The picture of your desk caddy is out of focus.

@@ -1,3 +1,0 @@
-Academic Score: 4
-Citizenship Score: 5
-Comments: Great job!  When writing the symbols, you must be very careful.  When writing the symbol | , it must be straight up and down instead of /.  Also, in your third sentence, you must write the symbol ∴.  For example, you must write ∴ x = {A} instead of just x = {A}.  

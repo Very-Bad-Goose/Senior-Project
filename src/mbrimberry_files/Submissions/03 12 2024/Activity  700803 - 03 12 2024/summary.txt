@@ -1,8 +1,0 @@
-Academic Score: 0
-Citizenship Score: 0
-Comments: Please be sure to submit every page of the activity packet. The three sentences in your answer must contain the following symbols:
-    x = {-A, A}
-    x ε R | x > 0
- ∴ x = {A}
-
-Also, the image of your desk caddy is out of focus.
