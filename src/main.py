@@ -15,6 +15,7 @@ from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection import FasterRCNN
 from kivy.clock import Clock
 from model_api import load_model,stop_model,model_predict
+from google_sheet import google_sheet
 
 # ai model objects
 desk_model:FasterRCNN
@@ -37,15 +38,7 @@ class MyProgressBar(Widget):
 class MyFloatLayout(FloatLayout):
     progress_bar_value = NumericProperty(0)
     error_file = StringProperty("")
-    # method for when start button is pressed
-    def start_press(self):
-        self.ids.progress_bar_background.set_value += 10
-        if(self.ids.progress_bar_background.set_value > 100):
-            self.ids.progress_bar_background.set_value = 0
-        self.progress_bar_value = self.ids.progress_bar_background.set_value
-        
-        global models
-        model_predict(models,"./src/mbrimberry_files/")
+   
         
     # method for when stop button is pressed
     def stop_press(self):
@@ -112,6 +105,8 @@ class MyFloatLayout(FloatLayout):
         except FileNotFoundError:
             print("Configuration file not found.")
             return None
+        
+    
 
     def save_sheet_id(self):
             sheet_id = self.ids.sheet_id_input.text
@@ -135,6 +130,75 @@ class MyFloatLayout(FloatLayout):
     
     def clear_message(self, *args):
         self.error_file = ""  # Clears the message
+        
+    
+    # method for when start button is pressed
+    def start_press(self):
+        self.ids.progress_bar_background.set_value += 10
+        if(self.ids.progress_bar_background.set_value > 100):
+            self.ids.progress_bar_background.set_value = 0
+        self.progress_bar_value = self.ids.progress_bar_background.set_value
+        
+        # Grab the json path
+        try:
+            with open("src/json_config.txt", 'r') as config_file:
+                file_path = config_file.read().strip()
+                print(f"Loaded file path from config: {file_path}")
+        except FileNotFoundError:
+            print("Configuration file not found.")
+                
+        # Grab the sheet path
+        try:
+            with open("./sheet_id.txt", 'r') as config_file:
+                sheet_path = config_file.read().strip()
+                print(f"Loaded Sheet ID: {file_path}")
+        except FileNotFoundError:
+            print("Sheet file not found.")
+        
+        
+        googleSheet_object = google_sheet(file_path, sheet_path)
+        
+        # MAIN LOOP HERE
+        # Start with second row:
+        
+        # Loop through the rows:
+        sheet_row_counter = 2                               # Start with row 2
+        row_total = googleSheet_object.get_row_count()      # Get the total amount of populated rows
+        
+        # Quick CheatSheet for us:
+        # Column 2 = Student ID
+        colStudentID = 2
+        # Column 4 = Assessment Score
+        colAssessmentScore = 4
+        # Column 5 = Citizenship Score
+        colCitizenshipScore = 5
+        # Column 6 = Folder URL
+        colFolderURL = 6
+        # Column 9 = Desk Number
+        colDeskNum = 9
+        # Column 14 = AI checkbox
+        colAICheck = 14
+        
+        # Begin Loop
+        while(sheet_row_counter < 4):
+            studentID = googleSheet_object.get_cell(sheet_row_counter, colStudentID)
+            
+            folderURL = googleSheet_object.get_link(sheet_row_counter, colFolderURL)
+            
+            
+            deskNumber = googleSheet_object.get_cell(sheet_row_counter, colDeskNum)
+            
+            print(studentID)
+            print(folderURL)
+            print(deskNumber)
+            
+            
+            sheet_row_counter += 1
+        
+        
+        
+        global models
+        model_predict(models,"./src/mbrimberry_files/")
 
     #====================================================================================       
     
@@ -149,24 +213,24 @@ class TechTutorApp(App):
         return MyFloatLayout()
     
     global packet_model
-    packet_model = load_model("./models/id_periodNum_model.pt", "packet")
+    #packet_model = load_model("./models/id_periodNum_model.pt", "packet")
     
     global desk_model
-    desk_model = load_model("./models/desk_model.pt", "desk")
+    #desk_model = load_model("./models/desk_model.pt", "desk")
     
     global caddy_model
-    caddy_model = load_model("./models/caddy_model.pt", "caddy")
+    #caddy_model = load_model("./models/caddy_model.pt", "caddy")
     
     global models
     # must be in order of packet,desk,caddy model in tuple
-    models = (packet_model,desk_model,caddy_model)
+    #models = (packet_model,desk_model,caddy_model)
 
 if __name__ == '__main__':
     TechTutorApp().run()
     
 
 
-
+"""
 # helper functions to get the models
 def get_packet_model():
     if packet_model is not None:
@@ -179,3 +243,4 @@ def get_caddy_model():
 def get_desk_model():
     if desk_model is not None:
         return desk_model
+"""
