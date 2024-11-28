@@ -36,16 +36,20 @@ class SheetController:
     def ExampleFunction1(self, cell_value):
             # Example placeholder function for criteria check
             # This function can be customized to perform various checks on the cell value
-            from id_periodNum_nn import predict_with_id_model
+            from object_detection_model import predict_with_model
+            from main import get_caddy_model,get_desk_model,get_packet_model
+            
             print("running")
             from handwriting_recognition import process_image_to_digits
             print("also running")
-            model_path = "./models/id_periodNum_model.pt"
-            print(model_path)
+            
+            # model_path = "./models/id_periodNum_model.pt"
+            # print(model_path)
+            
             # Change this to get the file path from the cell
             img = './src/mbrimberry_files/Submissions/03 12 2024/Activity  574644 - 03 12 2024/Activity Packet/activity_1.png'
             print(img)
-            bbox = predict_with_id_model(img,model_path)
+            bbox = predict_with_model(img,get_packet_model())
             id = process_image_to_digits(img,bbox[0])
             print(id)
             return cell_value.lower() == "example"  # Modify as needed
