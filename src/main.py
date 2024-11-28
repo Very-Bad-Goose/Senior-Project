@@ -184,11 +184,12 @@ class MyFloatLayout(FloatLayout):
         # Begin Loop
         tempFolderPath = "C:\\NewTemp"
         while(sheet_row_counter < 4):
+            # Get the information from the cells for the current row
             studentID = googleSheet_object.get_cell(sheet_row_counter, colStudentID)
-            
             folderURL = googleSheet_object.get_link(sheet_row_counter, colFolderURL)
+            
 
-            print("outside try")
+            # Make sure that the folder url is valid and exists
             if(folderURL != None):
                 print(f"getting folderID for {sheet_row_counter}")
                 try:
@@ -198,9 +199,34 @@ class MyFloatLayout(FloatLayout):
                 except Exception as e:
                     print(f"bad {e}")
             
+            # Pass path to the ModelAPIs
+            # Wait for return
             
+            # If return 0 for Model APIs for Activity, mark
+            # Activity score 0 and mark AI
+            packetModelOutput = "" # TODO
+            
+            # If the studentID doesn't match or is unreadable then mark a 0
+            if(studentID != packetModelOutput):
+                googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 0)
+                googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
+
+            # If return 0/null for Model APIs for Desk/Caddy, mark
+            # Citizenship Score 0 and mark AI if not already
+            
+            deskModelOutput = "" # TODO
+            caddyModelOutput = "" # TODO
+            
+            # Compare deskNumber to Desk Model output
             deskNumber = googleSheet_object.get_cell(sheet_row_counter, colDeskNum)
+            # If the desk number and caddy number don't match the spreadsheet number, then mark it as a 0
+            if(deskNumber != deskModelOutput or deskNumber != caddyModelOutput):
+                googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 0)
+                googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
             
+            
+            
+            # Debug statements
             print(studentID)
             print(folderURL)
             print(deskNumber)
