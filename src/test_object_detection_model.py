@@ -58,7 +58,7 @@ def test_train_model():
     with pytest.raises(TypeError, match= "model must be type torchvision.models.detection.FasterRCNN"):
         object_detection_model.train_model(model=None, num_epochs=10)
 
-    model = object_detection_model.create_model(2,"packet")
+    model = object_detection_model.create_model(2,"packet",trainning=True)
     
     
     # Test case 8: incorrect type for num_epochs
@@ -91,7 +91,7 @@ def test_test_model():
         object_detection_model.test_model(model=None)
     
     # Test case 15: assert that after testing, model is still of type FasterRCNN. It trains the model passed in so no retrun value to test
-    model = object_detection_model.create_model(2, "packet")
+    model = object_detection_model.create_model(2, "packet",trainning=True)
     object_detection_model.train_model(model=model, num_epochs=1)
     
     object_detection_model.test_model(model=model)
@@ -100,6 +100,9 @@ def test_test_model():
 def test_save_model():
     
     path = "./src/test_files/obj_detect_test/test.pt"
+    if not os.path.exists("./src/test_files/obj_detect_test/checkpoints"):
+        os.makedirs("./src/test_files/obj_detect_test/checkpoints")
+        
     
     # Test case 16: incorrect type for model
     with pytest.raises(TypeError, match= "model must be type torchvision.models.detection.FasterRCNN"):
@@ -266,4 +269,4 @@ def test_predict_with_model():
     type = "packet"
     
 if __name__ == '__main__':
-    test_train_model()
+    test_save_model()

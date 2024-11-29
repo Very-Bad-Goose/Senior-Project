@@ -85,7 +85,7 @@ def create_transforms():
         transforms.ToDtype(torch.float32, scale=True),
         transforms.Resize(size=(image_width,image_height))
     ])
-def create_model(num_objects_to_predict:int,type="None") -> FasterRCNN:
+def create_model(num_objects_to_predict:int,type="None",trainning = False) -> FasterRCNN:
     "Creates a model for num_objects_to_predict"
     
     # Failure cases
@@ -98,7 +98,8 @@ def create_model(num_objects_to_predict:int,type="None") -> FasterRCNN:
     
     if not isinstance(type,(str)):
         raise TypeError("type must be string")
-    if type != "None":
+    
+    if trainning:
         targ_dir = Path("src/mbrimberry_files/Submissions")
         create_dataloaders(targ_dir, type)
     else:
@@ -351,7 +352,7 @@ def create_and_train_model(num_epochs:int,num_objects_to_predict:int, model_path
     
     
     # Creating model
-    model = create_model(num_objects_to_predict=num_objects_to_predict,type=type)
+    model = create_model(num_objects_to_predict=num_objects_to_predict,type=type,trainning=True)
     # training
     train_model(model,num_epochs)
     # if checkpoint_path:
