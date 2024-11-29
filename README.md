@@ -125,6 +125,8 @@ For project management and tracking progress, refer to the following Jira timeli
 Link to Jira Backlog: https://bad-goose.atlassian.net/jira/software/projects/PROJECT01/boards/2/backlog
 # Testing
 
+In order to run one of the several PyTest test suites we have built for this project, please run ```pytest test_file_name``` in terminal for a specific test file. For example, to run src/test_image_blur_detection.py, type ```pytest test_image_blur_detection.py``` into terminal.
+
 # Deployment
 
 # Contributors

@@ -31,7 +31,8 @@ debug.log
 /src/mbrimberry_files/**/*.png
 /src/mbrimberry_files/**/*.jpg
 /src/mbrimberry_files/**/*.jpeg
-
+/src/mbrimberry_files/**/classes**.txt
+/src/mbrimberry_files/**/summary.txt
 
 /src/__pycache__
 /models/checkpoints
