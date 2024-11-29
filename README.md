@@ -11,6 +11,41 @@ TechTutor has a very simple UI. It consists of a button to start, stop, and chan
 ![TechTutor_Current_UI](https://github.com/Very-Bad-Goose/Senior-Project/assets/149719462/8c753d70-3487-4f2c-94a4-06c9c37d8716)
 
 
+# How to Download, Setup, and Run
+
+### Prerequisites
+
+#### Install Miniconda
+- Download Miniconda for your platform from [Miniconda Downloads](https://docs.conda.io/en/latest/miniconda.html).
+- Follow the installer instructions for your operating system.
+- Verify installation by running:
+  ```
+  conda --version
+  ```
+### Step 1: Clone the Repository
+- Open a terminal and navigate to your desired folder.
+  ```
+  git clone https://github.com/Very-Bad-Goose/Senior-Project.git
+  ```
+- Navigate into the project directory:
+  ```
+  cd Senior-Project
+  ```
+### Step 2: Run the Deployment Script
+- Execute the provided deployment script:
+  ```
+  run_app.bat
+  ```
+#### The script will:
+- Use the provided .yml file to create and configure the necessary Conda environment.
+- Install all dependencies required for the project.
+
+### Step 4: Run the Program
+- Inside the project directory, start the program by running:
+  ```
+  python main.py
+  ```
+
 # Developer Instructions
 
 For those interested in using TechTutor, follow these instructions: (Note we are using test2.ipynb now)
