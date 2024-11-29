@@ -16,9 +16,20 @@ TechTutor has a very simple UI. It consists of a button to start, stop, and chan
 ### Prerequisites
 
 #### Install Miniconda
+**Option 1: Manual Installation**
 - Download Miniconda for your platform from [Miniconda Downloads](https://docs.conda.io/en/latest/miniconda.html).
 - Follow the installer instructions for your operating system.
 - Verify installation by running:
+  ```
+  conda --version
+  ```
+**Option 2: Automated Installation**
+- After cloning the repository use the provided InstallMiniconda.bat script.
+- Navigate to the directory containing the script.
+  ```
+  InstallMiniconda.bat
+  ```
+- After the script completes, verify installation by running:
   ```
   conda --version
   ```
