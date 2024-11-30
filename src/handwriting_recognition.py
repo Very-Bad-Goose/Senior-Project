@@ -97,6 +97,7 @@ def predict_digits(digit_images):
         #plt.title(f"Predicted: {predicted_digit}, Confidence: {confidence:.2f}")
         #plt.axis("off")
         #plt.show()
+        #plt.savefig("digit.png")
     
     return predictions
 
@@ -105,16 +106,17 @@ def crop_img(img, box):
     # bbox = box_convert(box, 'cxcywh', 'xywh')
     bbox = box
 
-    width = int(bbox[2]) - int(bbox[0])
-    height = int(bbox[3]) - int(bbox[1])
+    #width = int(bbox[2]) - int(bbox[0])
+    #height = int(bbox[3]) - int(bbox[1])
     # width, height = img.size
     # left, top, crop_width, crop_height = (int(bbox[0][i] * (width if i % 2 == 0 else height)) for i in range(4))
-    cropped = F.crop(img, int(bbox[1]), int(bbox[0]), width, height)
+    cropped = F.crop(img, int(bbox[1]), int(bbox[0]), int(bbox[3]), int(bbox[2]))
 
     #debug display
     #plt.imshow(cropped)
     #plt.title("Cropped Image")
     #plt.show()
+    #plt.savefig("Cropped Image.png")
 
     return cropped
 
@@ -126,6 +128,7 @@ def preprocess_image(img):
     #plt.imshow(gray_img, cmap='gray')
     #plt.title("Grayscale Image")
     #plt.show()
+    #plt.savefig("Grayscale Image.png")
     
     return gray_img_np
 
@@ -155,6 +158,7 @@ def deskew_image(gray_img_np):
         #plt.imshow(deskewed_img, cmap='gray')
         #plt.title("Deskewed Image")
         #plt.show()
+        #plt.savefig("Deskewed Image.png")
         
         return deskewed_img
     else:
@@ -168,6 +172,7 @@ def convert_to_binary(deskewed_img):
     #plt.imshow(binary_img, cmap='gray')
     #plt.title("Binary Image")
     #plt.show()
+    #plt.savefig("Binary Image.png")
     
     return binary_img
 
@@ -181,6 +186,7 @@ def crop_to_bottom_half(binary_img):
     #plt.imshow(cropped_half, cmap='gray')
     #plt.title("cropped_half Image")
     #plt.show()
+    #plt.savefig("cropped_half Image.png")
 
     return cropped_half
 
@@ -211,3 +217,7 @@ def segment_digits(cropped_half):
     #Convert to PIL format
     digit_images = [Image.fromarray(digit) for digit in digit_images]
     return digit_images
+
+if __name__ == "__main__":
+    box = torch.tensor([208,86,143,59])
+    process_image_to_digits(r"C:\Users\Ryan\Desktop\senior project stuff\mbrimberry_files\Submissions\03 11 2024\Activity  474756 - 03 11 2024\Activity Packet\activity_1.png",box,box)
