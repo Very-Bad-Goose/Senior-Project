@@ -96,7 +96,6 @@ class google_sheet:
             result = self.retry_on_rate_limit(self.worksheet.cell(row, col).value)
             
         except Exception as e:
-            self.logger.log_failure(operation_name, str(e))
             print(f"Error writing to cell: {e}")
         return result
     
