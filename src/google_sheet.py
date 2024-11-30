@@ -27,7 +27,6 @@ from googleapiclient.discovery import build
 import time
 from datetime import datetime
 from logger import SheetLogger
-import gspread
 import zipfile
 import tempfile
 import shutil

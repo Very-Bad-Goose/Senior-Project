@@ -6,6 +6,7 @@ from kivy.lang import Builder
 from kivy.config import Config
 import time
 import os
+import glob
 import shutil
 from kivy.core.window import Window
 from kivy.properties import NumericProperty,StringProperty
@@ -424,146 +425,15 @@ class MyFloatLayout(FloatLayout):
             sheet_row_counter += 1
             self.ids.progress_bar_background.set_value = round(sheet_row_counter/row_total*100, 2)
             self.progress_bar_value = self.ids.progress_bar_background.set_value
+            files = glob.glob("./Temp/*/*")
+            for file in files:
+                os.remove(file)
         #progress bar doesn't like working properly so set it to 100% after completing everything
         self.ids.progress_bar_background.set_value = 100
         self.progress_bar_value = self.ids.progress_bar_background.set_value
         print("Main Loop Complete, awaiting further instructions...")
     
     
-    """# method for when start button is pressed
-    def start_press(self):
-        # Check to make sure that we have a number in the activity_packet_number field
-        
-        # Ensure `activity_page_number` has been set
-        if not hasattr(self, 'activity_page_number') or not self.activity_page_number:
-            self.error_file = "Please set the Activity Page Number before starting."
-            Clock.schedule_once(self.clear_message, 2)
-            return
-    
-        # Call `get_page_amount` with the saved `activity_page_number`
-        try:
-            if(self.activity_page_number == 0 or self.activity_page_number == None):
-                pass
-            #get_page_amount(self.activity_page_number)
-            print(f"Activity Page Number passed to get_page_amount: {self.activity_page_number}")
-        except Exception as e:
-            self.error_file = f"Error calling get_page_amount: {e}"
-            Clock.schedule_once(self.clear_message, 2)
-            
-            self.ids.progress_bar_background.set_value += 10
-            if(self.ids.progress_bar_background.set_value > 100):
-                self.ids.progress_bar_background.set_value = 0
-            self.progress_bar_value = self.ids.progress_bar_background.set_value
-            
-        # Grab the json path
-        try:
-            with open("src/json_config.txt", 'r') as config_file:
-                file_path = config_file.read().strip()
-                print(f"Loaded file path from config: {file_path}")
-        except FileNotFoundError:
-            print("Configuration file not found.")
-                
-        # Grab the sheet path
-        try:
-            with open("./sheet_id.txt", 'r') as config_file:
-                sheet_path = config_file.read().strip()
-                print(f"Loaded Sheet ID: {file_path}")
-        except FileNotFoundError:
-            print("Sheet file not found.")
-        
-        
-        googleSheet_object = google_sheet(file_path, sheet_path)
-        
-        # MAIN LOOP HERE
-        # Start with second row:
-        
-        # Loop through the rows:
-        sheet_row_counter = 3                               # Start with row 2
-        row_total = googleSheet_object.get_row_count()      # Get the total amount of populated rows
-        
-
-
-        studentID = []
-        counter = 2
-        while(True):
-            # Get the information from the cells for the current row
-            temp = googleSheet_object.get_cell(counter, colStudentID)
-            if(temp == None ):
-                print("breaking at counter: ", counter)
-                break
-            studentID.append(temp)
-            counter += 1
-        
-        # Begin Loop
-        tempFolderPath = "./Temp"
-        global models
-        while(sheet_row_counter < counter):
-            counter = 4
-            # Get the information from the cells for the current row
-            studentID = googleSheet_object.get_cell(sheet_row_counter, colStudentID)
-            folderURL = googleSheet_object.get_link(sheet_row_counter, colFolderURL)
-            
-            # Check the downloaded files to make sure the correct amount of images are in
-            # the activity packet, if not then give them a 0 and continue
-            
-
-            # Make sure that the folder url is valid and exists
-            if(folderURL != None):
-                print(f"getting folderID for {sheet_row_counter}")
-                try:
-                    folderID = googleSheet_object.extract_folder_id(folderURL)
-                    print(folderID)
-                    googleSheet_object.download_folder_as_normal_folder(folderID, tempFolderPath)
-                except Exception as e:
-                    print(f"bad {e}")
-            
-            # Pass path to the ModelAPIs
-            print("Making predictions with models")
-            results = []
-            t1 = model_predict(models,tempFolderPath,results)
-            # Wait for return
-            t1.join()
-            # Debug print statements
-            print(f"The results in main are: {results[0]}")
-            print(f"The results in main are: {results[1]}")
-            print(f"The results in main are: {results[2]}")
-            # If return 0 for Model APIs for Activity, mark
-            # Activity score 0 and mark AI
-            packetModelOutput = results[0] # TODO
-            
-            # If the studentID doesn't match or is unreadable then mark a 0
-            if(studentID != packetModelOutput):
-                googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 1)
-                googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
-
-            # If return 0/null for Model APIs for Desk/Caddy, mark
-            # Citizenship Score 0 and mark AI if not already
-            
-            deskModelOutput = results[1] # TODO
-            caddyModelOutput = results[2] # TODO
-            
-            # Compare deskNumber to Desk Model output
-            deskNumber = googleSheet_object.get_cell(sheet_row_counter, colDeskNum)
-            # If the desk number and caddy number don't match the spreadsheet number, then mark it as a 0
-            if( not isNumberinResults(deskModelOutput, deskNumber,2) or not isNumberinResults(caddyModelOutput, deskNumber,1)):
-                googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 1)
-                googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
-            
-            
-            
-            # Debug statements
-            print(studentID)
-            print(folderURL)
-            print(deskNumber)
-            
-            
-            # The google sheet object deletes files from your pc, because obviously that's the correct component
-            # to be deleting things (T-T)
-            #googleSheet_object.delete_temp_folder(tempFolderPath) #not today, google
-            sheet_row_counter += 1
-            self.ids.progress_bar_background.set_value = round(sheet_row_counter/counter*100, 2)
-            self.progress_bar_value = self.ids.progress_bar_background.set_value
-"""
     #====================================================================================       
     
 
