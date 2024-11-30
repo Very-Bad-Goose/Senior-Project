@@ -40,6 +40,11 @@ class TestMain(unittest.TestCase):
         self.assertEqual(os.path.isfile(img3), True)
         self.assertEqual(os.path.isfile(img4), True)
 
+    def test_assetsMissing(self):
+        cwd = os.getcwd()
+        missing_img = os.path.join(cwd, "src/ui_images", "missing_image.png")
+        self.assertFalse(os.path.isfile(missing_img), "Error: Missing asset test failed.")
+
     def test_buttonsExist(self):
         app = main.TechTutorApp()
         gui = app.build()
