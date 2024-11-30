@@ -11,7 +11,7 @@ from object_detection_model import predict_with_model, create_model
 from torchvision.models.detection import FasterRCNN
 from pathlib import Path
 import os
-from easyOCR_Number_Recognition import isNumberinResults, Desk_Number_Recognition
+from easyOCR_Number_Recognition import Desk_Number_Recognition
 from PIL import Image
 from handwriting_recognition import process_image_to_digits
 
@@ -109,7 +109,6 @@ def model_predict_helper(models:tuple, folder_path, results):
                     check_path = check_path[-3] + "/" + check_path[-2] + "/" + check_path[-1]
                         # use line below once model has been trained and function has been made 
                     if "Activity Packet" in image_path:
-                        print("I see a activity page")
                         if blur_check:
                             print(f"{image_path} is too blury")
                             packet_results.append(None)
@@ -130,14 +129,12 @@ def model_predict_helper(models:tuple, folder_path, results):
                         stu_box = None
                     elif "Desk Images" in image_path:
                         if "desk_1" in image_path:
-                            print("I see desk 1")
                             if blur_check:
                                 print(f"{image_path} is too blury")
                                 desk_results.append(None)
                             # preds = predict_with_model(image=image_path,model=desk_model,type="desk")
                             desk_results = Desk_Number_Recognition(image_path,confidence_threshhold=0.7, type = "desk")
                         elif "desk_2" in image_path:
-                            print("I see desk 2")
                             if blur_check:
                                 print(f"{image_path} is too blury")
                                 caddy_results.append(None)
