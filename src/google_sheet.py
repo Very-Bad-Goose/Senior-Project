@@ -96,7 +96,7 @@ class google_sheet:
             result = self.retry_on_rate_limit(self.worksheet.cell(row, col).value)
             
         except Exception as e:
-            print(f"Error writing to cell: {e}")
+            print(f"Error reading from cell: {e}")
         return result
     
     # Return a specified row
