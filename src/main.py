@@ -183,7 +183,7 @@ class MyFloatLayout(FloatLayout):
         #----------------------------------------------
         
         # Begin Loop
-        tempFolderPath = "C:\\NewTemp"
+        tempFolderPath = "./Temp"
         while(sheet_row_counter < 4):
             # Get the information from the cells for the current row
             studentID = googleSheet_object.get_cell(sheet_row_counter, colStudentID)
@@ -235,7 +235,7 @@ class MyFloatLayout(FloatLayout):
             
             # The google sheet object deletes files from your pc, because obviously that's the correct component
             # to be deleting things (T-T)
-            googleSheet_object.delete_temp_folder(tempFolderPath)
+            #googleSheet_object.delete_temp_folder(tempFolderPath) #not today, google
             sheet_row_counter += 1
         
         global models
