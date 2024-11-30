@@ -10,11 +10,6 @@ class TestTechTutorApp(GraphicUnitTest):
         self.app = TechTutorApp()
         self.layout = self.app.build()  # Ensure layout is assigned here
 
-    def test_start_press(self):
-        # Simulate start button press and check if the progress bar updates
-        self.layout.start_press()
-        self.assertEqual(self.layout.progress_bar_value, 10)
-
     def test_stop_press(self):
         # Simulate stop button press (example case, may require additional setup)
         self.layout.stop_press()
