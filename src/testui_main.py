@@ -50,18 +50,30 @@ class TestMain(unittest.TestCase):
         gui = app.build()
         children = gui.children
         grandchildren = children[0].children
-        completion_label = grandchildren[5].text
-        change_label = grandchildren[8].text
-        stop_label = grandchildren[7].text
-        start_label = grandchildren[9].text
-        save_sheet = grandchildren[1].text
-        
+        completion_label = grandchildren[7].text
+        change_label = grandchildren[10].text
+        stop_label = grandchildren[9].text
+        start_label = grandchildren[11].text
+        save_sheet = grandchildren[3].text
         
         self.assertEqual(save_sheet,"Save Sheet ID")
         self.assertEqual(completion_label, "0% Done")
         self.assertEqual(stop_label, "Stop")
         self.assertEqual(start_label, "Start")
         self.assertEqual(change_label, "Change Account Credentials")
+
+        #print(grandchildren[0].text) #Save Number
+        #print(grandchildren[1].text) #blank
+        #print(grandchildren[2].text) #image object
+        #print(grandchildren[3].text) #Save Sheet ID
+        #print(grandchildren[4].text) #blank
+        #print(grandchildren[5].text) #blank
+        #print(grandchildren[6].text) #blank
+        #print(grandchildren[7].text) #0% Done
+        #print(grandchildren[8].text) #MyProgressBar object
+        #print(grandchildren[9].text) #Stop
+        #print(grandchildren[10].text) #Change Account Credentials
+        #print(grandchildren[11].text) #Start
 
     def setUp(self):
         self.layout = MyFloatLayout()
