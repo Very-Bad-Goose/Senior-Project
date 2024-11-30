@@ -16,6 +16,7 @@ from torchvision.models.detection import FasterRCNN
 from kivy.clock import Clock
 from model_api import load_model,stop_model,model_predict
 from google_sheet import google_sheet
+from easyOCR_Number_Recognition import isNumberinResults
 
 # ai model objects
 desk_model:FasterRCNN
@@ -218,10 +219,13 @@ class MyFloatLayout(FloatLayout):
             t1 = model_predict(models,tempFolderPath,results)
             # Wait for return
             t1.join()
-            print(f"The results in main are: {results}")
+            # Debug print statements
+            # print(f"The results in main are: {results[0]}")
+            # print(f"The results in main are: {results[1]}")
+            # print(f"The results in main are: {results[2]}")
             # If return 0 for Model APIs for Activity, mark
             # Activity score 0 and mark AI
-            packetModelOutput = "" # TODO
+            packetModelOutput = results[0] # TODO
             
             # If the studentID doesn't match or is unreadable then mark a 0
             if(studentID != packetModelOutput):
@@ -231,13 +235,13 @@ class MyFloatLayout(FloatLayout):
             # If return 0/null for Model APIs for Desk/Caddy, mark
             # Citizenship Score 0 and mark AI if not already
             
-            deskModelOutput = "" # TODO
-            caddyModelOutput = "" # TODO
+            deskModelOutput = results[1] # TODO
+            caddyModelOutput = results[2] # TODO
             
             # Compare deskNumber to Desk Model output
             deskNumber = googleSheet_object.get_cell(sheet_row_counter, colDeskNum)
             # If the desk number and caddy number don't match the spreadsheet number, then mark it as a 0
-            if(deskNumber != deskModelOutput or deskNumber != caddyModelOutput):
+            if( not isNumberinResults(deskModelOutput, deskNumber,2) and not isNumberinResults(caddyModelOutput, deskNumber,1)):
                 googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 0)
                 googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
             
