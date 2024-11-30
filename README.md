@@ -6,7 +6,8 @@
 ## Summary
 TechTutor, developed by the Byte Brigade team, is a Python-based project leveraging PyTorch for machine learning tasks. The primary objective of TechTutor is to simplify the process of grading students' homework by employing machine learning algorithms to analyze images submitted by students. The graded assignments are then conveniently uploaded to Google Drive for teachers' review. The grading process is facilitated by the input of a grading key by the teacher, which the program utilizes to assess and score the homework assignments.
 
-![image](https://github.com/user-attachments/assets/f4d4b4a9-d9ee-42f2-bae6-46545310f0ed)
+![image](https://github.com/user-attachments/assets/4fbade32-7dc4-43e9-9bc9-babdcff9fdb7)
+
 
 
 
