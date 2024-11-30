@@ -59,19 +59,21 @@ def test_load_model():
     
 def test_model_predict():
     # Test case 1: models is wrong type
+    results = []
     models = [] # list not tuple
     folder_path = "./src"
     with pytest.raises(TypeError,match=("models must be type tuple")):
-        model_api.model_predict(models=models,folder_path=folder_path)
+        model_api.model_predict(models=models,folder_path=folder_path, results=results)
         
     # Test case 2: models is None
+    results = []
     models = None
     folder_path = "./src"
     with pytest.raises(TypeError,match=("models must be type tuple")):
-        model_api.model_predict(models=models,folder_path=folder_path)
+        model_api.model_predict(models=models,folder_path=folder_path, results=results)
         
     # Test case 3: folder_path is not type str or pathlib.Path
-    
+    results = []
     model1:FasterRCNN = model_api.load_model("./models/caddy_model.pt","caddy")
     model2:FasterRCNN = model_api.load_model("./models/desk_model.pt","desk")
     model3:FasterRCNN = model_api.load_model("./models/id_periodNum_model.pt","packet")
@@ -79,29 +81,33 @@ def test_model_predict():
     models = (model1,model2,model3)
     folder_path = 4
     with pytest.raises(TypeError,match=("folder path must be type str or Path")):
-        model_api.model_predict(models=models,folder_path=folder_path)
+        model_api.model_predict(models=models,folder_path=folder_path, results=results)
         
     # Test case 4: folder_path is None
+    results = []
     folder_path = None
     with pytest.raises(TypeError,match=("folder path must be type str or Path")):
-        model_api.model_predict(models=models,folder_path=folder_path)
+        model_api.model_predict(models=models,folder_path=folder_path, results=results)
         
     # Test case 5: models is not of len 3
+    results = []
     models = (model1,model2)
     folder_path = "./src"
     with pytest.raises(ValueError,match=("models must be of len 3")):
-        model_api.model_predict(models=models,folder_path=folder_path)
+        model_api.model_predict(models=models,folder_path=folder_path, results=results)
     
     # Test case 6: models does not have FastRCNN models in the tuple
+    results = []
     models = (1,2,4)
     folder_path = "./src"
     with pytest.raises(TypeError,match=("model must be of type FasterRCNN")):
-        model_api.model_predict(models=models,folder_path=folder_path)
+        model_api.model_predict(models=models,folder_path=folder_path, results=results)
     
     # Test case 7: folder_path does not exist
+    results = []
     models = (model1,model2,model3)
     folder_path = ""
     with pytest.raises(FileNotFoundError):
-        model_api.model_predict(models=models,folder_path=folder_path)
+        model_api.model_predict(models=models,folder_path=folder_path, results=results)
     
     

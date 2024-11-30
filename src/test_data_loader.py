@@ -87,7 +87,7 @@ def test_makeIndividualImgDataset():
         transforms.ToDtype(torch.float32, scale=True),
         transforms.Resize(size=(1920,1080))
     ])
-    makeIndividualImgDataset(targ_dir="./src/mbrimberry_files/Submissions",transform = transform, type = "desk")
+    makeIndividualImgDataset(targ_dir="./src/test_files",transform = transform, type = "desk")
     assert imgDS.transform == transform
 
 def test_bounding_box_txt_parse():
@@ -104,14 +104,14 @@ def test_bounding_box_txt_parse():
     # changed to no longer need this test case    
     # # Test case 3: num_of_classes is invalid type
     # with pytest.raises(TypeError, match="num_of_classes must be of type int"):
-    #     bounding_box_txt_parse(txt_file="./test_files/activity_1.txt",num_of_classes='should not work')
+    #     bounding_box_txt_parse(txt_file="./src/test_files/test_files/activity_1.txt",num_of_classes='should not work')
         
     # Test case 4: num_of_classes is too large of a number
     # with pytest.raises(ValueError, match="num_of_classes too large"):
-    #    bounding_box_txt_parse(txt_file="./src/test_files/find_classes_test_dir/Desk Images/desk_1.txt",num_of_classes=3)
+    #    bounding_box_txt_parse(txt_file="./src/test_files/test_folder/find_classes_test_dir/Desk Images/desk_1.txt",num_of_classes=3)
         
     # Test case 5: assert that return type is of Tuple(int,torch.tensor)
-    result = bounding_box_txt_parse(txt_file="./src/test_files/find_classes_test_dir/Desk Images/desk_1.txt",num_of_classes=2)
+    result = bounding_box_txt_parse(txt_file="./src/test_files/test_folder/find_classes_test_dir/Desk Images/desk_1.txt",num_of_classes=2)
     print(type(result[0]))
     assert isinstance(result[0],list)
     for item in result[0]:

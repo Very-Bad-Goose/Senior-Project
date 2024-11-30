@@ -420,6 +420,9 @@ class MyFloatLayout(FloatLayout):
             sheet_row_counter += 1
             self.ids.progress_bar_background.set_value = round(sheet_row_counter/row_total*100, 2)
             self.progress_bar_value = self.ids.progress_bar_background.set_value
+        #progress bar doesn't like working properly so set it to 100% after completing everything
+        self.ids.progress_bar_background.set_value = 100
+        self.progress_bar_value = self.ids.progress_bar_background.set_value
         print("Main Loop Complete, awaiting further instructions...")
     
     
