@@ -64,35 +64,51 @@ def temp_folder(tmp_path):
 #         detect_image_blur_helper("invalid/folder/path")
 # """
 
-@patch("cv2.imread", return_value=MagicMock())
 @patch("cv2.cvtColor", return_value=MagicMock())
 @patch("cv2.Laplacian")
-@patch("builtins.open", new_callable=mock_open)
-def test_detect_image_blur(mock_open_file, mock_laplacian, mock_cvtColor, mock_imread, mock_image):
-    
-    # Test Case 1: image below threshold must return true
+
+# Test Case 1: image below threshold must return true
+def test_detect_image_blur_with_blurry_image(mock_laplacian, mock_image):
     
     # Mock the Laplacian filter and its variance
     mock_laplacian.return_value = mock_image
     mock_image.var.return_value = 40  # Variance below threshold
-    
     blur_check = detect_image_blur(mock_image)
-    
     assert(blur_check is True)
     
-    # Test case 2: image above threshold must return to be false
+@patch("cv2.cvtColor", return_value=MagicMock())
+@patch("cv2.Laplacian")
+
+# Test Case 2: image above threshold must return false
+def test_detect_image_blur_not_blurry_image(mock_laplacian, mock_image):
+    
+    # Mock the Laplacian filter and its variance
     mock_laplacian.return_value = mock_image
     mock_image.var.return_value = 80  # Variance above threshold
-    
     blur_check = detect_image_blur(mock_image)
-    
-    assert(blur_check is False)
-    
-    
-    # Test case 3: wrong type for image_path
+    assert(blur_check is False)    
+
+# Test case 3: wrong type for image_path
+def test_detect_image_blur_input():
     with pytest.raises(TypeError, match= "image path must be type str or pathlib.Path"):
         detect_image_blur(image_path=4)
-        
-    # Test case 4: image_path is None
+
+# Test case 4: image_path is None
+def test_detect_image_blur_none_input():
     with pytest.raises(TypeError, match= "image path must be type str or pathlib.Path"):
-        detect_image_blur(image_path=None)    
+        detect_image_blur(image_path=None)
+        
+# Test case 5: image_path does not exist
+def test_detect_image_blur_bad_path():
+    with pytest.raises(FileNotFoundError):
+        detect_image_blur(image_path="")
+        
+# Test case 6: image_path does not lead to an image
+def test_detect_image_blur_not_image():
+    with pytest.raises(TypeError, match="image_path must be a path to an image"):
+        detect_image_blur(image_path="./src/main.py")
+
+# Test case 7: image_path does lead to an image, image is not blurry assert it returns False
+def test_detect_image_blur_good_image():
+    blur_check = detect_image_blur(image_path="./src/test_files/find_classes_test_dir/Desk Images/desk_1.png")
+    assert (blur_check is False)
