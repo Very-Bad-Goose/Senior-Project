@@ -194,6 +194,8 @@ class MyFloatLayout(FloatLayout):
         #----------------------------------------------
         # Column 2 = Student ID
         colStudentID = 2
+        # Column 3 = Period Num
+        colPeriodNum = 3
         # Column 4 = Assessment Score
         colAssessmentScore = 4
         # Column 5 = Citizenship Score
@@ -223,6 +225,7 @@ class MyFloatLayout(FloatLayout):
         while(sheet_row_counter < counter):
             # Get the information from the cells for the current row
             studentID = googleSheet_object.get_cell(sheet_row_counter, colStudentID)
+            PeriodNum = googleSheet_object.get_cell(sheet_row_counter, colPeriodNum)
             folderURL = googleSheet_object.get_link(sheet_row_counter, colFolderURL)
             
 
@@ -242,32 +245,71 @@ class MyFloatLayout(FloatLayout):
             t1 = model_predict(models,tempFolderPath,results)
             # Wait for return
             t1.join()
+            print("results: ", results)
+            if (len(results) < 3):
+                print("error, results not populated")
             # Debug print statements
-            # print(f"The results in main are: {results[0]}")
-            # print(f"The results in main are: {results[1]}")
-            # print(f"The results in main are: {results[2]}")
+            #print(f"The results in main are: {results[0]}")
+            #print(type(results[0]))
+            #print(type(results[0][0]))
+            #print(f"The results in main are: {results[1]}")
+            #print(results[1][0][1])
+            #print(results[1][1][1])
+            #print(f"The results in main are: {results[2]}")
+            #print(results[2][0][1])
+            
             # If return 0 for Model APIs for Activity, mark
             # Activity score 0 and mark AI
-            packetModelOutput = results[0] # TODO
-            
-            # If the studentID doesn't match or is unreadable then mark a 0
-            if(studentID != packetModelOutput):
-                googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 0)
-                googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
+            packetModelOutput = results[0] #initialize packet model output to list of all page outputs
+            try:
+                badpacket = False
+                # If the studentID or Period Number doesn't match or is unreadable then mark a 0
+                for predictions in packetModelOutput:
+                    if(studentID != predictions[0]):
+                        googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 0)
+                        googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
+                        badpacket = True
+                        break
+                    if(PeriodNum != predictions[1]):
+                        googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 0)
+                        googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
+                        badpacket = True
+                        break
+                #Otherwise, if the Student ID and Period Number is readable give the student a point
+                if (badpacket == False):
+                    googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 1)
+                    googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
+           
+                # If return 0/null for Model APIs for Desk/Caddy, mark
+                # Citizenship Score 0 and mark AI if not already
+                try:
+                    deskModelOutput = results[1][0][1]
+                    if ( deskModelOutput == results[1][1][1]):
+                        return
+                    else:
+                        deskModelOutput = 0
+                except Exception as e:
+                        deskModelOutput = 0
+                        print(f"Error finding desk numbers, assuming at least one doesn't exist.")
 
-            # If return 0/null for Model APIs for Desk/Caddy, mark
-            # Citizenship Score 0 and mark AI if not already
+                #try grabbing the caddy number from results.
+                try:
+                    caddyModelOutput = results[2][0][1]
+                except Exception as e:
+                    caddyModelOutput = 0
+                    print(f"Error finding caddy number, assuming it doesn't exist.")
             
-            deskModelOutput = results[1] # TODO
-            caddyModelOutput = results[2] # TODO
             
-            # Compare deskNumber to Desk Model output
-            deskNumber = googleSheet_object.get_cell(sheet_row_counter, colDeskNum)
-            # If the desk number and caddy number don't match the spreadsheet number, then mark it as a 0
-            if( not isNumberinResults(deskModelOutput, deskNumber,2) and not isNumberinResults(caddyModelOutput, deskNumber,1)):
-                googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 0)
+                # Compare deskNumber to Desk Model output
+                deskNumber = googleSheet_object.get_cell(sheet_row_counter, colDeskNum)
+                # If the desk number and caddy number don't match the spreadsheet number, then mark it as a 0
+                if( not isNumberinResults(deskModelOutput, deskNumber,2) and not isNumberinResults(caddyModelOutput, deskNumber,1)):
+                    googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 0)
+                    #googleSheet_object.update_cell(sheet_row_counter, colAICheck, True) #remove this in favor of saving reads/writes on the google sheets
+            except: #no data exists within results
+                googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 1)
+                googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 1)
                 googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
-            
             
             
             # Debug statements

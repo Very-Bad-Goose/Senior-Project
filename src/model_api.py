@@ -120,7 +120,7 @@ def model_predict_helper(models:tuple, folder_path, results):
                             elif label == 1:
                                 per_box = pred_box
                         if per_box is not None and stu_box is not None:
-                            print(f"{per_box.dtype} is period, {stu_box.dtype} is ID")
+                            #print(f"{per_box.dtype} is period, {stu_box.dtype} is ID")
                             packet_results.append(process_image_to_digits(image_path, stu_box, per_box))
                         else:
                             print(f"Model could not detect period num and/or student ID for {image_path}")
