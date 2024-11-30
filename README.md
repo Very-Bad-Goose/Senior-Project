@@ -6,14 +6,14 @@
 ## Summary
 TechTutor, developed by the Byte Brigade team, is a Python-based project leveraging PyTorch for machine learning tasks. The primary objective of TechTutor is to simplify the process of grading students' homework by employing machine learning algorithms to analyze images submitted by students. The graded assignments are then conveniently uploaded to Google Drive for teachers' review. The grading process is facilitated by the input of a grading key by the teacher, which the program utilizes to assess and score the homework assignments.
 
-![image](https://github.com/user-attachments/assets/4fbade32-7dc4-43e9-9bc9-babdcff9fdb7)
 
 
 
 
 ## User Interface
-TechTutor has a very simple UI. It consists of a button to start, stop, and change the grading key the AI uses to grade against. The UI also has a progress bar to show the user the current grading job's completion percentage, and a window to show what current grading key is being used. It utilizes Kivy for its main UI and here is an exmaple of what one might see when using the application.
-![TechTutor_Current_UI](https://github.com/Very-Bad-Goose/Senior-Project/assets/149719462/8c753d70-3487-4f2c-94a4-06c9c37d8716)
+TechTutor has a very simple UI. It consists of a few buttons and text boxes. The Sheet URL text box is where the user inputs the URL for the Google Sheet and the Save Sheet ID button will save the URL. The Number of Packet Pages text box is where the user enters the expected amount of images that a student should have for a submission and will only accept numbers larger than 0. You save the number in this text box by clicking the "Save Number". The "Change Credentials" button allows the user to change the Json file that is acquired from a Google Service Account. The "Start" button is the button you will push to run the AI models against the values in the sheet. The "Stop" button will stop the application while it is running.
+![image](https://github.com/user-attachments/assets/4fbade32-7dc4-43e9-9bc9-babdcff9fdb7)
+
 
 
 # How to Download, Setup, and Run
