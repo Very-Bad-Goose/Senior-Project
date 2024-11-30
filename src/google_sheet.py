@@ -89,15 +89,17 @@ class google_sheet:
     # Grabs the worksheet (default 0) for us
     def get_worksheet(self, index=0):
         return self.sheet.get_worksheet(index)
-    
-    # Return a specified cell
+
+
     def get_cell(self, row, col):
+        operation_name = "Read Cell"
         try:
-            result = self.retry_on_rate_limit(self.worksheet.cell(row, col).value)
-            
+            # Uses Retry function to avoid rate limit errors
+            return self.retry_on_rate_limit(self.worksheet.cell, row, col).value
         except Exception as e:
-            print(f"Error reading from cell: {e}")
-        return result
+            self.logger.log_failure(operation_name, str(e))
+            print(f"Error reading cell at row {row}, col {col}: {e}")
+            return None
     
     # Return a specified row
     def get_row(self, row):
