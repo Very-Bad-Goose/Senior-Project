@@ -89,12 +89,19 @@ class google_sheet:
     # Grabs the worksheet (default 0) for us
     def get_worksheet(self, index=0):
         return self.sheet.get_worksheet(index)
-
-
+    
+    # Return a specified cell
     def get_cell(self, row, col):
+        """
+        Reads a cell from the Google Sheet while handling rate limit errors.
+
+        :param row: The row number of the cell to read (1-indexed).
+        :param col: The column number of the cell to read (1-indexed).
+        :return: The value of the cell, or None if an error occurs.
+        """
         operation_name = "Read Cell"
         try:
-            # Uses Retry function to avoid rate limit errors
+            # Using the retry mechanism for rate limit errors
             return self.retry_on_rate_limit(self.worksheet.cell, row, col).value
         except Exception as e:
             self.logger.log_failure(operation_name, str(e))
