@@ -113,3 +113,23 @@
             pos_hint:{'center_x': .5, 'center_y': .6}
             size_hint: (.4,.4)
             fit_mode: 'fill'
+
+        # Text input for number
+        TextInput:
+            id: number_input
+            size_hint: (0.3, 0.05)
+            pos_hint: {'center_x': 0.35, 'top': 0.28}
+            hint_text: "Number of Packet Pages"
+            multiline: False
+            input_filter: 'int'
+            font_size: 18
+
+        # Button to save number
+        Button:
+            id: save_number_button
+            text: "Save Number"
+            size_hint: (0.3, 0.05)
+            pos_hint: {'center_x': 0.65, 'top': 0.28}
+            background_normal: 'ui_images/gray4.png'
+            background_down: 'ui_images/gray2.png'
+            on_press: root.save_activity_number()
