@@ -67,6 +67,12 @@ def detect_image_blur(image_path):
     if not isinstance(image_path,(str,pathlib.Path,MagicMock)):
         raise TypeError("image path must be type str or pathlib.Path")
     
+    if not os.path.exists(image_path):
+        raise FileNotFoundError
+    
+    if not image_path.lower().endswith((".png",".jpeg",".jpg",".heic")):
+        raise TypeError("image_path must be a path to an image")
+    
     
     image_file = cv2.imread(image_path)
     image_file = cv2.cvtColor(image_file, cv2.COLOR_BGR2GRAY)
