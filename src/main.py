@@ -45,6 +45,26 @@ class MyFloatLayout(FloatLayout):
     # method for when stop button is pressed
     def stop_press(self):
         stop_model()
+    
+    def create_temp_folder():
+        # Get the parent directory of the current directory
+        # parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+        
+        # Path to the Temp folder
+        temp_folder_path = "./Temp"
+        
+        # Create the Temp folder if it doesn't exist
+        if not os.path.exists(temp_folder_path):
+            try:
+                os.makedirs(temp_folder_path)
+                print(f"Temporary folder created at: {temp_folder_path}")
+            except Exception as e:
+                print(f"Error creating temporary folder: {e}")
+        else:
+            print(f"Temporary folder already exists at: {temp_folder_path}")
+
+    # Call this function where necessary in your script, e.g., before starting your processing
+    create_temp_folder()
         
     # Change Account Info
     #====================================================================================
@@ -83,7 +103,9 @@ class MyFloatLayout(FloatLayout):
         except Exception as e:
             print(f"Failed to save JSON file: {e}")
             return None
-
+        
+    
+    
     # Save the path of the saved JSON file to json_config.txt
     def save_config(self, file_path):
         config_file_path = 'src/json_config.txt'
@@ -136,6 +158,7 @@ class MyFloatLayout(FloatLayout):
     
     # method for when start button is pressed
     def start_press(self):
+        
         self.ids.progress_bar_background.set_value += 10
         if(self.ids.progress_bar_background.set_value > 100):
             self.ids.progress_bar_background.set_value = 0
@@ -266,6 +289,7 @@ class MyFloatLayout(FloatLayout):
 # main call loop for kivy to make application window
 class TechTutorApp(App):
     set_value = 5
+    
     def build(self):
         
         # setting window background to white
