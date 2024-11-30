@@ -55,7 +55,7 @@ TechTutor has a very simple UI. It consists of a button to start, stop, and chan
 - Use the provided .yml file to create and configure the necessary Conda environment.
 - Install all dependencies required for the project.
 
-### Step 4: Run the Program
+### Step 3: Run the Program
 - Inside the project directory, start the program by running:
   ```
   python main.py
