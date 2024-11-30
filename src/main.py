@@ -182,6 +182,12 @@ class MyFloatLayout(FloatLayout):
         
     
     def start_press(self):
+        
+        self.ids.progress_bar_background.set_value += 10
+        if(self.ids.progress_bar_background.set_value > 100):
+            self.ids.progress_bar_background.set_value = 0
+        self.progress_bar_value = self.ids.progress_bar_background.set_value
+        
         # Check to make sure that we have a number in the activity_page_number field
         if not hasattr(self, 'activity_page_number') or not self.activity_page_number:
             self.error_file = "Please set the Activity Page Number before starting."
@@ -223,6 +229,8 @@ class MyFloatLayout(FloatLayout):
         #----------------------------------------------
         # Column 2 = Student ID
         colStudentID = 2
+        # Column 3 = Period Number
+        colPeriodNum = 3
         # Column 4 = Assessment Score
         colAssessmentScore = 4
         # Column 5 = Citizenship Score
@@ -247,6 +255,10 @@ class MyFloatLayout(FloatLayout):
             # Get the student ID and folder URL for the current row
             studentID = googleSheet_object.get_cell(sheet_row_counter, colStudentID)
             folderURL = googleSheet_object.get_link(sheet_row_counter, colFolderURL)
+            PeriodNum = googleSheet_object.get_cell(sheet_row_counter, colPeriodNum)
+            # Compare deskNumber to Desk Model output
+            deskNumber = googleSheet_object.get_cell(sheet_row_counter, colDeskNum)
+            
 
             # If no folder URL is provided, skip the iteration
             if not folderURL:
@@ -254,7 +266,7 @@ class MyFloatLayout(FloatLayout):
                 # TODO
                 # If you want to change it so that if there is no link for the submission that it
                 # scores a 0, uncomment this code below:
-                googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 0)
+                #googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 0)
                 sheet_row_counter += 1
                 continue
 
@@ -297,44 +309,111 @@ class MyFloatLayout(FloatLayout):
             # Wait for return
             t1.join()
             # Debug print statements
-            print(f"The results in main are: {results[0]}")
-            print(f"The results in main are: {results[1]}")
-            print(f"The results in main are: {results[2]}")
+            print("results: ", results)
+            if (len(results) < 3):
+                print("error, results not populated")
+            # Debug print statements
+            #print(f"The results in main are: {results[0]}")
+            #print(type(results[0]))
+            #print(type(results[0][0]))
+            #print(f"The results in main are: {results[1]}")
+            #print(results[1][0][1])
+            #print(results[1][1][1])
+            #print(f"The results in main are: {results[2]}")
+            #print(results[2][0][1])
+            
             # If return 0 for Model APIs for Activity, mark
             # Activity score 0 and mark AI
-            packetModelOutput = results[0] # TODO
-            
-            # If the studentID doesn't match or is unreadable then mark a 0
-            if(studentID != packetModelOutput):
-                googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 1)
-                googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
-                googleSheet_object.update_cell(sheet_row_counter, colAICheck + 1, "Model Output does not match student ID, please manually review")
-                
+            packetModelOutput = results[0] #initialize packet model output to list of all page outputs
+            print("Outside Big Try")
+            try:
+                print("Inside Big Try")
+                badpacket = False
+                # If the studentID or Period Number doesn't match or is unreadable then mark a 0
+                for predictions in packetModelOutput:
+                    print("Inner for Loop")
+                    if(studentID != predictions[0]):
+                        print("Student ID Doesn't match")
+                        googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 0)
+                        googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
+                        googleSheet_object.update_cell(sheet_row_counter, colActivityFeedback, "Model Output does not match student ID, please manually review")
+                        badpacket = True
+                        break
+                    if(PeriodNum != predictions[1]):
+                        print("Period Num Doesn't Match")
+                        googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 0)
+                        googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
+                        googleSheet_object.update_cell(sheet_row_counter, colAICheck + 1, "Model Output does not match Period ID, please manually review")
+                        badpacket = True
+                        break
+                    #Otherwise, if the Student ID and Period Number is readable give the student a point
+                if (badpacket == False):
+                    print("Badpacket was bad. Packet.")
+                    googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 1)
+                    googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
+                    
+                # If return 0/null for Model APIs for Desk/Caddy, mark
+                # Citizenship Score 0 and mark AI if not already
+                try:
+                    deskModelFlag = 0
+                    deskModelOutput = results[1][0][1]
+                    if (deskModelOutput == results[1][1][1]):
+                        #return <-- I'M LEAVING THIS RETURN AS A WARNING TO THE OTHERS, IT BROKE EVERYTHING. I could have deleted it, but I want my fury felt.
+                        deskModelFlag = 1
+                    else:
+                        deskModelOutput = 0
+                except Exception as e:
+                    deskModelOutput = 0
+                    print(f"Error finding desk numbers, assuming at least one doesn't exist.")
 
-            # If return 0/null for Model APIs for Desk/Caddy, mark
-            # Citizenship Score 0 and mark AI if not already
+                print("try to do the caddy now")
+                #try grabbing the caddy number from results.
+                try:
+                    caddyModelOutput = results[2][0][1]
+                    
+                except Exception as e:
+                    caddyModelOutput = 0
+                    print(f"Error finding caddy number, assuming it doesn't exist.")
+
+                if(deskModelFlag == 1):
+                    # This means that the calc and the desk match
+
+                    if deskModelOutput == caddyModelOutput:
+                        # This means that the caddy and the desk model match
+                        if deskModelOutput == deskNumber:
+                            
+                            if caddyModelOutput == deskNumber:
+                                pass
+                                # The caddy image and desk image match the assigned desk!
+                                googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "AI successfully matched desk and caddy to correct number listed")
+                            else:
+                                googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Caddy Number doesn't match listed desk number according to AI")
+                        else:
+                            googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Desk Number doesn't match listed desk number according to AI")
+                    else:
+                        googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Caddy and Desk Number doesn't match according to AI")
+                else:
+                    googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Calc and Desk Number doesn't match according to AI")                
             
-            deskModelOutput = results[1] # TODO
-            caddyModelOutput = results[2] # TODO
-            
-            # Compare deskNumber to Desk Model output
-            deskNumber = googleSheet_object.get_cell(sheet_row_counter, colDeskNum)
-            # If the desk number and caddy number don't match the spreadsheet number, then mark it as a 0
-            if( not isNumberinResults(deskModelOutput, deskNumber,2) or not isNumberinResults(caddyModelOutput, deskNumber,1)):
-                googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 0)
-                googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
-                googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Failed AI comparison for Desk Number and Caddy Number")
-            else:
-                googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Passed AI check for Desk and Caddy Images")
-                googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 5)
-            
-            
-            # Debug statements
-            print(studentID)
-            print(folderURL)
-            print(deskNumber)
-            
-            
+                
+                """# If the desk number and caddy number don't match the spreadsheet number, then mark it as a 0
+                if( not isNumberinResults(deskModelOutput, deskNumber,2) or not isNumberinResults(caddyModelOutput, deskNumber,1)):
+                    googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 0)
+                    googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)
+                    googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Failed AI comparison for Desk Number and Caddy Number")
+                    
+                else:
+                    googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Passed AI check for Desk and Caddy Images")
+                    googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 5)"""
+                    
+            except: #no data exists within results
+                googleSheet_object.update_cell(sheet_row_counter, colAssessmentScore, 1)
+                googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 1)
+                googleSheet_object.update_cell(sheet_row_counter, colAICheck, True)    
+                
+                
+                
+                
             # The google sheet object deletes files from your pc, because obviously that's the correct component
             # to be deleting things (T-T)
             #googleSheet_object.delete_temp_folder(tempFolderPath) #not today, google
