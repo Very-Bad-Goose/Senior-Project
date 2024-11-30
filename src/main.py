@@ -14,7 +14,7 @@ from tkinter import filedialog
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection import FasterRCNN
 from kivy.clock import Clock
-from model_api import load_model,stop_model,model_predict,get_page_amount
+from model_api import load_model,stop_model,model_predict
 from google_sheet import google_sheet
 from easyOCR_Number_Recognition import isNumberinResults
 
