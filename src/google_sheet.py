@@ -92,7 +92,13 @@ class google_sheet:
     
     # Return a specified cell
     def get_cell(self, row, col):
-        return self.worksheet.cell(row,col).value
+        try:
+            result = self.retry_on_rate_limit(self.worksheet.cell(row, col).value)
+            
+        except Exception as e:
+            self.logger.log_failure(operation_name, str(e))
+            print(f"Error writing to cell: {e}")
+        return result
     
     # Return a specified row
     def get_row(self, row):
