@@ -190,8 +190,8 @@ class google_sheet:
     def update_cell(self, row, col, string):
         operation_name = "Update Cell"
         try:
-            result = self.logger.time_operation(self.retry_on_rate_limit(self.worksheet.update_cell, row, col, string))
-            self.logger.log(operation_name, result)
+            result = self.retry_on_rate_limit(self.worksheet.update_cell, row, col, string)
+            
         except Exception as e:
             self.logger.log_failure(operation_name, str(e))
             print(f"Error writing to cell: {e}")
