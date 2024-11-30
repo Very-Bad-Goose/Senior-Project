@@ -87,15 +87,15 @@ For those interested in using TechTutor, follow these instructions: (Note we are
         Go to the Keys tab.
         Click Add Key, choose Create new key, and select JSON. Click Create.
         This action will download a JSON file to your computer (move to the Project directory)
-        Share the Google Sheet with the service account's email to give it access.
-        (enter the email address of the service account in the share icon on the Google sheet. 
+        Share the Google Sheet with the service account's email to give it access
+        (enter the email address of the service account in the share icon on the Google sheet). 
         Grant the service account “Editor” access so it can read and write to the sheet.
    
    Step 3:
         Now alter all the TODO locations to ensure your file paths/file names are set up correctly.
 
    Step 4:
-        For now, test the prototype with the sample image provided (should be in same directory as project.
+        For now, test the prototype with the sample image provided (should be in same directory as project).
         To do this, you need to use local host, since pulling that image off the internet can cause issues.
         Do this with ```python -m http.server 8000``` in the terminal, then RUN the code.
    
@@ -125,60 +125,12 @@ In order to install kivy into your virtual environment for python use pip instal
 
 More Information at: https://kivy.org/doc/stable/gettingstarted/installation.html#install-pip
 
-# Lightning Installation Instructions
-open a terminal an enter the following command
-
-```python -m pip install lightning```
-
-Additional information on the library can be found at: https://github.com/Lightning-AI/pytorch-lightning
-
-# IMG2PDF Installation Instructions
-open a terminal an enter the following command
-
-```python -m pip install img2pdf```
-
 Additional information on the library can be found at: https://pypi.org/project/img2pdf/
-
-
-## Jira Timeline
-
-For project management and tracking progress, refer to the following Jira timeline:
-
-- **Sprint 5:** Train AI on handwriting recognission (8/26/24 - 9/8/24)
-  - Train AI to read math symbols.
-  - Train AI to locate ID numbers on worksheets.
-  - Make sure AI can handle imperfections in paper.
-    - this includes blemishes and too blurry of pictures.
-  - Train AI to locate differences in images.
-  - Make the AI look at a submission and compare it against a "correct" image.
-  - Make AI determine the percent difference between grading key and submission.
-- **Sprint 6:** Train AI on Desk Recognition (9/9/24 - 9/22/24)
-  - Train AI to handle dents in desks.
-  - Train AI to make sure desk number is same as assigned desk numbers.
-  - Train AI to make sure calculator is in top left of desk.
-  - Train AI to make sure number on calculator matches desk number.
-  - Train AI to make sure side pouches are clean.
-  - Create test data sets.     
-- **Sprint 7:** Train AI on Other Submissions (9/23/24 - 10/6/24)
-  - Test AI on different types of assignments and different grading keys.
-  - Add ability for user to test if AI can read grading key correctly.
-  - Test submissions on different grading keys that are not correct.
-  - Implement a threashold for how good the image quality needs to be for AI to grade assignment.        
-- **Sprint 8:** UI Finishing Touches (10/7/24 - 10/20/24)
-  - Progress bar update with regards to current AI job.
-  - Make Start button start AI model.
-  - Make Stop button stop AI model.
-  - Make it so the grading key chosen by UI is the one being used by AI model.
-  - Add logging feature of AI to see why it made the decisions it did.
-- **Sprint 9:** Testing - Get Accuracy > 95% (10/21/24 - 11/3/24)
-- **Sprint 10:** Final Testing (11/4/24 - 11/17/24)
 
 Link to Jira Backlog: https://bad-goose.atlassian.net/jira/software/projects/PROJECT01/boards/2/backlog
 # Testing
 
 In order to run one of the several PyTest test suites we have built for this project, please run ```pytest test_file_name``` in terminal for a specific test file. For example, to run src/test_image_blur_detection.py, type ```pytest test_image_blur_detection.py``` into terminal.
-
-# Deployment
 
 # Contributors
 
@@ -192,7 +144,7 @@ In order to run one of the several PyTest test suites we have built for this pro
 - Austin Nolte: Email address: arnolte@csus.edu Phone number: 209-352-7436 
 
 
-For more information or assistance, please contact the Byte Brigade team.
+For more information or assistance, please refer to attached manuals.
 
 ---
 
