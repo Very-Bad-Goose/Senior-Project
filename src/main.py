@@ -388,12 +388,16 @@ class MyFloatLayout(FloatLayout):
                                 googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "AI successfully matched desk and caddy to correct number listed")
                             else:
                                 googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Caddy Number doesn't match listed desk number according to AI")
+                                googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 0)
                         else:
                             googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Desk Number doesn't match listed desk number according to AI")
+                            googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 0)
                     else:
                         googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Caddy and Desk Number doesn't match according to AI")
+                        googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 0)
                 else:
-                    googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Calc and Desk Number doesn't match according to AI")                
+                    googleSheet_object.update_cell(sheet_row_counter, colDeskFeedback, "Calc and Desk Number doesn't match according to AI")
+                    googleSheet_object.update_cell(sheet_row_counter, colCitizenshipScore, 0)                
             
                 
                 """# If the desk number and caddy number don't match the spreadsheet number, then mark it as a 0

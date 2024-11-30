@@ -133,13 +133,13 @@ def model_predict_helper(models:tuple, folder_path, results):
                                 print(f"{image_path} is too blury")
                                 desk_results.append(None)
                             # preds = predict_with_model(image=image_path,model=desk_model,type="desk")
-                            desk_results = Desk_Number_Recognition(image_path,confidence_threshhold=0.7, type = "desk")
+                            desk_results = Desk_Number_Recognition(image_path,confidence_threshhold=0.65, type = "desk")
                         elif "desk_2" in image_path:
                             if blur_check:
                                 print(f"{image_path} is too blury")
                                 caddy_results.append(None)
                             # preds = predict_with_model(image=image_path,model=caddy_model,type="caddy")
-                            caddy_results = Desk_Number_Recognition(image_path,confidence_threshhold=0.7, type = "caddy")
+                            caddy_results = Desk_Number_Recognition(image_path,confidence_threshhold=0.65, type = "caddy")
         results.append(packet_results)
         results.append(desk_results)
         results.append(caddy_results)   
