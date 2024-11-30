@@ -11,8 +11,9 @@ from object_detection_model import predict_with_model, create_model
 from torchvision.models.detection import FasterRCNN
 from pathlib import Path
 import os
+from easyOCR_Number_Recognition import isNumberinResults, Desk_Number_Recognition
 from PIL import Image
-
+from handwriting_recognition import process_image_to_digits
 
 num_classes = {"desk": 2,"caddy": 1,"packet": 2}
 predict_flag = False
@@ -53,7 +54,7 @@ def stop_model():
         t1.join()
         
 # this will become the real predict model, other one is just for testing purposes while real model is being made
-def model_predict(models:tuple , folder_path):
+def model_predict(models:tuple , folder_path, results):
     
     if not isinstance(folder_path,(str,Path)):
         raise TypeError("folder path must be type str or Path")
@@ -70,10 +71,11 @@ def model_predict(models:tuple , folder_path):
     
     global predict_flag
     predict_flag = True
-    t1 = threading.Thread(target=model_predict_helper,args=(models,folder_path,))
+    t1 = threading.Thread(target=model_predict_helper,args=(models,folder_path,results))
     t1.start()
+    return t1
 
-def model_predict_helper(models:tuple, folder_path):
+def model_predict_helper(models:tuple, folder_path, results):
     
     # must be in order of packet,desk,caddy model in tuple
     packet_model,desk_model,caddy_model = models
@@ -89,9 +91,12 @@ def model_predict_helper(models:tuple, folder_path):
     #     with open("image_blur_results.txt","r") as image_blur_file:
     #         image_blur_results = image_blur_file.read()
     while predict_flag:
+        packet_results = []
+        desk_results = []
+        caddy_results = []
         for path,sub_path,files in os.walk(folder_path):
+            # check if file is supported and if it passed blur check
             for file in files:
-                # check if file is supported and if it passed blur check
                 if not predict_flag:
                     break
                 if file.endswith((".png",".jpeg",".jpg",".heic")):
@@ -102,33 +107,45 @@ def model_predict_helper(models:tuple, folder_path):
                     except Exception as e:
                         print(f"Error: {e}")    
                     check_path = check_path[-3] + "/" + check_path[-2] + "/" + check_path[-1]
-                    if not blur_check:
                         # use line below once model has been trained and function has been made 
-                        if "Activity Packet" in image_path:
-                            test = predict_with_model(image=image_path,model=packet_model,type="packet")
-                            processed_path = check_path.replace('/','_')
-                            for i in test:
-                                pred_box,score,image,label = i
-                                if label == 0:
-                                    image.save(f"./src/result_images/id_num{processed_path}")
-                                elif label == 1:
-                                    image.save(f"./src/result_images/period_num{processed_path}")
+                    if "Activity Packet" in image_path:
+                        print("I see a activity page")
+                        if blur_check:
+                            print(f"{image_path} is too blury")
+                            packet_results.append(None)
+                        preds = predict_with_model(image=image_path,model=packet_model,type="packet")
+                        for i in preds:
+                            pred_box,score,image,label = i
+                            if label == 0:
+                                stu_box = pred_box
+                            elif label == 1:
+                                per_box = pred_box
+                        if per_box is not None and stu_box is not None:
+                            print(f"{per_box.dtype} is period, {stu_box.dtype} is ID")
+                            packet_results.append(process_image_to_digits(image_path, stu_box, per_box))
+                        else:
+                            print(f"Model could not detect period num and/or student ID for {image_path}")
+                            packet_results.append(None)
+                        per_box = None
+                        stu_box = None
+                    elif "Desk Images" in image_path:
+                        if "desk_1" in image_path:
+                            print("I see desk 1")
+                            if blur_check:
+                                print(f"{image_path} is too blury")
+                                desk_results.append(None)
+                            # preds = predict_with_model(image=image_path,model=desk_model,type="desk")
+                            desk_results = Desk_Number_Recognition(image_path,confidence_threshhold=0.7, type = "desk")
+                        elif "desk_2" in image_path:
+                            print("I see desk 2")
+                            if blur_check:
+                                print(f"{image_path} is too blury")
+                                caddy_results.append(None)
+                            # preds = predict_with_model(image=image_path,model=caddy_model,type="caddy")
+                            caddy_results = Desk_Number_Recognition(image_path,confidence_threshhold=0.7, type = "caddy")
+        results.append(packet_results)
+        results.append(desk_results)
+        results.append(caddy_results)   
+        predict_flag = False    
+        
                             
-                        elif "Desk Images" in image_path:
-                            if "desk_1" in image_path:
-                                test = predict_with_model(image=image_path,model=desk_model,type="desk")
-                                processed_path = check_path.replace('/','_')
-                                for i in test:
-                                    pred_box,score,image,label = i
-                                    if label == 0:
-                                        image.save(f"./src/result_images/calculator{processed_path}")
-                                    elif label == 1:
-                                        image.save(f"./src/result_images/desk_number{processed_path}")
-                            elif "desk_2" in image_path:
-                                print("here in desk_2")
-                                test = predict_with_model(image=image_path,model=caddy_model,type="caddy")
-                                
-                                processed_path = check_path.replace('/','_')
-                                for i in test:
-                                    pred_box,score,image,label = i
-                                    image.save(f"./src/result_images/caddy{processed_path}")

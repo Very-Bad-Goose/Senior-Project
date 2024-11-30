@@ -184,6 +184,7 @@ class MyFloatLayout(FloatLayout):
         
         # Begin Loop
         tempFolderPath = "./Temp"
+        global models
         while(sheet_row_counter < 4):
             # Get the information from the cells for the current row
             studentID = googleSheet_object.get_cell(sheet_row_counter, colStudentID)
@@ -201,8 +202,12 @@ class MyFloatLayout(FloatLayout):
                     print(f"bad {e}")
             
             # Pass path to the ModelAPIs
+            print("Making predictions with models")
+            results = []
+            t1 = model_predict(models,tempFolderPath,results)
             # Wait for return
-            
+            t1.join()
+            print(f"The results in main are: {results}")
             # If return 0 for Model APIs for Activity, mark
             # Activity score 0 and mark AI
             packetModelOutput = "" # TODO
@@ -238,8 +243,7 @@ class MyFloatLayout(FloatLayout):
             #googleSheet_object.delete_temp_folder(tempFolderPath) #not today, google
             sheet_row_counter += 1
         
-        global models
-        model_predict(models,"./src/mbrimberry_files/")
+        # model_predict(models,"./src/mbrimberry_files/")
         
 
 

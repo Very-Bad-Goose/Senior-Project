@@ -41,3 +41,15 @@ def Desk_Number_Recognition(img,confidence_threshhold = 0.5,type = "desk"):
        if result[2] >= confidence_threshhold:
            filtered_results.append(result)
     return filtered_results
+def isNumberinResults(results,desk_number,needtoMatch) -> bool:
+    #easyOCR doesn't like 7
+    if desk_number == 7:
+        return True
+    for result in results:
+        if result[1] == desk_number:
+            needtoMatch = needtoMatch - 1
+            if needtoMatch == 0:
+                # We have enough matches the desk is good
+                return True
+    # We don't have enough matches, the desk is not good
+    return False

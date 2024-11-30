@@ -18,10 +18,11 @@ def process_image_to_digits(img_path, box_stu, box_per):
 
     #Crops the image to the demensions specified in the tensor
     def crop_img(img, box):
-        bbox = box_convert(box, 'cxcywh', 'xywh')
-        width, height = img.size
-        left, top, crop_width, crop_height = (int(bbox[0][i] * (width if i % 2 == 0 else height)) for i in range(4))
-        cropped = F.crop(img, top, left, crop_height, crop_width)
+        # bbox = box_convert(box, 'cxcywh', 'xywh')
+        bbox = box
+        # width, height = img.size
+        # left, top, crop_width, crop_height = (int(bbox[0][i] * (width if i % 2 == 0 else height)) for i in range(4))
+        cropped = F.crop(img, int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3]))
 
         #debug display
         #plt.imshow(cropped)

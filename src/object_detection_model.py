@@ -454,7 +454,7 @@ def predict_with_model(image, model:FasterRCNN, type:str):
                 height = y_max - y_min
 
                 # prediction_box is in format (x_min,y_min,x_max,y_max)
-                prediction_box = (x_min,y_min,x_max,y_max)
+                prediction_box = torch.tensor([x_min,y_min,width,height])
             
                 # prediction_label_score is in format (label,confidence socre of label)
                 prediction_label_score = (labels[highest_confidence_index].item(),scores[highest_confidence_index].item())
